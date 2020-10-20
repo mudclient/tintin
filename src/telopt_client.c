@@ -412,6 +412,11 @@ int client_translate_telopts(struct session *ses, unsigned char *src, int cplen)
 
 			if (skip <= cplen)
 			{
+                if (HAS_BIT(ses->config_flags, CONFIG_FLAG_IAC_GA)) {
+                    if (skip == 2 && (cpsrc[1] == GA || cpsrc[1] == EOR)) {
+                        gtd->mud_output_len++; *cpdst++ = cpsrc[1];
+                    };
+                };
 				cplen -= skip;
 				cpsrc += skip;
 			}

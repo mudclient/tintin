@@ -193,12 +193,12 @@ pcre *regexp_compile(struct session *ses, char *exp, int option)
 {
 	const char *error;
 	int i;
-/*
-	if (HAS_BIT(ses->charset, CHARSET_FLAG_UTF8))
+
+	if (HAS_BIT(ses->charset, CHARSET_FLAG_UTF8) && HAS_BIT(ses->config_flags, CONFIG_FLAG_PCRE_UTF))
 	{
 		option |= PCRE_UTF8|PCRE_NO_UTF8_CHECK;
 	}
-*/
+
 	return pcre_compile(exp, option, &error, &i, NULL);
 }
 

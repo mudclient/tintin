@@ -637,6 +637,8 @@ enum operators
 #define CONFIG_FLAG_VERBATIM          BV16
 #define CONFIG_FLAG_VERBOSE           BV17
 #define CONFIG_FLAG_WORDWRAP          BV18
+#define CONFIG_FLAG_IAC_GA            BV30
+#define CONFIG_FLAG_PCRE_UTF          BV31
 
 #define SES_FLAG_BUFFERUPDATE         BV01
 #define SES_FLAG_CLOSED               BV02
@@ -2180,6 +2182,8 @@ extern DO_CONFIG(config_verbatim);
 extern DO_CONFIG(config_verbatimchar);
 extern DO_CONFIG(config_verbose);
 extern DO_CONFIG(config_wordwrap);
+extern DO_CONFIG(config_iac_ga);
+extern DO_CONFIG(config_pcre_utf);
 
 #endif
 

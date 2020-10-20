@@ -309,6 +309,19 @@ struct config_type config_table[] =
 		config_wordwrap
 	},
 
+	{
+		"PCRE UTF",
+		"Compile PCRE expression in UTF mode",
+		"Don't compile PCRE expression in UTF mode",
+		config_pcre_utf
+	},
+
+	{
+		"IAC GA",
+		"Don't strip IAC GA from server output",
+		"Strip IAC GA from server output",
+		config_iac_ga
+	},
 
 	{
 		"",

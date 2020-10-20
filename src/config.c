@@ -1014,3 +1014,51 @@ DO_CONFIG(config_wordwrap)
 
 	return ses;
 }
+
+DO_CONFIG(config_pcre_utf)
+{
+	if (*arg2)
+	{
+		if (is_abbrev(arg2, "ON"))
+		{
+			SET_BIT(ses->config_flags, CONFIG_FLAG_PCRE_UTF);
+		}
+		else if (is_abbrev(arg2, "OFF"))
+		{
+			DEL_BIT(ses->config_flags, CONFIG_FLAG_PCRE_UTF);
+		}
+		else
+		{
+			show_error(ses, LIST_CONFIG, "#SYNTAX: #CONFIG {%s} <ON|OFF>", config_table[index].name);
+
+			return NULL;
+		}
+	}
+	strcpy(arg2, HAS_BIT(ses->config_flags, CONFIG_FLAG_PCRE_UTF) ? "ON" : "OFF");
+
+	return ses;
+}
+
+DO_CONFIG(config_iac_ga)
+{
+	if (*arg2)
+	{
+		if (is_abbrev(arg2, "ON"))
+		{
+			SET_BIT(ses->config_flags, CONFIG_FLAG_IAC_GA);
+		}
+		else if (is_abbrev(arg2, "OFF"))
+		{
+			DEL_BIT(ses->config_flags, CONFIG_FLAG_IAC_GA);
+		}
+		else
+		{
+			show_error(ses, LIST_CONFIG, "#SYNTAX: #CONFIG {%s} <ON|OFF>", config_table[index].name);
+
+			return NULL;
+		}
+	}
+	strcpy(arg2, HAS_BIT(ses->config_flags, CONFIG_FLAG_IAC_GA) ? "ON" : "OFF");
+
+	return ses;
+}
