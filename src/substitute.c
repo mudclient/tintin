@@ -1069,7 +1069,18 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 			case '\0':
 				if (HAS_BIT(flags, SUB_EOL))
 				{
-					if (HAS_BIT(ses->flags, SES_FLAG_RUN))
+					if (HAS_BIT(ses->telopts, TELOPT_FLAG_CR|TELOPT_FLAG_LF))
+					{
+						if (HAS_BIT(ses->telopts, TELOPT_FLAG_CR))
+						{
+							*pto++ = '\r';
+						}
+						if (HAS_BIT(ses->telopts, TELOPT_FLAG_LF))
+						{
+							*pto++ = '\n';
+						}
+					}
+					else if (HAS_BIT(ses->flags, SES_FLAG_RUN))
 					{
 						*pto++ = '\r';
 					}
@@ -1991,25 +2002,49 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 						case 'x':
 							if (pti[1] && pti[2])
 							{
-								if (pti[1] == '0' && pti[2] == '0' && pti[3] == 0)
-								{
-									pti += 2;
-									DEL_BIT(flags, SUB_EOL);
-									DEL_BIT(flags, SUB_LNF);
-								}
-								else
-								{
-									pti++;
-									*pto++ = hex_number_8bit(pti);
-									pti++;
-								}
+								*pto++ = hex_number_8bit(pti + 1);
+								pti += 2;
 							}
 							break;
 
 						case 'u':
-							if (pti[1] && pti[2] && pti[3] && pti[4])
+							if (pti[1] == '{')
 							{
-								pto += unicode_16_bit(&pti[1], pto);
+								if (pti[2] && pti[3] && pti[4])
+								{
+									if (pti[4] == '}')
+									{
+										pto += unicode_8_bit(pti + 2, pto);
+										pti += 4;
+									}
+									else if (pti[5] == '}')
+									{
+										pto += unicode_12_bit(pti + 2, pto);
+										pti += 5;
+									}
+									else if (pti[5] && pti[6])
+									{
+										if (pti[6] == '}')
+										{
+											pto += unicode_16_bit(pti + 2, pto);
+											pti += 6;
+										}
+										else if (pti[7] == '}')
+										{
+											pto += unicode_20_bit(pti + 2, pto);
+											pti += 7;
+										}
+										else if (pti[7] && pti[8] == '}')
+										{
+											pto += unicode_21_bit(pti + 2, pto);
+											pti += 8;
+										}
+									}
+								}
+							}
+							else if (pti[1] && pti[2] && pti[3] && pti[4])
+							{
+								pto += unicode_16_bit(pti + 1, pto);
 								pti += 4;
 							}
 							break;
@@ -2017,7 +2052,7 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 						case 'U':
 							if (pti[1] && pti[2] && pti[3] && pti[4] && pti[5] && pti[6])
 							{
-								pto += unicode_21_bit(&pti[1], pto);
+								pto += unicode_21_bit(pti + 1, pto);
 								pti += 6;
 							}
 							break;
@@ -2029,14 +2064,14 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 						case '0':
 							if (pti[1] == 0)
 							{
+								*pto++ = 0;
 								DEL_BIT(flags, SUB_EOL);
 								DEL_BIT(flags, SUB_LNF);
 							}
 							else if (pti[1] && pti[2])
 							{
-								pti++;
-								*pto++ = oct_number(pti);
-								pti++;
+								*pto++ = oct_number(pti + 1);
+								pti += 2;
 							}
 							break;
 

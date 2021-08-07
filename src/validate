@@ -47,7 +47,9 @@
 
 #nop ----------
 
-#switch {3} {#case 3 #return;#default error 5: switch failure}
+#switch {3}     {#case 3 #return;#default error 5.0: switch failure}
+#switch {1+2}   {#case 3 #return;#default error 5.1: switch failure}
+#switch {"bla"} {#case "bla" #return;#default error 5.2: switch string failure}
 
 #nop ----------
 
@@ -201,6 +203,9 @@ bla
 
 #if {(513 & ~1) != 512} {error 24.01: #math error}
 #if {1 << 1 != 2}	   {error 24.02: #math error}
+#if {1 < 2} {#nop} {error 24.03: #math error}
+#if {2 > 1} {#nop} {error 24.04: #math error}
+#if {2 % 2} {error 24.05: #math error}
 
 #nop ----------
 
@@ -413,6 +418,7 @@ bla
 		#info memory;
 		#info stack;
 		#draw Yellow Green scroll box 1 1 3 80 End of validation with 0 errors in @time{} seconds.;
+		#line benchmark {#10000 #math tmp (2 | 1) / 2 + 5};
 		#end \
 	}
 }

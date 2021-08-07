@@ -469,33 +469,33 @@
 #nop Move down by pressing arrow left + right simultaniously.
 #nop -------------------------------------------------------------------------
 
-#macro {\e[1;5A} {#cursor preserve;#delay {move} {#cursor reset_macro;n} {0.05}}
-#macro {\e[1;5C} {#cursor preserve;#delay {move} {#cursor reset_macro;e} {0.05}}
-#macro {\e[1;5B} {#cursor preserve;#delay {move} {#cursor reset_macro;s} {0.05}}
-#macro {\e[1;5D} {#cursor preserve;#delay {move} {#cursor reset_macro;w} {0.05}}
+#macro {\e[1;5A} {#cursor macro preserve;#delay {move} {#cursor macro reset;n} {0.05}}
+#macro {\e[1;5C} {#cursor macro preserve;#delay {move} {#cursor macro reset;e} {0.05}}
+#macro {\e[1;5B} {#cursor macro preserve;#delay {move} {#cursor macro reset;s} {0.05}}
+#macro {\e[1;5D} {#cursor macro preserve;#delay {move} {#cursor macro reset;w} {0.05}}
 
-#macro {\e[1;5A\e[1;5A} {#undelay {move};#cursor reset_macro;n;n}
-#macro {\e[1;5C\e[1;5C} {#undelay {move};#cursor reset_macro;e;e}
-#macro {\e[1;5B\e[1;5B} {#undelay {move};#cursor reset_macro;s;s}
-#macro {\e[1;5D\e[1;5D} {#undelay {move};#cursor reset_macro;w;w}
+#macro {\e[1;5A\e[1;5A} {#undelay {move};#cursor macro reset;n;n}
+#macro {\e[1;5C\e[1;5C} {#undelay {move};#cursor macro reset;e;e}
+#macro {\e[1;5B\e[1;5B} {#undelay {move};#cursor macro reset;s;s}
+#macro {\e[1;5D\e[1;5D} {#undelay {move};#cursor macro reset;w;w}
 
-#macro {\e[1;5A\e[1;5B} {#undelay {move};#cursor reset_macro;u}
-#macro {\e[1;5B\e[1;5A} {#undelay {move};#cursor reset_macro;u}
+#macro {\e[1;5A\e[1;5B} {#undelay {move};#cursor macro reset;u}
+#macro {\e[1;5B\e[1;5A} {#undelay {move};#cursor macro reset;u}
 
-#macro {\e[1;5C\e[1;5D} {#undelay {move};#cursor reset_macro;d}
-#macro {\e[1;5D\e[1;5C} {#undelay {move};#cursor reset_macro;d}
+#macro {\e[1;5C\e[1;5D} {#undelay {move};#cursor macro reset;d}
+#macro {\e[1;5D\e[1;5C} {#undelay {move};#cursor macro reset;d}
 
-#macro {\e[1;5A\e[1;5C} {#undelay {move};#cursor reset_macro;ne}
-#macro {\e[1;5C\e[1;5A} {#undelay {move};#cursor reset_macro;ne}
+#macro {\e[1;5A\e[1;5C} {#undelay {move};#cursor macro reset;ne}
+#macro {\e[1;5C\e[1;5A} {#undelay {move};#cursor macro reset;ne}
 
-#macro {\e[1;5B\e[1;5C} {#undelay {move};#cursor reset_macro;se}
-#macro {\e[1;5C\e[1;5B} {#undelay {move};#cursor reset_macro;se}
+#macro {\e[1;5B\e[1;5C} {#undelay {move};#cursor macro reset;se}
+#macro {\e[1;5C\e[1;5B} {#undelay {move};#cursor macro reset;se}
 
-#macro {\e[1;5D\e[1;5B} {#undelay {move};#cursor reset_macro;sw}
-#macro {\e[1;5B\e[1;5D} {#undelay {move};#cursor reset_macro;sw}
+#macro {\e[1;5D\e[1;5B} {#undelay {move};#cursor macro reset;sw}
+#macro {\e[1;5B\e[1;5D} {#undelay {move};#cursor macro reset;sw}
 
-#macro {\e[1;5D\e[1;5A} {#undelay {move};#cursor reset_macro;nw}
-#macro {\e[1;5A\e[1;5D} {#undelay {move};#cursor reset_macro;nw}
+#macro {\e[1;5D\e[1;5A} {#undelay {move};#cursor macro reset;nw}
+#macro {\e[1;5A\e[1;5D} {#undelay {move};#cursor macro reset;nw}
 
 #nop -------------------------------------------------------------------------
 #nop Place tells in the top 5 lines of the screen
@@ -875,8 +875,32 @@
 }
 
 #nop -------------------------------------------------------------------------
-#nop 
+#nop This is a script to connect to Gemstone 4.
+#nop Visit play.net/gs4, login, and hit the 'GO PLAY' button.
+#nop Select the Storm Front radio button and hit the 'GO PLAY' button.
+#nop Save the .sal file to your script directory and name it gemstone.sal.
+#nop Use the 'gemstone' alias to connect.
 #nop -------------------------------------------------------------------------
+
+#alias {gemstone}
+{
+    #var gemstone {};
+
+    #line oneshot #action {^GAMEHOST=%*} {#var gemstone[host] %%1};
+    #line oneshot #action {^GAMEPORT=%*} {#var gemstone[port] %%1};
+    #line oneshot #action {^KEY=%*} {#var gemstone[key] %%1};
+
+    #scan txt gemstone.sal;
+
+    #if {&gemstone[] != 3}
+    {
+        #showme Failed to load gemstone.sal file.;
+        #return
+    };
+    #ses gemstone $gemstone[host] $gemstone[port];
+    #send {$gemstone[key]};
+    #send {>/FE:JAVA}
+}
 
 #nop -------------------------------------------------------------------------
 #nop 

@@ -282,16 +282,7 @@ DO_COMMAND(do_test)
 
 	if (!strcmp(arg1, "bla"))
 	{
-		int size = sizeof(cp949_to_unicode_table) / sizeof(struct interval_type);
-
-		printf("size: %d\n", size);
-
-		for (int i = 0 ; i < size ; i++)
-		{
-			execute(ses, "#variable keys[%d] %d", cp949_to_unicode_table[i].head, cp949_to_unicode_table[i].tail);
-//			command(ses, do_line, "log cp949_to_unicode_keys %d,", cp949_to_unicode_table[i].head);
-//			command(ses, do_line, "log cp949_to_unicode_vals %d,", cp949_to_unicode_table[i].tail);
-		}
+		printf("%d", ~1 + 2);
 	}
 
 	if (!strcmp(arg1, "rain"))

@@ -1,71 +1,72 @@
+  - look into large variable handling, foreach, once again
 
-  - look into large variable loading
+  - tab window, add tab ordering and garbage collection
 
-  - Display directory on failed #read.
+----------------
+  - #macro \n has some oddities.
+
+  - #run sessionname ssh muinet@muinet.com -p 2233 has poor enter handling with #cursor echo on
+
+  - https://github.com/scandum/tintin/issues/62 : TO CONTINUE, PLEASE DELETE THE FILE:
+
+  - see about using the regex offset in #replace.
+
+  - check: #var bla { x};#draw scroll box 1 1 3 40 $bla
+
+  - mapper.c vnum = ses->map->grid_rooms[x + 1 + max_x * (y - 1)] ? ses->map->grid_rooms[x + 1 + max_x * (y - 1)]->vnum : 0; crash
+
+#list speedruns index name;
+#list speedruns find cot temp;
+#var newItem {{name} {cot} {type} {area} {vnum} {5} {desc} {Pinnacle: Center of Town}};
+#list speedruns set $temp $newItem;
+
+  - set_line_screen stack call triggered on android
+
+  - prompt page up/down bug https://github.com/scandum/tintin/discussions/60
+
+  - upgrade #prompt to take a square coordinate
+
+  - add pathdir support to #path load
+
+  - look into #map list {roomflag} {!void}
+
+  - input spell checking, #cursor display ?
+
+  - look into named actions as a 4th argument
+
+  - look into adding #line quiet support to #buffer
+
+  - pruned tile handling
+
+  - #format %r reverses color codes.
+
+  - Get discworld / aardwolf mxp to work for @sentix
+
+  - Allow room symbols to cover exits
+
+  - SUB_BRA for input events
+  - https://tintin.sourceforge.io/forum/viewtopic.php?f=4&t=2827
+  - Add unmatched brace event
+
+  - look into default input color
+
+  - Add RECEIVED INPUT CHARACTER event / filter mouse input sequences.
+
+  - handle signals in the mainloop.
+
+  - add ctrl-r support for scrollback
+
+  - Add #event {SESSION CONNECTED} {5.1} option.
 
   - Add the option to use + ? . and * as variable exit fields. 
 
   - TT++ HANDBOOK for meticulous organized details.
 
-  - improve #draw bar.▪▪ ◼◼ ■■ ◆◆ ▬▬ ●● ⣿⣿⣿⣷
-    dual bar using reverse color and ██ ▀▀ ▄▄
-    color gradiant handling <faa><afa>
-    128 bit flags
-    text inside bar.    
+  - vertical bar drawing
 
-  - output from the other session remains in the input line of the new session sometimes.
-
-  - #1 {#delay 2 #showme A;#delay 1 #showme B;#del} double support?
-
-  - document #path zip/unzip changes to new format.
-
-  - dev/test/mouse/windowmap.tin has issues with ; in chat window
-    caused by %w in format, add SUB_BRA to just substitute braces.
-
-  - double check packet patch code, gagging patched line? Echo command?
-
-  - store creation epoch in arg4 for #tick, add example script to display.
-  - get rid of SORT_DELAY due to one shot code.
-
-  - add #path load option to #path create
-
-  - double check script crashes on screen resize
-
-  - #echo {%g} {10684.3609}
-
-  - Add catch events for SIGUSR1 and SIGUSR2
-
-  - check out hibbmap.dat in dev/test, mudlet to tt++ conversion
-
-  - no longer works?
-
-          #event {SESSION ACTIVATED} {
-                #BUFFER end;
-                };
-
-  - Possible crash with launching 2 sessions reading a large variable.
-
-  - https://tintin.sourceforge.io/forum/viewtopic.php?f=3&t=2818 (likely a
-    telnet compatibility issue)
-
+  - error: cursor_check_line_modified1: 
   - https://tintin.sourceforge.io/forum/viewtopic.php?f=10&t=2811 (possible
-    issue with iniating input buffer for a new session, possibly prompt
-    related somehow)
-
-  - possible issue with sessions randomly getting activated.
-
-  - possible wordwrapping on raw string length instead of stripped length
-    in some edge case.
-
-  - Look into WSL sound handling
-
-  - CP949.TXT full table support
-
-  - Look into escaped color code handling in zmp, possibly msdp
-
-  - See about making @$var{} work. Maybe allow @{$var}{}
-
-  - See about turning window close into a program termination event.
+    issue with initiating input buffer for a new session)
 
   - finish BUFFER_SIZE replacement.
 
@@ -73,29 +74,17 @@
 
   - update msdp scripts with #line msdp feature
 
-  - refresh input on session switch
-
-  - swap arg1, arg2, arg for do_port
-
-  - https://tintin.sourceforge.io/forum/viewtopic.php?f=5&t=2776
-    Need special casing for non capturing {?!} regex handling.
-
   - #cursor get word option, maybe get the yank buffer as well.
-
-  - Look into config option to change the working directory
 
   - Add a way to set env variables either 1) for the current process, and/or 2) as a parameter to #system (i.e. after fork in the child process).
 
 * STUFF THAT IS PROBABLY GONNA GET DONE
 
+  - make named delays proper delays
+
   - Finish port proxy support: resizing, input, security
 
   - look into transparent drawing
-
-  - if error pcre.h, need export C_INCLUDE_PATH= where it locate
-
-  - The #else command could follow a #foreach so as to create "for-else" loops
-    in case a loop is not broken.
 
   - Add #line gag 2 +2 -2 support.
 
@@ -103,8 +92,6 @@
 
   - $var[%*][%*] support.
   - make list sorting move nests as well
-
-  - #line convert utf-8 support.
 
   - better #draw font support
 
@@ -115,19 +102,8 @@
 #0  0x00005555555a5418 in tunnel_void (ses=0x555558a97b00, from=8004, room=1931506785, dir=1684955508) at mapper.c:4220
 #1  0x00005555555a599d in searchgrid_find (ses=0x555558a97b00, from=153, search=0x555558d8f850) at mapper.c:4336
 #2  0x00005555555afb44 in map_list (ses=0x555558a97b00, arg=0x5555572e1b95 "{} {} {} {$roomarea} {variable} {area_mapped}",
-    arg1=0x555555d2d910 "", arg2=0x555555d23cb0 "") at mapper.c:6791
-#3  0x0000555555596562 in do_map (ses=0x555558a97b00, arg=0x5555572e1b95 "{} {} {} {$roomarea} {variable} {area_mapped}",
-    arg1=0x555555d2d910 "", arg2=0x555555d23cb0 "", arg3=0x0, arg4=0x0) at mapper.c:133
-#4  0x00005555555be82a in parse_script (root=0x555557f71960, lvl=0, token=0x55555c6ba230, shift=0x55555767ab10) at tokenize.c:812
-#5  0x00005555555bfded in script_driver (ses=0x555558a97b00, list=1,
-    str=0x555555d19ff0 "#map {get} {ROOMVNUM} {roomvnum};#map {get} {ROOMAREA} {roomarea};#map {get} {ROOMNAME} {roomname};#map {get} {ROOMDESC} {roomdesc};#format {roomname_len}\t{%L} {$roomname};#format {roomvnum_len}\t{%L} "...) at tokenize.c:1242
-#6  0x0000555555581ee1 in parse_input (ses=0x555558a97b00, input=0x55555767c099 "") at parse.c:226
-#7  0x00005555555bef73 in parse_script (root=0x555557680c80, lvl=0, token=0x555557f719d0, shift=0x555557f719d0) at tokenize.c:1011
-#8  0x00005555555bfded in script_driver (ses=0x555558a97b00, list=6, str=0x555558d95d10 "mapupdate") at tokenize.c:1242
-#9  0x00005555555865af in delay_update () at update.c:938
-#10 0x000055555558434d in mainloop () at update.c:159
-#11 0x000055555557df19 in main (argc=2, argv=0x7fffffffe4c8) at main.c:416
 
+  - Store the map filename to differentiate between maps.
   - #map list {<exits>} breaks on rooms that have e mapped to eu.
   - finish landmarks
   - map sandbox mode support (flags to disable saving?)
@@ -187,20 +163,13 @@
 
   - add packets patched counter
 
-  - Fix arrow key up history recall overwriting the prompt (partial redesign)
-    Auto prompt fixing on overwrite.
-
   - reportable_sounds
-
-  - https://tintin.sourceforge.io/forum/viewtopic.php?f=4&t=2597 #add #screen support
 
   - TELNET documentation.
 
   - Add JSON support to #scan
 
   - see if #break 2 is possible, maybe #continue 2 as well.
-
-  - http://tintin.sourceforge.net/board/viewtopic.php?p=9625 (map undo issue) (not a big issue)
 
   - http://tintin.sourceforge.net/board/viewtopic.php?t=2339 (map area data)
 
@@ -218,6 +187,8 @@
 
 * LOW PRIORITY
 
+  - ./configure might error on /dev/ptmx
+
   - Add a file handler.
 
   - multi-line buffer searches / captures / deletes
@@ -227,6 +198,10 @@
   - add color based auto unwrap routine.
 
   - Start of line anchors aren't working in #replace.
+
+  - add #history filter option to filter out 1 letter commands.
+
+  - Look into config option to change the working directory
 
 --------------------------------------------------------------------------------
 

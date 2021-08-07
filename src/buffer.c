@@ -160,6 +160,12 @@ void add_line_buffer(struct session *ses, char *line, int prompt)
 
 	push_call("add_line_buffer(%p,%s,%d)",ses,line,prompt);
 
+	if (HAS_BIT(ses->flags, SES_FLAG_SNOOPSCROLL))
+	{
+		SET_BIT(gtd->flags, TINTIN_FLAG_SESSIONUPDATE);
+		SET_BIT(ses->flags, SES_FLAG_PRINTLINE);
+	}
+
 	if (gtd->level->scroll)
 	{
 		pop_call();
@@ -274,6 +280,14 @@ void add_line_buffer(struct session *ses, char *line, int prompt)
 		port_socket_printf(ses, ses->proxy, "%s%s", ses->scroll->input, prompt ? "" : "\n");
 	}
 
+	if (!HAS_BIT(ses->logmode, LOG_FLAG_LOW))
+	{
+		if (ses->logfile)
+		{
+			logit(ses, ses->scroll->input, ses->logfile, LOG_FLAG_LINEFEED);
+		}
+	}
+
 	ses->scroll->buffer[ses->scroll->used] = calloc(1, sizeof(struct buffer_data));
 
 	buffer = ses->scroll->buffer[ses->scroll->used];
@@ -295,14 +309,6 @@ void add_line_buffer(struct session *ses, char *line, int prompt)
 	ses->scroll->used++;
 
 	str_cpy(&ses->scroll->input, "");
-
-	if (!HAS_BIT(ses->logmode, LOG_FLAG_LOW))
-	{
-		if (ses->logfile)
-		{
-			logit(ses, temp, ses->logfile, LOG_FLAG_LINEFEED);
-		}
-	}
 
 	if (gtd->chat)
 	{
@@ -438,7 +444,7 @@ int show_buffer(struct session *ses)
 {
 	int scroll_size, scroll_cnt, scroll_tmp, scroll_add, scroll_cut, start, end, row;
 
-	if (ses != gtd->ses)
+	if (ses != gtd->ses && !HAS_BIT(ses->flags, SES_FLAG_SNOOPSCROLL))
 	{
 		return TRUE;
 	}

@@ -171,7 +171,7 @@ struct session *parse_input(struct session *ses, char *input)
 	char *line;
 
 	push_call("parse_input(%s,%s)",ses->name,input);
-
+/*
 	if (*input == 0)
 	{
 		write_mud(ses, input, SUB_EOL);
@@ -179,7 +179,7 @@ struct session *parse_input(struct session *ses, char *input)
 		pop_call();
 		return ses;
 	}
-
+*/
 	line = str_alloc_stack(0);
 
 	if (VERBATIM(ses))
@@ -211,7 +211,7 @@ struct session *parse_input(struct session *ses, char *input)
 		return ses;
 	}
 
-	while (*input)
+	do
 	{
 		input = space_out(input);
 
@@ -239,6 +239,7 @@ struct session *parse_input(struct session *ses, char *input)
 			input++;
 		}
 	}
+	while (*input);
 
 	pop_call();
 	return ses;

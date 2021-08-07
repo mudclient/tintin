@@ -478,7 +478,7 @@ DO_LINE(line_multishot)
 {
 	unsigned int shots;
 
-	arg = get_arg_in_braces(ses, arg, arg1, GET_ONE);
+	arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
 	arg = get_arg_in_braces(ses, arg, arg2, GET_ALL);
 
 	shots = (unsigned int) get_number(ses, arg1);

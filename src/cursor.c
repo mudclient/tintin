@@ -908,8 +908,15 @@ DO_CURSOR(cursor_delete)
 		}
 	}
 
-	cursor_redraw_line(ses, "");
-
+	if (gtd->ses->input->raw_len == gtd->ses->input->raw_pos)
+	{
+		input_printf("\e[1X");
+		cursor_check_line(ses, arg);
+	}
+	else
+	{
+		cursor_redraw_line(ses, "");
+	}
 	modified_input();
 }
 
@@ -943,7 +950,7 @@ DO_CURSOR(cursor_delete_word_left)
 
 	while (span_raw < index_raw)
 	{
-		span_raw += get_vt102_width(gtd->ses, &gtd->ses->input->buf[gtd->ses->input->raw_pos], &width);
+		span_raw += get_vt102_width(gtd->ses, &gtd->ses->input->buf[span_raw], &width);
 
 		gtd->ses->input->str_pos -= width;
 	}
@@ -1189,6 +1196,39 @@ DO_CURSOR(cursor_flag)
 
 	arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
 	arg = sub_arg_in_braces(ses, arg, arg2, GET_ALL, SUB_VAR|SUB_FUN);
+
+	if (is_abbrev(arg1, "EOL"))
+	{
+		if (*arg2 == 0)
+		{
+			TOG_BIT(ses->telopts, TELOPT_FLAG_CR|TELOPT_FLAG_LF);
+		}
+		else if (!strcasecmp(arg2, "CR"))
+		{
+			SET_BIT(ses->telopts, TELOPT_FLAG_CR);
+			DEL_BIT(ses->telopts, TELOPT_FLAG_LF);
+		}
+		else if (!strcasecmp(arg2, "LF"))
+		{
+			DEL_BIT(ses->telopts, TELOPT_FLAG_CR);
+			SET_BIT(ses->telopts, TELOPT_FLAG_LF);
+		}
+		else if (!strcasecmp(arg2, "CRLF"))
+		{
+			SET_BIT(ses->telopts, TELOPT_FLAG_CR);
+			SET_BIT(ses->telopts, TELOPT_FLAG_LF);
+		}
+		else if (!strcasecmp(arg2, "OFF"))
+		{
+			DEL_BIT(ses->telopts, TELOPT_FLAG_CR);
+			DEL_BIT(ses->telopts, TELOPT_FLAG_LF);
+		}
+		else
+		{
+			show_error(gtd->ses, LIST_COMMAND, "#SYNTAX: #CURSOR {FLAG} {EOL} {CR|LF|CRLF|OFF}.");
+		}
+		return;
+	}
 
 	if (is_abbrev(arg1, "ECHO"))
 	{
@@ -1758,7 +1798,7 @@ DO_CURSOR(cursor_move_left_word)
 
 	while (span_raw < index_raw)
 	{
-		span_raw += get_vt102_width(gtd->ses, &gtd->ses->input->buf[gtd->ses->input->raw_pos], &width);
+		span_raw += get_vt102_width(gtd->ses, &gtd->ses->input->buf[span_raw], &width);
 
 		gtd->ses->input->str_pos -= width;
 	}
