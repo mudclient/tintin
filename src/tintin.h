@@ -552,38 +552,39 @@ enum operators
 
 #define SUB_ARG                       BV01
 #define SUB_SEC                       BV02
-#define SUB_CMD                       BV03
-#define SUB_VAR                       BV04
-#define SUB_FUN                       BV05
-#define SUB_COL                       BV06
-#define SUB_ESC                       BV07
-#define SUB_EOL                       BV08 // telnet
-#define SUB_LNF                       BV09
-#define SUB_SIL                       BV10 // silent
-#define SUB_LIT                       BV11 // no soft escaping
-
+#define SUB_BRA                       BV03
+#define SUB_CMD                       BV04
+#define SUB_VAR                       BV05
+#define SUB_FUN                       BV06
+#define SUB_COL                       BV07
+#define SUB_ESC                       BV08
+#define SUB_EOL                       BV09 // telnet
+#define SUB_LNF                       BV10
+#define SUB_SIL                       BV11 // silent
+#define SUB_LIT                       BV12 // no soft escaping
 
 /*
 #define SUB_ARG                       BV01
 #define SUB_SEC                       BV02
+#define SUB_BRA                       BV03
 */
-#define EVENT_FLAG_CATCH              BV03
-#define EVENT_FLAG_CLASS              BV04
-#define EVENT_FLAG_GAG                BV05
-#define EVENT_FLAG_INPUT              BV06
-#define EVENT_FLAG_MAP                BV07
-#define EVENT_FLAG_MOUSE              BV08
-#define EVENT_FLAG_OUTPUT             BV09
-#define EVENT_FLAG_PORT               BV10
-#define EVENT_FLAG_SCAN               BV11
-#define EVENT_FLAG_SCREEN             BV12
-#define EVENT_FLAG_SESSION            BV13
-#define EVENT_FLAG_SYSTEM             BV14
-#define EVENT_FLAG_TELNET             BV15
-#define EVENT_FLAG_TIME               BV16
-#define EVENT_FLAG_UPDATE             BV17
-#define EVENT_FLAG_VARIABLE           BV18
-#define EVENT_FLAG_VT100              BV19
+#define EVENT_FLAG_CATCH              BV04
+#define EVENT_FLAG_CLASS              BV05
+#define EVENT_FLAG_GAG                BV06
+#define EVENT_FLAG_INPUT              BV07
+#define EVENT_FLAG_MAP                BV08
+#define EVENT_FLAG_MOUSE              BV09
+#define EVENT_FLAG_OUTPUT             BV10
+#define EVENT_FLAG_PORT               BV11
+#define EVENT_FLAG_SCAN               BV12
+#define EVENT_FLAG_SCREEN             BV13
+#define EVENT_FLAG_SESSION            BV14
+#define EVENT_FLAG_SYSTEM             BV15
+#define EVENT_FLAG_TELNET             BV16
+#define EVENT_FLAG_TIME               BV17
+#define EVENT_FLAG_UPDATE             BV18
+#define EVENT_FLAG_VARIABLE           BV19
+#define EVENT_FLAG_VT100              BV20
 
 
 #define TAB_FLAG_FORWARD              BV01
@@ -599,7 +600,7 @@ enum operators
 
 
 
-#define TINTIN_FLAG_GETNUMBER         BV01
+#define TINTIN_FLAG_GETNUMBER         BV01 // UNUSED
 #define TINTIN_FLAG_SESSIONUPDATE     BV02
 #define TINTIN_FLAG_PROCESSINPUT      BV03
 #define TINTIN_FLAG_INHERITANCE       BV04
@@ -662,6 +663,7 @@ enum operators
 #define TELOPT_FLAG_UPDATENAWS        BV10
 #define TELOPT_FLAG_CR                BV11
 #define TELOPT_FLAG_LF                BV12
+#define TELOPT_FLAG_NUL               BV13
 
 #define LIST_FLAG_IGNORE              BV01
 #define LIST_FLAG_PRIORITY            BV02
@@ -766,7 +768,8 @@ enum operators
 #define MAP_SEARCH_TERRAIN             5
 #define MAP_SEARCH_FLAG                6
 #define MAP_SEARCH_ID                  7
-#define MAP_SEARCH_MAX                 8
+#define MAP_SEARCH_DISTANCE            8
+#define MAP_SEARCH_MAX                 9
 
 #define MAP_EXIT_N                     1
 #define MAP_EXIT_E                     2
@@ -1492,7 +1495,9 @@ struct search_data
 	pcre                  * note;
 	pcre                  * terrain;
 	long long               flag;
+	long long               galf;
 	char                  * id;
+	float                   distance;
 };
 
 struct msdp_data

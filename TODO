@@ -3,32 +3,13 @@
   - tab window, add tab ordering and garbage collection
 
 ----------------
-  - #macro \n has some oddities.
-
-  - #run sessionname ssh muinet@muinet.com -p 2233 has poor enter handling with #cursor echo on
-
-  - https://github.com/scandum/tintin/issues/62 : TO CONTINUE, PLEASE DELETE THE FILE:
-
-  - see about using the regex offset in #replace.
-
   - check: #var bla { x};#draw scroll box 1 1 3 40 $bla
 
   - mapper.c vnum = ses->map->grid_rooms[x + 1 + max_x * (y - 1)] ? ses->map->grid_rooms[x + 1 + max_x * (y - 1)]->vnum : 0; crash
 
-#list speedruns index name;
-#list speedruns find cot temp;
-#var newItem {{name} {cot} {type} {area} {vnum} {5} {desc} {Pinnacle: Center of Town}};
-#list speedruns set $temp $newItem;
-
   - set_line_screen stack call triggered on android
 
-  - prompt page up/down bug https://github.com/scandum/tintin/discussions/60
-
-  - upgrade #prompt to take a square coordinate
-
   - add pathdir support to #path load
-
-  - look into #map list {roomflag} {!void}
 
   - input spell checking, #cursor display ?
 
@@ -70,6 +51,8 @@
 
   - finish BUFFER_SIZE replacement.
 
+  - WSL sound, double check soundpack scripts for lag/stutter
+
   - WSL faq: #system cmd.exe /c start notepad
 
   - update msdp scripts with #line msdp feature
@@ -79,6 +62,8 @@
   - Add a way to set env variables either 1) for the current process, and/or 2) as a parameter to #system (i.e. after fork in the child process).
 
 * STUFF THAT IS PROBABLY GONNA GET DONE
+
+  - #line timeshot to auto destroy a trigger after given interval.
 
   - make named delays proper delays
 
@@ -182,6 +167,8 @@
   - http://tintin.sourceforge.net/board/viewtopic.php?p=8745#8745 (verbose logging?)
 
   - See about adding ~/ handling for file names.
+
+  - Look into adding basic EUC-KR support.
 
 --------------------------------------------------------------------------------
 

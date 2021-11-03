@@ -1180,9 +1180,17 @@ DO_CURSOR(cursor_enter_finish)
 	ses->input->raw_pos = 0;
 	ses->input->str_pos = 0;
 
+	ses->input->str_off = 1;
 	ses->input->str_hid = 0;
 
 	DEL_BIT(gtd->ses->input->flags, INPUT_FLAG_EDIT);
+
+	if (ses == gtd->ses && gtd->ses->scroll->line != -1)
+	{
+		cursor_check_line(gtd->ses, "");
+
+		buffer_end(gtd->ses, "", "", "");
+	}
 
 	if (ses == gtd->ses && HAS_BIT(gtd->ses->flags, SES_FLAG_SPLIT))
 	{
@@ -1207,26 +1215,44 @@ DO_CURSOR(cursor_flag)
 		{
 			SET_BIT(ses->telopts, TELOPT_FLAG_CR);
 			DEL_BIT(ses->telopts, TELOPT_FLAG_LF);
+			DEL_BIT(ses->telopts, TELOPT_FLAG_NUL);
 		}
 		else if (!strcasecmp(arg2, "LF"))
 		{
 			DEL_BIT(ses->telopts, TELOPT_FLAG_CR);
 			SET_BIT(ses->telopts, TELOPT_FLAG_LF);
+			DEL_BIT(ses->telopts, TELOPT_FLAG_NUL);
 		}
-		else if (!strcasecmp(arg2, "CRLF"))
+		else if (!strcasecmp(arg2, "CRLF") || !strcasecmp(arg2, "ON"))
 		{
 			SET_BIT(ses->telopts, TELOPT_FLAG_CR);
 			SET_BIT(ses->telopts, TELOPT_FLAG_LF);
+			DEL_BIT(ses->telopts, TELOPT_FLAG_NUL);
+		}
+		else if (!strcasecmp(arg2, "CRNUL"))
+		{
+			SET_BIT(ses->telopts, TELOPT_FLAG_CR);
+			DEL_BIT(ses->telopts, TELOPT_FLAG_LF);
+			SET_BIT(ses->telopts, TELOPT_FLAG_NUL);
 		}
 		else if (!strcasecmp(arg2, "OFF"))
 		{
 			DEL_BIT(ses->telopts, TELOPT_FLAG_CR);
 			DEL_BIT(ses->telopts, TELOPT_FLAG_LF);
+			DEL_BIT(ses->telopts, TELOPT_FLAG_NUL);
 		}
 		else
 		{
-			show_error(gtd->ses, LIST_COMMAND, "#SYNTAX: #CURSOR {FLAG} {EOL} {CR|LF|CRLF|OFF}.");
+			show_error(gtd->ses, LIST_COMMAND, "#SYNTAX: #CURSOR {FLAG} {EOL} {CR|LF|CRLF|CRNUL|OFF}.");
+			return;
 		}
+
+		show_message(gtd->ses, LIST_COMMAND, "#CURSOR FLAG EOL HAS BEEN SET TO: %s",
+			HAS_BIT(ses->telopts, TELOPT_FLAG_CR|TELOPT_FLAG_LF) == 0 ? "OFF" :
+			HAS_BIT(ses->telopts, TELOPT_FLAG_CR|TELOPT_FLAG_NUL) == (TELOPT_FLAG_CR|TELOPT_FLAG_NUL) ? "CRNUL" :
+			HAS_BIT(ses->telopts, TELOPT_FLAG_CR|TELOPT_FLAG_LF) == TELOPT_FLAG_CR ? "CR" :
+			HAS_BIT(ses->telopts, TELOPT_FLAG_CR|TELOPT_FLAG_LF) == TELOPT_FLAG_LF ? "LF" : "CRLF");
+
 		return;
 	}
 
@@ -1272,7 +1298,7 @@ DO_CURSOR(cursor_flag)
 		return;
 	}
 
-	show_error(gtd->ses, LIST_COMMAND, "#SYNTAX: #CURSOR {FLAG} {ECHO|INSERT} {ON|OFF}.");
+	show_error(gtd->ses, LIST_COMMAND, "#SYNTAX: #CURSOR {FLAG} {ECHO|EOL|INSERT} {ON|OFF}.");
 }
 
 DO_CURSOR(cursor_get)

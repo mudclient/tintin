@@ -935,7 +935,7 @@ void wrapstring(struct session *ses, char *str, char *wrap)
 		{
 			*pte++ = 0;
 
-			substitute(ses, pts, arg1, SUB_SEC);
+			substitute(ses, pts, arg1, SUB_BRA);
 
 			cat_sprintf(str, "{%d}{%s}", ++cnt, arg1);
 
@@ -946,7 +946,7 @@ void wrapstring(struct session *ses, char *str, char *wrap)
 			pte++;
 		}
 	}
-	substitute(ses, pts, arg1, SUB_SEC);
+	substitute(ses, pts, arg1, SUB_BRA);
 
 	cat_sprintf(str, "{%d}{%s}", ++cnt, arg1);
 

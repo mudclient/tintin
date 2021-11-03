@@ -2778,6 +2778,7 @@ struct help_type help_table[] =
 		"         <278>  Lists all matching rooms and their distance. The following\n"
 		"         <278>  search keywords are supported.\n"
 		"\n"
+		"         <278>  {distance}    <arg> will list rooms within given distance.\n"
 		"         <278>  {roomarea}    <arg> will list rooms with matching area name.\n"
 		"         <278>  {roomdesc}    <arg> will list rooms with matching room desc.\n"
 		"         <278>  {roomexits}   <arg> will list rooms with identical room exits.\n"

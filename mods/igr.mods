@@ -1,5 +1,17 @@
 May 2022        2.02.12
 ------------------------------------------------------------------------------
+map.c           Added support for #map list {roomflag} {!void} etc.
+
+line.c          Added #line substitute braces which will turn { and } into
+                \x7B and \x7D.
+
+map.c           Added #map list {{distance}{5}} to list all rooms within a
+                weighted distance of 5. Keep in mind this goes by weight,
+                which starts at 1.0 and increases by 2.0 per room by default.
+
+cursor.c        Added #cursor flag eol {cr|lf|crlf|crnul|off} to change the
+                default end of line character between \r \n \r\n and \r\0.
+
 log.c           Changed logging to where it logs data before it's wrapped by
                 the client.
 

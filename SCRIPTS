@@ -903,8 +903,16 @@
 }
 
 #nop -------------------------------------------------------------------------
-#nop 
+#nop Start a dated log file in the logs directory when a session connects. See
+#nop #help time for the available date options for #format %t.
 #nop -------------------------------------------------------------------------
+
+#event {SESSION CONNECTED}
+{
+	#format date %t %Y-%m-%d-%H-%M;
+
+	#log append logs/%0_$date.log
+}
 
 #nop -------------------------------------------------------------------------
 #nop 

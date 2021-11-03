@@ -67,26 +67,43 @@ DO_COMMAND(do_showme)
 	str_cpy_printf(&out, "%s%s%s", COLOR_TEXT, arg1, COLOR_TEXT);
 
 	tintin_puts3(ses, out, prompt);
-/*
-	add_line_buffer(ses, out, prompt);
 
-	if (ses == gtd->ses)
+	return ses;
+}
+
+DO_COMMAND(do_echo)
+{
+	char *result, *out;
+	int prompt;
+
+	result = arg2;
+
+	out = str_alloc_stack(0);
+
+	arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
+
+	format_string(ses, arg1, arg, result);
+
+	arg = get_arg_in_braces(ses, result, arg1, GET_ALL);
+
+	prompt = is_suffix(arg1, "\\") && !is_suffix(arg1, "\\\\");
+
+	substitute(ses, arg1, arg1, SUB_COL|SUB_ESC);
+
+	arg = sub_arg_in_braces(ses, arg, arg2, GET_ONE, SUB_VAR|SUB_FUN);
+	arg = sub_arg_in_braces(ses, arg, arg3, GET_ONE, SUB_VAR|SUB_FUN);
+
+	if (*arg2)
 	{
-		if (!HAS_BIT(ses->flags, SES_FLAG_READMUD) && IS_SPLIT(ses))
-		{
-			save_pos(ses);
+		split_show(ses, arg1, arg2, arg3);
 
-			goto_pos(ses, ses->split->bot_row, ses->split->top_col);
-		}
-
-		print_line(ses, &out, prompt);
-
-		if (!HAS_BIT(ses->flags, SES_FLAG_READMUD) && IS_SPLIT(ses))
-		{
-			restore_pos(ses);
-		}
+		return ses;
 	}
-*/
+
+	str_cpy_printf(&out, "%s%s%s", COLOR_TEXT, arg1, COLOR_TEXT);
+
+	tintin_puts3(ses, out, prompt);
+
 	return ses;
 }
 

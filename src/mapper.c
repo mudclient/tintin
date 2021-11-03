@@ -32,7 +32,6 @@
 int                 map_grid_x;
 int                 map_grid_y;
 
-#define             MAP_SEARCH_DIST 1000
 #define             MAP_BF_SIZE 10000
 
 extern  int dir_flags(struct session *ses, int room, int dir);
@@ -3554,6 +3553,10 @@ void search_keywords(struct session *ses, char *arg, char *out, char *var)
 		{
 			arg = sub_arg_in_braces(ses, arg, buf[MAP_SEARCH_FLAG], GET_ALL, SUB_VAR|SUB_FUN);
 		}
+		else if (!strcasecmp(arg1, "distance"))
+		{
+			arg = sub_arg_in_braces(ses, arg, buf[MAP_SEARCH_DISTANCE], GET_ALL, SUB_VAR|SUB_FUN);
+		}
 		else if (!strcasecmp(arg1, "variable"))
 		{
 			arg = sub_arg_in_braces(ses, arg, var, GET_ALL, SUB_VAR|SUB_FUN);
@@ -3808,43 +3811,56 @@ void map_search_compile(struct session *ses, char *arg, char *var)
 
 	if (*buf)
 	{
-		char flags[BUFFER_SIZE];
+		char flags[BUFFER_SIZE], *ptf;
+		long long *flag;
 
 		ses->map->search->flag = get_number(ses, buf);
+		ses->map->search->galf = 0;
 
 		ptb = buf;
 
 		while (*ptb)
 		{
 			ptb = sub_arg_in_braces(ses, ptb, flags, GET_ONE, SUB_NONE);
+			ptf = flags;
 
-			if (is_abbrev(buf, "avoid"))
+			if (ptf[0] == '!')
 			{
-				SET_BIT(ses->map->search->flag, ROOM_FLAG_AVOID);
+				flag = &ses->map->search->galf;
+				ptf++;
 			}
-			else if (is_abbrev(buf, "curved"))
+			else
 			{
-				SET_BIT(ses->map->search->flag, ROOM_FLAG_CURVED);
+				flag = &ses->map->search->flag;
 			}
-			else if (is_abbrev(buf, "hide"))
+
+			if (is_abbrev(ptf, "avoid"))
 			{
-				SET_BIT(ses->map->search->flag, ROOM_FLAG_HIDE);
+				SET_BIT(*flag, ROOM_FLAG_AVOID);
 			}
-			else if (is_abbrev(buf, "invis"))
+			else if (is_abbrev(ptf, "curved"))
 			{
-				SET_BIT(ses->map->search->flag, ROOM_FLAG_INVIS);
+				SET_BIT(*flag, ROOM_FLAG_CURVED);
 			}
-			else if (is_abbrev(buf, "leave"))
+			else if (is_abbrev(ptf, "hide"))
 			{
-				SET_BIT(ses->map->search->flag, ROOM_FLAG_LEAVE);
+				SET_BIT(*flag, ROOM_FLAG_HIDE);
 			}
-			else if (is_abbrev(buf, "void"))
+			else if (is_abbrev(ptf, "invis"))
 			{
-				SET_BIT(ses->map->search->flag, ROOM_FLAG_VOID);
+				SET_BIT(*flag, ROOM_FLAG_INVIS);
 			}
-			else if (is_abbrev(buf, "static"))
+			else if (is_abbrev(ptf, "leave"))
 			{
-				SET_BIT(ses->map->search->flag, ROOM_FLAG_STATIC);
+				SET_BIT(*flag, ROOM_FLAG_LEAVE);
+			}
+			else if (is_abbrev(ptf, "void"))
+			{
+				SET_BIT(*flag, ROOM_FLAG_VOID);
+			}
+			else if (is_abbrev(ptf, "static"))
+			{
+				SET_BIT(*flag, ROOM_FLAG_STATIC);
 			}
 
 			if (*ptb == COMMAND_SEPARATOR)
@@ -3856,6 +3872,7 @@ void map_search_compile(struct session *ses, char *arg, char *var)
 	else
 	{
 		ses->map->search->flag = 0;
+		ses->map->search->galf = 0;
 	}
 
 	arg = sub_arg_in_braces(ses, arg, buf, GET_ALL, SUB_VAR|SUB_FUN); // id
@@ -3872,6 +3889,17 @@ void map_search_compile(struct session *ses, char *arg, char *var)
 	else
 	{
 		ses->map->search->id = NULL;
+	}
+
+	arg = sub_arg_in_braces(ses, arg, buf, GET_ALL, SUB_VAR|SUB_FUN); // distance
+
+	if (*buf)
+	{
+		ses->map->search->distance = (float) get_number(ses, buf);
+	}
+	else
+	{
+		ses->map->search->distance = 0;
 	}
 
 	pop_call();
@@ -3988,6 +4016,32 @@ int match_room(struct session *ses, int vnum, struct search_data *search)
 		if ((room->flags & search->flag) != search->flag)
 		{
 			return 0;
+		}
+	}
+
+	if (search->galf)
+	{
+		if ((room->flags & search->galf) == search->galf)
+		{
+			return 0;
+		}
+	}
+
+	if (search->distance)
+	{
+		if (ses->map->search->stamp != room->search_stamp)
+		{
+			if (search->distance != -1)
+			{
+				return 0;
+			}
+		}
+		else
+		{
+			if (room->length > search->distance)
+			{
+				return 0;
+			}
 		}
 	}
 	return 1;
@@ -4696,7 +4750,7 @@ void shortest_path(struct session *ses, int run, char *delay, char *arg)
 
 		if (ses->map->room_list[vnum]->search_stamp != ses->map->search->stamp)
 		{
-			show_error(ses, LIST_COMMAND, "%d bad search stamp %d vs %d", vnum, ses->map->room_list[vnum]->search_stamp, ses->map->search->stamp);
+			show_error(ses, LIST_COMMAND, "#SHORTEST PATH: %d bad search stamp %d vs %d", vnum, ses->map->room_list[vnum]->search_stamp, ses->map->search->stamp);
 		}
 
 		if (vnum == dest)
@@ -5455,7 +5509,7 @@ DO_MAP(map_dig)
 		return;
 	}
 
-	room = (int) tintoi(arg1);
+	room = (int) get_number(ses, arg1);
 
 	if (room > 0 && room < ses->map->size)
 	{

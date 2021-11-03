@@ -444,8 +444,10 @@ DO_COMMAND(do_draw)
 	{
 		if (is_abbrev(arg1, draw_table[index].name))
 		{
-			arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
-			arg = sub_arg_in_braces(ses, arg, arg2, GET_ONE, SUB_VAR|SUB_FUN);
+			arg = get_arg_in_braces(ses, arg, arg1, GET_ONE);
+			arg = get_arg_in_braces(ses, arg, arg2, GET_ONE);
+//			arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
+//			arg = sub_arg_in_braces(ses, arg, arg2, GET_ONE, SUB_VAR|SUB_FUN);
 
 			top_row = get_row_index_arg(ses, arg1);
 			top_col = get_col_index_arg(ses, arg2);

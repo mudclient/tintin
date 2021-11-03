@@ -300,6 +300,10 @@ DO_PATH(path_get)
 	}
 	else if (*arg2 == 0)
 	{
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH GET <INFO|LENGTH|MAPPING|POSITION|RUNNING> <VARIABLE NAME>");
+	}
+	else if (is_abbrev(arg1, "INFO"))
+	{
 		set_nest_node_ses(ses, arg2, "{length}{%d}", root->used);
 
 		add_nest_node_ses(ses, arg2, "{position}{%d}", root->update + 1);
@@ -350,7 +354,7 @@ DO_PATH(path_get)
 	}
 	else
 	{
-		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH GET <LENGTH|POSITION> <VARIABLE NAME>");
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH GET <INFO|LENGTH|MAPPING|POSITION|RUNNING> <VARIABLE NAME>");
 	}
 }
 
