@@ -97,7 +97,7 @@ void reset_terminal(struct session *ses)
 	{
 		print_stdout(0, 0, "\e[?1000l\e[?1002l\e[?1006l");
 	}
-	print_stdout(0, 0, "\e[?25h\e[23t\e[?1004l\e[>4n\e[?47l\e[r\e[0#t");
+	print_stdout(0, 0, "\e[?25h\e[23t\e[?1004l\e[>4n\e[>4;0m\e[?47l\e[r\e[0#t");
 }
 
 

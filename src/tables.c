@@ -80,6 +80,7 @@ struct charset_type charset_table[] =
 
 	{    "BIG5TOUTF8",    "utf-8",       CHARSET_FLAG_UTF8|CHARSET_FLAG_BIG5TOUTF8 },
 	{    "CP1251TOUTF8",  "utf-8",       CHARSET_FLAG_UTF8|CHARSET_FLAG_CP1251TOUTF8 },
+	{    "CP437TOUTF8",   "utf-8",       CHARSET_FLAG_UTF8|CHARSET_FLAG_FANSITOUTF8 },
 	{    "CP949TOUTF8",   "utf-8",       CHARSET_FLAG_UTF8|CHARSET_FLAG_CP949TOUTF8 },
 	{    "FANSITOUTF8",   "utf-8",       CHARSET_FLAG_UTF8|CHARSET_FLAG_FANSITOUTF8 },
 	{    "GBK1TOUTF8",    "utf-8",       CHARSET_FLAG_UTF8|CHARSET_FLAG_GBK1TOUTF8 },
@@ -1050,6 +1051,7 @@ struct event_type event_table[] =
 	{    "READ FILE",                              0, EVENT_FLAG_SYSTEM,   "SYSTEM",    "the read command finished"  },
 	{    "RECEIVED ERROR",                         0, EVENT_FLAG_SYSTEM,   "SYSTEM",    "an error is received"       },
 	{    "RECEIVED INPUT",                         0, EVENT_FLAG_INPUT,    "INPUT",     "keyboard input is received" },
+	{    "RECEIVED INPUT CHARACTER",               0, EVENT_FLAG_INPUT,    "INPUT",     "keyboard input character"   },
 	{    "RECEIVED KEYPRESS",                      0, EVENT_FLAG_INPUT,    "INPUT",     "a keypress is received"     },
 	{    "RECEIVED LINE",                          0, EVENT_FLAG_OUTPUT,   "OUTPUT",    "a new line is received"     },
 	{    "RECEIVED OUTPUT",                        0, EVENT_FLAG_OUTPUT,   "OUTPUT",    "bulk output is received"    },
@@ -1160,15 +1162,6 @@ struct line_type line_table[] =
 	{    "SUBSTITUTE",        line_substitute,     "Execute line with given substitution."          },
 	{    "VERBATIM",          line_verbatim,       "Execute line as plain text."                    },
 	{    "VERBOSE",           line_verbose,        "Execute line with all system messages on."      },
-	{    "",                  NULL,                ""                                               }
-};
-
-struct log_type log_table[] =
-{
-	{    "APPEND",            log_append,          "Start logging, appending to given file."        },
-	{    "INFO",              log_info,            "Some logging related info."                     },
-	{    "OFF",               log_off,             "Stop logging."                                  },
-	{    "OVERWRITE",         log_overwrite,       "Start logging, overwriting the given file."     },
 	{    "",                  NULL,                ""                                               }
 };
 
@@ -1758,17 +1751,18 @@ struct stamp_type huge_stamp_table[] =
 	{ "!",  23, "██╗\n██║\n██║\n╚═╝\n██╗\n╚═╝" },
 	{ "\"", 41, "██╗██╗\n2██║██║\n╚═╝╚═╝\n   \n   \n   " },
 	{ "#",  59, " ██╗ ██╗ \n████████╗\n╚██╔═██╔╝\n████████╗\n╚██╔═██╔╝\n ╚═╝ ╚═╝ " },
-	{ "&",  59, "  ████╗  \n ██╔═██╗ \n ╚████╔╝ \n██╔══██═╗\n╚█████╔█║\n ╚════╝╚╝" },
+	{ "$",  53, "▄▄███▄▄ \n██╔█══╝ \n███████╗\n╚══█═██║\n███████║\n╚═▀▀▀══╝" },
 	{ "%",  47, "██╗ ██╗\n╚═╝██╔╝\n  ██╔╝ \n ██╔╝  \n██╔╝██╗\n╚═╝ ╚═╝" },
-	{ "'",  23, "╗██╗\n██║\n╚═╝\n   \n   \n   " },
+	{ "&",  59, "  ████╗  \n ██╔═██╗ \n ╚████╔╝ \n██╔══██═╗\n╚█████╔█║\n ╚════╝╚╝" },
+	{ "'",  23, "██╗\n██║\n╚═╝\n   \n   \n   " },
 	{ "(",  29, " ██╗\n██╔╝\n██║ \n██║ \n╚██╗\n ╚═╝" },
 	{ ")",  29, "██╗ \n╚██╗\n ██║\n ██║\n██╔╝\n╚═╝ " },
 	{ "*",  47, "▄  █  ▄\n █▄█▄█ \n  ▐█▌  \n █▀█▀█ \n▀  █  ▀\n       " },
 	{ "+",  59, "   ██╗   \n   ██║   \n████████╗\n╚══██╔══╝\n   ██║   \n   ╚═╝   " },
-// ,
-// -
-// .
-// /
+	{ ",",  23, "   \n   \n   \n██╗\n╚█║\n ╚╝" },
+	{ "-",  53, "        \n        \n███████╗\n╚══════╝\n        \n        " },
+	{ ".",  23, "   \n   \n   \n   \n██╗\n╚═╝" },
+	{ "/",  47, "    ██╗\n   ██╔╝\n  ██╔╝ \n ██╔╝  \n██╔╝   \n╚═╝    " },
 
 	{ "0",  53, " █████╗ \n██╔══██╗\n██║  ██║\n██║  ██║\n╚█████╔╝\n ╚════╝ " },
 	{ "1",  53, "  ▄██╗  \n ████║  \n ╚═██║  \n   ██║  \n ██████╗\n ╚═════╝" },
@@ -1780,14 +1774,12 @@ struct stamp_type huge_stamp_table[] =
 	{ "7",  53, "███████╗\n╚════██║\n    ██╔╝\n   ██╔╝ \n   ██║  \n   ╚═╝  " },
 	{ "8",  53, " █████╗ \n██╔══██╗\n╚█████╔╝\n██╔══██╗\n╚█████╔╝\n ╚════╝ " },
 	{ "9",  53, " █████╗ \n██╔══██╗\n╚██████║\n ╚═══██║\n █████╔╝\n ╚════╝ " },
-
 	{ ":",  53, "        \n   ██╗  \n   ╚═╝  \n        \n   ██╗  \n   ╚═╝  " },
-// ;
-// <
-// =
-// >
-// ?
-
+	{ ";",  53, "        \n   ██╗  \n   ╚═╝  \n   ██╗  \n   ╚█║  \n    ╚╝  " },
+	{ "<",  47, "   ██╗ \n  ██╔╝ \n ██╔╝  \n ╚██╗  \n  ╚██╗ \n   ╚═╝ " },
+	{ "=",  53, "        \n███████╗\n╚══════╝\n███████╗\n╚══════╝\n        " },
+	{ ">",  47, " ██╗   \n ╚██╗  \n  ╚██╗ \n  ██╔╝ \n ██╔╝  \n ╚═╝   " },
+        { "?",  47, "██████╗\n╚═══██║\n ▄███╔╝\n ▀▀══╝ \n ██╗   \n ╚═╝   " },
 
 	{ "@",  59, " ██████╗ \n██╔═══██╗\n██║██╗██║\n██║██║██║\n╚█║████╔╝\n ╚╝╚═══╝ " },
 	{ "A",  53, " █████╗ \n██╔══██╗\n███████║\n██╔══██║\n██║  ██║\n╚═╝  ╚═╝" },
@@ -1816,13 +1808,12 @@ struct stamp_type huge_stamp_table[] =
 	{ "X",  53, "██╗  ██╗\n╚██╗██╔╝\n ╚███╔╝ \n ██╔██╗ \n██╔╝ ██╗\n╚═╝  ╚═╝" },
 	{ "Y",  59, "██╗   ██╗\n╚██╗ ██╔╝\n ╚████╔╝ \n  ╚██╔╝  \n   ██║   \n   ╚═╝   " },
 	{ "Z",  53, "███████╗\n╚══███╔╝\n  ███╔╝ \n ███╔╝  \n███████╗\n╚══════╝" },
-
-// [
-
-// ]
+	{ "[",  41, " ███╗ \n ██╔╝ \n ██║  \n ██║  \n ███╗ \n ╚══╝ " },
+	{ "\\", 41, "██╗    \n╚██╗   \n ╚██╗  \n  ╚██╗ \n   ╚██╗\n    ╚═╝" },
+	{ "]",  41, " ███╗ \n ╚██║ \n  ██║ \n  ██║ \n ███║ \n ╚══╝ " },
 	{ "^",  41, " ███╗ \n██╔██╗\n╚═╝╚═╝\n      \n      \n" },
 	{ "_",  53, "        \n        \n        \n        \n███████╗\n╚══════╝" },
-// `
+	{ "`",  23, "██╗\n╚█║\n ╚╝\n   \n   \n   " },
 
 	{ "i",  23, "██╗\n╚═╝\n██╗\n██║\n██║\n╚═╝" },
 	{ "n",  47, "       \n       \n██▟███╗\n██║ ██║\n██║ ██║\n╚═╝ ╚═╝" },

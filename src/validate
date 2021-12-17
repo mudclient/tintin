@@ -1,5 +1,59 @@
 #!./tt++ -G
 
+#line sub arg #var arg {%0}
+
+#if {"$arg" == "draw"}
+{
+	#screen clear all;
+	#draw convert scroll Red Blue box 1 1 5 40 convert\nx\ny;
+	#draw Red box 1 1 2 2;
+	#draw rounded Red box 3 1 4 2;
+	#draw tubed Red box 5 1 6 2;
+	#draw crossed Red box 8 1 9 2;
+
+	#draw Green line 1 4 1 14;
+	#draw Green teed line 2 4 2 14;
+	#draw Green jeweled line 3 4 3 14;
+	#draw Green circled line 4 4 4 14;
+	#draw Green left circled line 5 4 5 14;
+	#draw Green right circled line 6 4 6 14;
+	#draw Green bot vertical teed line 7 4 7 14;
+	#draw Green top vertical teed line 8 4 8 14;
+
+	#draw Yellow left horizontal teed line  1 16 10 16;
+	#draw Yellow right horizontal teed line 1 18 10 18;
+	#draw Yellow top circled line 1 20 10 20;
+	#draw Yellow bottom circled line 1 22 10 22;
+	#draw Yellow pruned circled line 1 24 10 24;
+	#draw Yellow filled circled line 1 26 10 26;
+	#draw Yellow filled jeweled line 1 28 10 28;
+
+	#draw Cyan box 1 40 10 60;
+	#draw Jade rounded box 2 41  9 59;
+	#draw Azure pruned box 2 41 9 59;
+	#draw Violet numbered box 3 42 8 58;
+	#draw White rounded tubed box 4 43 7 57;
+
+	#draw Magenta Green round table 12  1 20 38 {{a}{b}{c}{d}}{{e}{f}{g}{h}}{{i}{j}{k}{l}};
+	#draw Magenta Green grid table 12 42 21 78 {{a}{b}{c}{d}}{{e}{f}{g}{h}}{{i}{j}{k}{l}};
+
+	#draw White Red talign box 22  1 27 19 talign;
+	#draw White Red balign box 22 21 27 39 balign;
+	#draw White Red lalign box 22 41 27 59 lalign;
+	#draw White Red ralign box 22 61 27 79 ralign;
+	#draw White Red calign box 22 81 27 99 calign;
+
+	#draw Lime Azure cursive box 28  1 31 19 cursive;
+	#draw Lime Azure     fat box 28 21 31 39 fat;
+	#draw Lime Azure sansser box 28 41 31 59 sansserif;
+	#draw Lime Azure ualign  box 28 61 31 79 { u\na\nl\ni\ng\nn};
+	#draw Lime Azure scaled  box 28 81 31 99 scaled;
+
+
+
+	#end \
+}
+
 #format start %U
 
 #math error 0
@@ -44,6 +98,8 @@
 #if {&tmp[%*] != 2} error 4.2: buffer or variable or if failure ($tmp)
 #if {&{tmp[]} != 2} error 4.3: buffer or variable or if failure ($tmp)
 #if {&{tmp[%*]} != 2} error 4.4: buffer or variable or if failure ($tmp)
+
+#showme $arg
 
 #nop ----------
 
@@ -326,6 +382,33 @@ bla
 
 #nop ----------
 
+#tab bliblablo
+#cursor set bli
+#cursor tab list forward
+#cursor get bla
+#cursor clear
+#if {"$bla" != "bliblablo"} {error 31.1: tab list handling ("$bla" != "bliblablo")}
+#untab bliblablo
+#cursor set bli
+#cursor tab dict forward
+#cursor get bla
+#cursor clear
+#if {"$bla" != "bliaut"} {error 31.2: tab dict handling ("$bla" != "bliaut")}
+
+#nop ----------
+#map create
+#map goto 1
+#map move {nw;ne;s;s}
+#map exit n weight 0.9
+#map find 3
+#path save forward bla
+#if {"$bla" != "n;n"} {error 32.1: #map find failing exit weight reduction}
+#map exit n weight 1.0
+#map find 3
+#path save forward bla
+#if {"$bla" != "nw;ne"} {error 32.2: #map find failing exit weight increase}
+
+#nop ----------
 #nop ----------
 
 #nop command crash test

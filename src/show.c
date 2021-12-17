@@ -162,7 +162,7 @@ void show_message(struct session *ses, int index, char *format, ...)
 
 	if (HAS_BIT(root->flags, LIST_FLAG_LOG))
 	{
-		if (ses->logfile)
+		if (ses->log->file)
 		{
 			va_start(args, format);
 
@@ -175,7 +175,7 @@ void show_message(struct session *ses, int index, char *format, ...)
 			}
 			va_end(args);
 
-			logit(ses, buffer, ses->logfile, LOG_FLAG_LINEFEED);
+			logit(ses, buffer, ses->log->file, LOG_FLAG_LINEFEED);
 
 			free(buffer);
 		}
@@ -230,9 +230,9 @@ void show_error(struct session *ses, int index, char *format, ...)
 
 	if (HAS_BIT(root->flags, LIST_FLAG_LOG))
 	{
-		if (ses->logfile)
+		if (ses->log->file)
 		{
-			logit(ses, buffer, ses->logfile, LOG_FLAG_LINEFEED);
+			logit(ses, buffer, ses->log->file, LOG_FLAG_LINEFEED);
 		}
 	}
 
@@ -280,9 +280,9 @@ void show_debug(struct session *ses, int index, char *format, ...)
 
 	if (HAS_BIT(root->flags, LIST_FLAG_LOG))
 	{
-		if (ses->logfile)
+		if (ses->log->file)
 		{
-			logit(ses, buf, ses->logfile, LOG_FLAG_LINEFEED);
+			logit(ses, buf, ses->log->file, LOG_FLAG_LINEFEED);
 		}
 	}
 	pop_call();

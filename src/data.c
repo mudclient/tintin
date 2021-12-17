@@ -115,7 +115,7 @@ struct listroot *copy_list(struct session *ses, struct listroot *sourcelist, int
 					break;
 
 				case LIST_TICKER:
-					node->val64 = gtd->utime + (long long) tintoi(node->arg3) * 1000000.0;
+					node->val64 = gtd->utime + (long long) (tintoi(node->arg3) * 1000000.0);
 
 					if (node->val64 < gtd->utime_next_tick)
 					{
@@ -197,7 +197,7 @@ struct listnode *create_node_list(struct listroot *root, char *arg1, char *arg2,
 			break;
 
 		case LIST_TICKER:
-			node->val64 = gtd->utime + (long long) tintoi(arg3) * 1000000.0;
+			node->val64 = gtd->utime + (long long) (tintoi(arg3) * 1000000.0);
 
 			if (node->val64 < gtd->utime_next_tick)
 			{
@@ -1556,7 +1556,7 @@ DO_COMMAND(do_info)
 							add_nest_node_ses(ses, name, "{IP} {%s}", sesptr->session_ip);
 							add_nest_node_ses(ses, name, "{PORT} {%s}", sesptr->session_port);
 						}
-						show_message(ses, LIST_COMMAND, "#INFO: DATA WRITTEN TO {info[SESSION]}");
+						show_message(ses, LIST_COMMAND, "#INFO: DATA WRITTEN TO {info[SESSIONS]}");
 					}
 					else
 					{
@@ -1617,13 +1617,26 @@ DO_COMMAND(do_info)
 				}
 				break;
 
+			case CTRL_T:
+				if (is_abbrev(arg1, "TOKENIZER"))
+				{
+					int index = URANGE(0, gtd->script_index + atoi(arg2), gtd->script_index);
+					struct scriptroot *root = gtd->script_stack[index];
+
+					tintin_printf2(ses, "#INFO TOKENIZER: SCRIPT_INDEX = %d", index);
+					tintin_printf2(ses, "#INFO TOKENIZER: SESSION_NAME = %s", root->ses->name);
+					tintin_printf2(ses, "#INFO TOKENIZER: LIST_TYPE    = %s", list_table[root->list].name);
+					tintin_printf2(ses, "#INFO TOKENIZER: LOCAL_VARS   = %d", root->local->used);
+					tintin_printf2(ses, "#INFO TOKENIZER: SCRIPT       =\n%s", view_script(ses, root));
+				}
+				break;
 			case CTRL_U:
 				if (is_abbrev(arg1, "UNICODE"))
 				{
 					int size, width, index;
 
 					size = get_utf8_size(arg2);
-					get_utf8_width(arg2, &width);
+					get_utf8_width(arg2, &width, NULL);
 					get_utf8_index(arg2, &index);
 
 					tintin_printf2(ses, "#INFO UNICODE: %s:  is_utf8_head  = %d (%s)", arg2, is_utf8_head(arg2), is_utf8_head(arg2) ? "true" : "false");

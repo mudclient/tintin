@@ -272,7 +272,7 @@ void add_line_buffer(struct session *ses, char *line, int prompt)
 
 	if (HAS_BIT(ses->flags, SES_FLAG_SNOOP) && ses != gtd->ses)
 	{
-		tintin_printf2(gtd->ses, "%s[%s%s] %s", COLOR_TEXT, ses->name, ses->scroll->input, COLOR_TEXT);
+		tintin_printf2(gtd->ses, "%s[%s] %s%s", COLOR_TEXT, ses->name, ses->scroll->input, COLOR_TEXT);
 	}
 
 	if (ses->proxy)
@@ -280,11 +280,11 @@ void add_line_buffer(struct session *ses, char *line, int prompt)
 		port_socket_printf(ses, ses->proxy, "%s%s", ses->scroll->input, prompt ? "" : "\n");
 	}
 
-	if (!HAS_BIT(ses->logmode, LOG_FLAG_LOW))
+	if (!HAS_BIT(ses->log->mode, LOG_FLAG_LOW))
 	{
-		if (ses->logfile)
+		if (ses->log->file)
 		{
-			logit(ses, ses->scroll->input, ses->logfile, LOG_FLAG_LINEFEED);
+			logit(ses, ses->scroll->input, ses->log->file, LOG_FLAG_LINEFEED);
 		}
 	}
 
@@ -1067,15 +1067,15 @@ DO_BUFFER(buffer_write)
 		{
 			show_message(ses, LIST_COMMAND, "#OK: WRITING BUFFER TO '%s'.", arg1);
 
-			loginit(ses, fp, ses->logmode + LOG_FLAG_OVERWRITE);
+			logheader(ses, fp, ses->log->mode + LOG_FLAG_OVERWRITE);
 
 			for (cnt = 0 ; cnt < ses->scroll->used ; cnt++)
 			{
-				if (HAS_BIT(ses->logmode, LOG_FLAG_PLAIN))
+				if (HAS_BIT(ses->log->mode, LOG_FLAG_PLAIN))
 				{
 					strip_vt102_codes(ses->scroll->buffer[cnt]->str, arg2);
 				}
-				else if (HAS_BIT(ses->logmode, LOG_FLAG_HTML))
+				else if (HAS_BIT(ses->log->mode, LOG_FLAG_HTML))
 				{
 					vt102_to_html(ses, ses->scroll->buffer[cnt]->str, arg2);
 				}

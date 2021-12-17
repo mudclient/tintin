@@ -1,11 +1,79 @@
-May 2022        2.02.12
+Sep 2021        2.02.13
 ------------------------------------------------------------------------------
-map.c           Added support for #map list {roomflag} {!void} etc.
+
+telopt_client.c Fixed an incorrect rejection response for the charset telopt.
+
+mapper.c        Fixed a problem with #map goto jumping to the room you're
+                currently in on a failed search.
+
+telopt_client.c More gmcp fixes
+
+mapper.c        Added #map flag pancake which will display rooms on the map
+                above and below you while enabled. You can use #map color
+                room <aaa><fff> to display rooms with a white to black color
+                gradient in pancake mode. To easily view color gradients use:
+
+                #loop 6 0 i #draw scroll bar 1 1 1 40 {$i;6;<aaa><fff>}
+
+session.c       The SESSION CREATED and SESSION CONNECTED will store the file
+                name, if provided, in the %4 argument.
+
+draw.c          #draw line now takes a text argument which can be further
+                manipulated with the CALIGN and RALIGN flags, LALIGN is the
+                default.
+
+session.c       The SESSION CONNECTED event now triggers after the SESSION
+                CREATED event.
+
+session.c       Changed GAG SESSION DISCONNECTED to GAG SESSION DESTROYED.
+
+mapper.c        Added the #map info save option.
+
+telopt_client.c Fixed handling of empty arrays for gmcp.
+
+utf8.c          Updated the cp949 to utf8 table with additional characters.
+
+May 2021        2.02.12
+------------------------------------------------------------------------------
+input.c         Added RECEIVED INPUT CHARACTER event that triggers on each
+                character added to the input buffer. %0 holds the character,
+                %1 the unicode index, %2 the byte size, %3 the character's
+                display width.
+
+cursor.c        Added #cursor tab caseless option to make tab completion case
+                incensitive.
+
+dict.c          Added #cursor tab dictionary option to tab through the
+                dictionary.
+
+log.c           Added #log timestamp <format>. The format follows strftime as
+                described in #help time. Timestamps will be prepended to each
+                line of log output.
+
+log.c           Added #log move <filename> <filename> to move files.
+
+log.c           Added #log remove <filename> to remove files.
+
+variable.c      #format %r now ignores color and escape codes.
+
+data.c          Added the #info tokenizer option to have a peek at the stack
+                of the scripting engine. Use case example:
+
+                #event {RECEIVED ERROR}
+                {
+                    #echo <118>%h { TOKENIZER };
+                    #info tokenizer -1;
+                    #echo <118>%h
+                }
+
+path.c          #path load now automatically adds reverse directions.
+
+mapper.c        Added support for #map list {roomflag} {!void} etc.
 
 line.c          Added #line substitute braces which will turn { and } into
                 \x7B and \x7D.
 
-map.c           Added #map list {{distance}{5}} to list all rooms within a
+mapper.c        Added #map list {{distance}{5}} to list all rooms within a
                 weighted distance of 5. Keep in mind this goes by weight,
                 which starts at 1.0 and increases by 2.0 per room by default.
 
@@ -15,10 +83,10 @@ cursor.c        Added #cursor flag eol {cr|lf|crlf|crnul|off} to change the
 log.c           Changed logging to where it logs data before it's wrapped by
                 the client.
 
-map.c           Added support for roomsymbol lengths up to 5 characters in
+mapper.c        Added support for roomsymbol lengths up to 5 characters in
                 unicode, and 6 characters in ascii graphics mode.
 
-map.c           Added the option to #map list/find to use * as a roomexit.
+mapper.c        Added the option to #map list/find to use * as a roomexit.
                 This will make the search ignore non-pathdir exits without
                 an exit direction.
 
@@ -46,8 +114,8 @@ data.c          Added the #info environ and #info environ save option.
 
 main.c          Added SIGUSR event. %0 will contain either 1 or 2.
                 #event {SIGUSR} {#showme RECEIVED SIGUSR %0}
-		#info system save
-		#system {kill -USR1 $info[SYSTEM][PID]
+                #info system save
+                #system {kill -USR1 $info[SYSTEM][PID]
 
 main.c          Added SIGHUB event which should trigger when the terminal is
                 closed with TinTin++ still running inside. You can use
@@ -81,7 +149,7 @@ draw.c          Added color gradient support to #draw bar. To use it you
                 field and based on the min;max value it will pick a color
                 somewhere in between.
 
-		#loop 1 9 i #draw <DDF> scroll bar 1 1 1 40 {$i;9;<faa><afa>}
+                #loop 1 9 i #draw <DDF> scroll bar 1 1 1 40 {$i;9;<faa><afa>}
 
 draw.c          Added the BAR drawing type. Currently only horizontal bars
                 are supported, but for forward compatibility you should draw
@@ -427,7 +495,7 @@ input.c         ctrl-v will now correctly capture ctrl-alt-f and similar
                 Example added to the SCRIPTS file.
 
 event.c         Added GAG SESSION CONNECTED, GAG SESSION CREATED,
-                GAG SESSION DISCONNECTED, and GAG SESSION TIMED OUT events.
+                GAG SESSION DESTROYED, and GAG SESSION TIMED OUT events.
 
 mapper.c        Added #map roomflag fog. Works like #map roomflag hide but
                 the flag is auto cleared on entrance.
@@ -461,7 +529,7 @@ screen.c        Added basic link support. To create a basic link surround a
                 keyword with the \e[4m keyword \e[24m tags. When clicked with
                 mouse support enabled it'll spawn a LINK mouse event.
 
-map.c           Added #map exitflag <dir> <option> GET <variable> support.
+mapper.c        Added #map exitflag <dir> <option> GET <variable> support.
 
 event.c         The %4 argument of mouse clicks once again reports the word
                 that has been clicked, with %5 reporting the line. Under
@@ -679,7 +747,7 @@ draw.c          Added TUBED drawing option.
 
 scan.c          Added #scan FILE {commands} option. See #help scan.
 
-map.c           Can provide multiple ; separated commands to #map move at
+mapper.c        Can provide multiple ; separated commands to #map move at
                 once. For example: #map move {n;e;s;w}
 
 main.c          Added support for starting tintin with telnet://host:port
@@ -1688,7 +1756,7 @@ highlight.c    Added option to use escape codes in the #highlight color field.
 
 class.c        Added #class {<class>} list {<list>} option.
 
-map.c          Added #map list {roomflag} option.
+mapper.c       Added #map list {roomflag} option.
 
 list.c         Fixed bug with using #list clear on a nested variable.
 

@@ -155,7 +155,7 @@ DO_COMMAND(do_help)
 
 		script_driver(ses, LIST_COMMAND, "#config {log} {html}");
 
-		if (HAS_BIT(ses->logmode, LOG_FLAG_HTML))
+		if (HAS_BIT(ses->log->mode, LOG_FLAG_HTML))
 		{
 			write_html_header(ses, logfile);
 		}
@@ -720,7 +720,6 @@ struct help_type help_table[] =
 		"         <278>  Will store the size of the class in a variable.\n"
 		"         <178>#class {<name>} {write} {<filename>}\n"
 		"         <278>  Will write all triggers of the given class to file.\n"
-		"         The {kill} option will delete all triggers of the given class.\n"
 		"\n"
 		"         Keep in mind that the kill and read option are very fast allowing\n"
 		"         them to be used to enable and disable classes.\n"
@@ -874,9 +873,31 @@ struct help_type help_table[] =
 		"         with macros. Subsequently many cursor commands only work properly when\n"
 		"         used within a macro or event.\n"
 		"\n"
-		"         <178>#cursor tab <list;scrollback> <backward|forward>\n"
-		"         <278>  Tab through the given option(s) going forward or backward.\n"
-		,
+		"         <178>#cursor flag\n"
+		"\n"
+		"         <278>EOL         end of line character(s)\n"
+		"         <278>ECHO        local echo\n"
+		"         <278>OVERTYPE    overtype mode\n"
+		"\n"
+		"         <178>#cursor macro\n"
+		"\n"
+		"         <278>PRESERVE    do not erase the macro from the macro input buffer\n"
+		"         <278>RESET       erase the macro input buffer\n"
+		"\n"
+		"         <178>#cursor tab\n"
+		"\n"
+		"         <278>CASELESS    makes tab completion caseless\n"
+		"         <278>COMPLETE    makes tab completion work while editing\n"
+		"\n"
+		"         <278>DICTIONARY  performs tab completion on the dictionary\n"
+		"         <278>LIST        performs tab completion on the tab completion list\n"
+		"         <278>SCROLLBACK  performs tab completion on the scrollback buffer\n"
+		"\n"
+		"         <278>BACKWARD    specifies tab completion to go backward\n"
+		"         <278>FORWARD     specifies tab completion to go forward\n"
+		"\n"
+		"         <278>Multiple options can/must be specified at once.\n",
+
 		"alias history keypad macro speedwalk tab"
 	},
 	{
@@ -1345,6 +1366,9 @@ struct help_type help_table[] =
 		"         <178>RECEIVED INPUT [NAME]\n"
 		"         <278>  %0 raw text\n"
 		"\n"
+		"         <178>RECEIVED INPUT CHARACTER\n"
+		"         <278>  %0 character  %1 unicode index  %2 size  %3 width\n"
+		"\n"
 		"         SEND OUTPUT            %0 raw text %1 size\n"
 		"         SENT OUTPUT            %0 raw text %1 size\n"
 		"\n"
@@ -1439,8 +1463,8 @@ struct help_type help_table[] =
 		"         <128>SESSION EVENTS<278>\n"
 		"\n"
 		"         SESSION ACTIVATED      %0 name\n"
-		"         SESSION CONNECTED      %0 name %1 host %2 ip %3 port\n"
-		"         SESSION CREATED        %0 name %1 host %2 ip %3 port\n"
+		"         SESSION CONNECTED      %0 name %1 host %2 ip %3 port %4 file\n"
+		"         SESSION CREATED        %0 name %1 host %2 ip %3 port %4 file\n"
 		"         SESSION DEACTIVATED    %0 name\n"
 		"         SESSION DISCONNECTED   %0 name %1 host %2 ip %3 port\n"
 		"         SESSION TIMED OUT      %0 name %1 host %2 ip %3 port\n"
@@ -2075,6 +2099,7 @@ struct help_type help_table[] =
 		"         triggers/variables associated with that list. With the SAVE option\n"
 		"         this data is written to the info variable.\n"
 		"\n"
+		"         #info big5toutf will show the big5 to utf8 translation table.\n"
 		"         #info cpu will show information about tintin's cpu usage.\n"
 		"         #info environ will show the environment variables.\n"
 		"         #info input will show information about the input line.\n"
@@ -2084,6 +2109,7 @@ struct help_type help_table[] =
 		"         #info session will show information on the session.\n"
 		"         #info sessions will show information on all sessions.\n"
 		"         #info system will show some system information.\n"
+		"         #info tokenizer will show information about the script stack.\n"
 		"         #info unicode will show information on the provided character.\n",
 
 		"class debug ignore kill message"
@@ -2152,19 +2178,19 @@ struct help_type help_table[] =
 		"LINE",
 		TOKEN_TYPE_COMMAND,
 		"<178>Command<278>: #line <178>{<278>option<178>} {<278>argument<178>}<278>\n"
-		"<128>\n"
-		"         Line sub commands that alter the argument.\n"
-		"<278>\n"
+		"\n"
+		"         <128>Line options that alter the argument.\n"
+		"\n"
 		"         <178>#line strip <argument>\n"
 		"         <278>  Argument is executed with all color codes stripped.\n"
 		"\n"
 		"         <178>#line substitute <options> <argument>\n"
 		"         <278>  Argument is executed using the provided substitutions, available\n"
-		"         <278>  options are: arguments, colors, escapes, functions, secure, and\n"
-		"         <278>  variables.\n"
-		"<128>\n"
-		"         Line sub commands that alter how the line is executed.\n"
-		"<278>\n"
+		"         <278>  options are: arguments, braces, colors, escapes, functions, secure,\n"
+		"         <278>  and variables.\n"
+		"\n"
+		"         <128>Line options that alter how the line is executed.\n"
+		"\n"
 		"         <178>#line background <argument>\n"
 		"         <278>  Prevent new session activation.\n"
 		"\n"
@@ -2566,12 +2592,36 @@ struct help_type help_table[] =
 	{
 		"LOG",
 		TOKEN_TYPE_COMMAND,
-		"<178>Command<278>: #log <178>{<278>append<178>|<278>overwrite<178>|<278>off<178>} {<278>[filename]<178>}<278>\n"
+		"<178>Command<278>: #log <178>{<278>option<178>} {<278>argument<178>}<278>\n"
+		"<278>\n"
+		"         The log command allows logging session output to file. You can set the\n"
+		"         data type to either plain, raw, or html with the config command.\n"
 		"\n"
-		"         Logs session output to a file, you can set the data type to either\n"
-		"         plain, raw, or html with the config command.\n",
-		
-		"read scan textin write"
+		"         <178>#log append <filename>\n"
+		"         <278>  Start logging to the given file, if the file already exists it won't\n"
+		"         <278>  be overwritten and data will be appended to the end.\n"
+		"\n"
+		"         <178>#log move <filename_1> <filename_2>\n"
+		"         <278>  Move filename_1 to filename_2. This can be any file and doesn't need\n"
+		"         <278>  to be a log file.\n"
+		"\n"
+		"         <178>#log overwrite <filename>\n"
+		"         <278>  Start logging to the given file, if the file already exists it will\n"
+		"         <278>  be overwritten.\n"
+		"\n"
+		"         <178>#log off\n"
+		"         <278>  Stop logging.\n"
+		"\n"
+		"         <178>#log remove <filename>\n"
+		"         <278>  Remove the file. This can be any file and doesn't need to be a log\n"
+		"         <278>  file.\n"
+		"\n"
+		"         <178>#log timestamp <format>\n"
+		"         <278>  When set the timestamp will be prepended to each line logged to file.\n"
+		"         <278>  The format will be formatted as a date using the strftime format\n"
+		"         <278>  specifiers as described in #help time.\n",
+
+		"read scan textin time write"
 	},
 
 	{
@@ -2739,8 +2789,9 @@ struct help_type help_table[] =
 		"         <278>  Takes you to the given room name, if you provide exits those\n"
 		"         <278>  must match.\n"
 		"\n"
-		"         <178>#map info\n"
-		"         <278>  Gives information about the map and room you are in.\n"
+		"         <178>#map info [save]\n"
+		"         <278>  Gives information about the map and room you are in. If the save\n"
+		"         <278>  argument is given the map data is saved to the info[map] variable.\n"
 		"\n"
 		"         <178>#map insert <direction> [roomflag]\n"
 		"         <278>  Insert a room in the given direction. Most useful for inserting\n"
@@ -4307,8 +4358,11 @@ struct help_type help_table[] =
 		"\n"
 		"         Adds a word to the tab completion list, alphabetically sorted.\n"
 		"\n"
-		"         If no tabs are defined tintin will use the scrollback buffer\n"
-		"         for auto tab completion.\n"
+		"         If no tabs are defined tintin will use the scrollback buffer for auto\n"
+		"         tab completion.\n"
+		"\n"
+		"         Tabbing behavior can be modified with the #cursor tab command which\n"
+		"         by default is bound to the tab key.\n"
 		"\n"
 		"<178>Comment<278>: You can remove a tab with the #untab command.\n",
 

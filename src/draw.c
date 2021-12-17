@@ -84,7 +84,6 @@ extern DO_DRAW(draw_bot_side);
 extern DO_DRAW(draw_box);
 extern DO_DRAW(draw_buffer);
 extern DO_DRAW(draw_corner);
-extern DO_DRAW(draw_horizontal_line);
 extern DO_DRAW(draw_left_side);
 extern DO_DRAW(draw_line);
 extern DO_DRAW(draw_map);
@@ -549,9 +548,11 @@ DO_COMMAND(do_draw)
 
 // utilities
 
+void string_to_stamp(struct session *ses, long long flags, char *in, char *out);
+
 void scale_drawing(struct session *ses, int *top_row, int *top_col, int *bot_row, int *bot_col, int *rows, int *cols, int index, long long flags, char *arg)
 {
-	char *buf, *out, *tmp;
+	char *buf, *out, *tmp, *swap;
 	int inside;
 	int height, bor_height, tot_height, max_height;
 	int width, bor_width, tot_width, max_width;
@@ -605,7 +606,19 @@ void scale_drawing(struct session *ses, int *top_row, int *top_col, int *bot_row
 	{
 		ualign(ses, arg, tmp, max_width - bor_width);
 
-		arg = tmp;
+		strcpy(arg, tmp);
+	}
+
+	if (HAS_BIT(flags, DRAW_FLAG_HUGE))
+	{
+		string_to_stamp(ses, flags, arg, tmp);
+
+		swap = arg; arg = tmp; tmp = swap;
+
+		if (*arg)
+		{
+			arg[strlen(arg) - 1] = 0;
+		}
 	}
 
 	while (*arg)
@@ -680,6 +693,10 @@ void scale_drawing(struct session *ses, int *top_row, int *top_col, int *bot_row
 	}
 //	tintin_printf2(ses, "debug4: cols %d top_col: %d bot_col %d", *cols, *top_col, *bot_col);
 
+	if (HAS_BIT(flags, DRAW_FLAG_HUGE))
+	{
+		arg = tmp;
+	}
 	pop_call();
 	return;
 }
@@ -952,28 +969,28 @@ char *get_draw_corner(long long flags, char *str)
 {
 	draw_cnt = (draw_cnt + 1) % 100;
 
-	if (HAS_BIT(flags, DRAW_FLAG_BLANKED))
-	{
-		strcpy(draw_buf[draw_cnt], " ");
-	}
-	else if (HAS_BIT(flags, DRAW_FLAG_NUMBERED))
+	if (HAS_BIT(flags, DRAW_FLAG_NUMBERED))
 	{
 		sprintf(draw_buf[draw_cnt], "%d", draw_cnt % 10);
 	}
+	else if (HAS_BIT(flags, DRAW_FLAG_PRUNED))
+	{
+		if (HAS_BIT(flags, DRAW_FLAG_SCROLL))
+		{
+			strcpy(draw_buf[draw_cnt], " ");
+		}
+		else
+		{
+			strcpy(draw_buf[draw_cnt], "\e[C");
+		}
+	}
+	else if (HAS_BIT(flags, DRAW_FLAG_BLANKED))
+	{
+		strcpy(draw_buf[draw_cnt], " ");
+	}
 	else if (HAS_BIT(flags, DRAW_FLAG_UTF8))
 	{
-		if (HAS_BIT(flags, DRAW_FLAG_PRUNED))
-		{
-			if (HAS_BIT(flags, DRAW_FLAG_SCROLL))
-			{
-				strcpy(draw_buf[draw_cnt], " ");
-			}
-			else
-			{
-				strcpy(draw_buf[draw_cnt], "\e[C");
-			}
-		}
-		else if (HAS_BIT(flags, DRAW_FLAG_CIRCLED))
+		if (HAS_BIT(flags, DRAW_FLAG_CIRCLED))
 		{
 			if (HAS_BIT(flags, DRAW_FLAG_CROSSED))
 			{
@@ -1255,17 +1272,21 @@ char *get_draw_corner(long long flags, char *str)
 	}
 	else
 	{
-		if (HAS_BIT(flags, DRAW_FLAG_PRUNED))
-		{
-			strcpy(draw_buf[draw_cnt], "\e[C");
-		}
-		else if (HAS_BIT(flags, DRAW_FLAG_CIRCLED) || HAS_BIT(flags, DRAW_FLAG_ROUNDED))
+		if (HAS_BIT(flags, DRAW_FLAG_CIRCLED) || HAS_BIT(flags, DRAW_FLAG_ROUNDED))
 		{
 			strcpy(draw_buf[draw_cnt], "o");
 		}
 		else if (HAS_BIT(flags, DRAW_FLAG_CROSSED))
 		{
 			strcpy(draw_buf[draw_cnt], "+");
+		}
+		else if (HAS_BIT(flags, DRAW_FLAG_VER))
+		{
+			strcpy(draw_buf[draw_cnt], "|");
+		}
+		else if (HAS_BIT(flags, DRAW_FLAG_HOR))
+		{
+			strcpy(draw_buf[draw_cnt], "-");
 		}
 		else
 		{
@@ -1281,7 +1302,14 @@ char *draw_horizontal(long long flags, char *str)
 
 	if (HAS_BIT(flags, DRAW_FLAG_BLANKED))
 	{
-		strcpy(draw_buf[draw_cnt], " ");
+		if (HAS_BIT(flags, DRAW_FLAG_PRUNED) && !HAS_BIT(flags, DRAW_FLAG_SCROLL))
+		{
+			strcpy(draw_buf[draw_cnt], "\e[C");
+		}
+		else
+		{
+			strcpy(draw_buf[draw_cnt], " ");
+		}
 	}
 	else if (HAS_BIT(flags, DRAW_FLAG_NUMBERED))
 	{
@@ -1309,9 +1337,16 @@ char *draw_vertical(long long flags, char *str)
 {
 	draw_cnt = (draw_cnt + 1) % 100;
 
-	if (HAS_BIT(flags, DRAW_FLAG_BLANKED))
+	if (!HAS_BIT(flags, DRAW_FLAG_BOXED|DRAW_FLAG_HOR|DRAW_FLAG_VER|DRAW_FLAG_LEFT|DRAW_FLAG_RIGHT) || HAS_BIT(flags, DRAW_FLAG_BLANKED))
 	{
-		strcpy(draw_buf[draw_cnt], " ");
+		if (HAS_BIT(flags, DRAW_FLAG_PRUNED) && !HAS_BIT(flags, DRAW_FLAG_SCROLL))
+		{
+			strcpy(draw_buf[draw_cnt], "\e[C");
+		}
+		else
+		{
+			strcpy(draw_buf[draw_cnt], " ");
+		}
 	}
 	else if (HAS_BIT(flags, DRAW_FLAG_NUMBERED))
 	{
@@ -1493,7 +1528,8 @@ DO_DRAW(draw_corner)
 
 DO_DRAW(draw_line_horizontal)
 {
-	int col, corner;
+	int col, corner, ins_len;
+	char *line;
 
 	if (!HAS_BIT(flags, DRAW_FLAG_VER))
 	{
@@ -1510,7 +1546,13 @@ DO_DRAW(draw_line_horizontal)
 
 	corner = flags;
 
-	arg = arg1;
+	sub_arg_in_braces(ses, arg, arg2, GET_ALL, SUB_COL|SUB_LIT|SUB_ESC|SUB_VAR|SUB_FUN);
+
+	arg = arg2;
+
+	line = arg1;
+
+	arg1 += sprintf(arg1, "%s", box_color);
 
 	if (HAS_BIT(flags, DRAW_FLAG_LEFT))
 	{
@@ -1543,15 +1585,40 @@ DO_DRAW(draw_line_horizontal)
 		arg1 += sprintf(arg1, "%s", draw_horizontal(flags, "─"));
 	}
 
+	if (*arg)
+	{
+		str_fix(line);
+
+		if (*txt_color)
+		{
+			str_cpy_printf(&arg, "%s%s", txt_color, arg);
+		}
+
+		ins_len = UMIN(cols, strip_vt102_strlen(ses, arg));
+
+		if (HAS_BIT(flags, DRAW_FLAG_RALIGN))
+		{
+			str_ins_str(ses, &line, arg, cols - ins_len, cols);
+		}
+		else if (HAS_BIT(flags, DRAW_FLAG_CALIGN))
+		{
+			str_ins_str(ses, &line, arg, cols / 2 - ins_len / 2, -1);
+		}
+		else
+		{
+			str_ins_str(ses, &line, arg, 0, ins_len);
+		}
+	}
+
 	if (HAS_BIT(flags, DRAW_FLAG_SCROLL))
 	{
-		tintin_printf2(ses, "%*s%s%s", top_col - 1, "", box_color, arg);
+		tintin_printf2(ses, "%*s%s", top_col - 1, "", line);
 	}
 	else
 	{
 		goto_pos(ses, top_row, top_col);
 
-		print_stdout(top_row, top_col, "%s%s", box_color, arg);
+		print_stdout(top_row, top_col, "%s", line);
 	}
 }
 
@@ -2408,30 +2475,25 @@ DO_DRAW(draw_text)
 		string_to_font(ses, flags, buf2, buf2);
 	}
 
-	if (HAS_BIT(flags, DRAW_FLAG_BOXED|DRAW_FLAG_TOP|DRAW_FLAG_PRUNED))
+	if (HAS_BIT(flags, DRAW_FLAG_BOXED|DRAW_FLAG_TOP|DRAW_FLAG_BLANKED|DRAW_FLAG_PRUNED))
 	{
 		top_row++;
 		rows--;
 	}
 
-	if (HAS_BIT(flags, DRAW_FLAG_BOXED|DRAW_FLAG_BOT|DRAW_FLAG_PRUNED))
+	if (HAS_BIT(flags, DRAW_FLAG_BOXED|DRAW_FLAG_BOT|DRAW_FLAG_BLANKED|DRAW_FLAG_PRUNED))
 	{
 		bot_row--;
 		rows--;
 	}
 
-	if (HAS_BIT(flags, DRAW_FLAG_BOXED|DRAW_FLAG_LEFT|DRAW_FLAG_PRUNED))
+	if (HAS_BIT(flags, DRAW_FLAG_BOXED|DRAW_FLAG_LEFT|DRAW_FLAG_BLANKED|DRAW_FLAG_PRUNED))
 	{
-		strcpy(side1, " ");
 		cols--;
 	}
 
-	if (HAS_BIT(flags, DRAW_FLAG_BOXED|DRAW_FLAG_RIGHT|DRAW_FLAG_PRUNED))
+	if (HAS_BIT(flags, DRAW_FLAG_BOXED|DRAW_FLAG_RIGHT|DRAW_FLAG_BLANKED|DRAW_FLAG_PRUNED))
 	{
-		if (!HAS_BIT(flags, DRAW_FLAG_GRID) || HAS_BIT(flags, DRAW_FLAG_RIGHT))
-		{
-			strcpy(side2, " ");
-		}
 		cols--;
 	}
 
@@ -2484,12 +2546,12 @@ DO_DRAW(draw_text)
 		}
 	}
 
-	if (HAS_BIT(flags, DRAW_FLAG_LEFT))
+	if (HAS_BIT(flags, DRAW_FLAG_BOXED|DRAW_FLAG_LEFT|DRAW_FLAG_BLANKED|DRAW_FLAG_PRUNED))
 	{
 		strcpy(side1, draw_vertical(flags, "│"));
 	}
 
-	if (HAS_BIT(flags, DRAW_FLAG_RIGHT))
+	if (HAS_BIT(flags, DRAW_FLAG_BOXED|DRAW_FLAG_RIGHT|DRAW_FLAG_BLANKED|DRAW_FLAG_PRUNED))
 	{
 		strcpy(side2, draw_vertical(flags, "│"));
 	}

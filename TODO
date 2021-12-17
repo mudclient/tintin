@@ -1,45 +1,63 @@
+#EVENT {VARIABLE UPDATED inventory[heals][cur]} {#show <118>WORKS}
+#var inventory[heals][cur] 2
+#math inventory[heals][cur] 2
+
+- make connect_retry second based and use session->created
+- #tick arg4 is no longer used but still set?
+- Add names to daemon
+- Add nohup mode
+
+ne room has #map set roomsymbol {<faa>/},
+e room has #map set roomsymbol {<faa>------}
+se room has #map set roomsymbol {<faa>\\}
+
+#var msg {\e[97m123456789ABCDEF\e[96m123456789ABCDEF\e[95m123456789ABCDEF\e[94m123456789ABCDEF123456789ABCDEF123456789ABCDEF};
+#format len %L {$msg};
+#show {msg length: $len};
+
+#math len {$len - 30};
+#show {max length: $len};
+
+#format substr {%.${len}s} $msg;
+#format len %L {$substr};
+#show {msg substr: $len};
+#show $substr;
+
+
   - look into large variable handling, foreach, once again
 
-  - tab window, add tab ordering and garbage collection
-
 ----------------
-  - check: #var bla { x};#draw scroll box 1 1 3 40 $bla
 
-  - mapper.c vnum = ses->map->grid_rooms[x + 1 + max_x * (y - 1)] ? ses->map->grid_rooms[x + 1 + max_x * (y - 1)]->vnum : 0; crash
+  - allow tt++ -R {name}
+
+  - #map at 0 should do nothing
+
+  - set_line_screen debug: col = -5 (64) from draw_text(%p,%d,%p,%p,%p)
+
+  - https://wiki.videolan.org/Documentation:Modules/rc/ VLC telnet audio interface
+
+  - regex101 like regex tester
+
+  - infinite loop in map.c at row 2091
+
+  - check: #var bla { x};#draw scroll box 1 1 3 40 $bla
 
   - set_line_screen stack call triggered on android
 
-  - add pathdir support to #path load
-
   - input spell checking, #cursor display ?
+
+  - cp949toutf8 is missing some characters
+  - https://github.com/scandum/tintin/discussions/38#discussioncomment-1258015
 
   - look into named actions as a 4th argument
 
-  - look into adding #line quiet support to #buffer
-
-  - pruned tile handling
-
-  - #format %r reverses color codes.
-
   - Get discworld / aardwolf mxp to work for @sentix
 
-  - Allow room symbols to cover exits
-
-  - SUB_BRA for input events
-  - https://tintin.sourceforge.io/forum/viewtopic.php?f=4&t=2827
-  - Add unmatched brace event
-
   - look into default input color
-
-  - Add RECEIVED INPUT CHARACTER event / filter mouse input sequences.
-
-  - handle signals in the mainloop.
 
   - add ctrl-r support for scrollback
 
   - Add #event {SESSION CONNECTED} {5.1} option.
-
-  - Add the option to use + ? . and * as variable exit fields. 
 
   - TT++ HANDBOOK for meticulous organized details.
 
@@ -73,45 +91,28 @@
 
   - Add #line gag 2 +2 -2 support.
 
-  - Work on VT2020 protocol (mouse click)
+  - VT2020
+
+  - mouse enter/leave events on move. hoover/long-press.
 
   - $var[%*][%*] support.
-  - make list sorting move nests as well
 
   - better #draw font support
 
-  - case insensitive tabbing (partial start with rewrite)
-  - tabbing on directory structure.
-  - tabbing on dictionary
+  - tab completion on directory structure.
 
-#0  0x00005555555a5418 in tunnel_void (ses=0x555558a97b00, from=8004, room=1931506785, dir=1684955508) at mapper.c:4220
-#1  0x00005555555a599d in searchgrid_find (ses=0x555558a97b00, from=153, search=0x555558d8f850) at mapper.c:4336
-#2  0x00005555555afb44 in map_list (ses=0x555558a97b00, arg=0x5555572e1b95 "{} {} {} {$roomarea} {variable} {area_mapped}",
-
+  - pancake mode to display rooms at all levels and annotations
   - Store the map filename to differentiate between maps.
   - #map list {<exits>} breaks on rooms that have e mapped to eu.
   - finish landmarks
   - map sandbox mode support (flags to disable saving?)
   - add ghosting to fix #map flag nofollow exit cmd issues?
-  ! #map legend support for unicode graphics.
-  - multi-line room symbols
-  - pancake mode to display rooms at all levels and annotations
-  - there might be a terrain density bug
-  - provide the coordinate of the X on the vtmap.
-  - add maze flag for maze handling.
-  - Request: aura around the character position. Something similar to terrain dense narrow. Could improve visibility of the character position on big resolutions. Furthermor config to allow modification of the character terrain. 
-  - vt map doesn't utilize all available space.
   - Request: 'stop' #map center command, so i could see how the 'user' moves, rather map moves around him? 
   - #map uninsert <vnum>
   - make map spacing easier
-  - add configurable default symbol
-  - exit symbol?
-  - more data to #map list saving, and maybe easier sorting of tables.
   - event for failed #map move.
   - look into #send triggering follow map.
   - add {roomdata} search to #map list
-
-  - truncate prompt longer than split.
 
   - Make actions with a priority of 0. trigger always
 
@@ -120,8 +121,6 @@
     #draw graph
     #draw button
     #draw titanic
-
-  - proper vt100 skip detection for improper color codes.
 
   - Make { match both a { and \x7B as it's an annoying issue to debug.
 
@@ -137,8 +136,6 @@
   - look into discord api / arachnos
 
   - better color syntax highlighting configuration.
-
-  - Add #log delete/remove option.
 
   - See about adding SESSIONS to the list table.
 
@@ -163,8 +160,6 @@
   - http://tintin.sourceforge.net/board/viewtopic.php?p=9109 (vt102 strip \e[2J\e[H )
 
   - http://tintin.sourceforge.net/board/viewtopic.php?p=8766#8766 (global verbose toggle?)
-
-  - http://tintin.sourceforge.net/board/viewtopic.php?p=8745#8745 (verbose logging?)
 
   - See about adding ~/ handling for file names.
 

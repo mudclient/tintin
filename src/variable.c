@@ -41,7 +41,9 @@ DO_COMMAND(do_variable)
 	}
 	else if (*arg == 0)
 	{
-		node = search_nest_node(root, arg1);
+		char *path = str_alloc_stack(0);
+
+		node = search_nest_node_path(root, arg1, path);
 
 		if (node)
 		{
@@ -53,11 +55,11 @@ DO_COMMAND(do_variable)
 
 				view_nest_node(node, &str_result, 0, TRUE, TRUE);
 
-				print_lines(ses, SUB_NONE, COLOR_TINTIN "%c" COLOR_COMMAND "%s " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}\n{\n" COLOR_STRING "%s" COLOR_BRACE "}" COLOR_RESET "\n", gtd->tintin_char, list_table[LIST_VARIABLE].name, node->arg1, str_result);
+				print_lines(ses, SUB_NONE, COLOR_TINTIN "%c" COLOR_COMMAND "%s " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}\n{\n" COLOR_STRING "%s" COLOR_BRACE "}" COLOR_RESET "\n", gtd->tintin_char, list_table[LIST_VARIABLE].name, path, str_result);
 			}
 			else
 			{
-				tintin_printf2(ses, COLOR_TINTIN "%c" COLOR_COMMAND "%s " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "} {" COLOR_STRING "%s" COLOR_BRACE "}" COLOR_RESET "\n", gtd->tintin_char, list_table[LIST_VARIABLE].name, node->arg1, node->arg2);
+				tintin_printf2(ses, COLOR_TINTIN "%c" COLOR_COMMAND "%s " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "} {" COLOR_STRING "%s" COLOR_BRACE "}" COLOR_RESET "\n", gtd->tintin_char, list_table[LIST_VARIABLE].name, path, node->arg2);
 			}
 		}
 		else if (show_node_with_wild(ses, arg1, ses->list[LIST_VARIABLE]) == FALSE)
@@ -69,7 +71,7 @@ DO_COMMAND(do_variable)
 	{
 		if (!valid_variable(ses, arg1))
 		{
-			show_error(ses, LIST_VARIABLE, "#VARIABLE: INVALID VARIALBE NAME {%s}.", arg1);
+			show_error(ses, LIST_VARIABLE, "#VARIABLE: INVALID VARIABLE NAME {%s}.", arg1);
 
 			return ses;
 		}
@@ -655,27 +657,49 @@ void hexstring(char *str)
 
 void reversestring(char *str)
 {
-	char t;
-	int a = 0, z = strlen(str) - 1;
+	char *pts, *ptz, *dup = str_mim(str);
+	int skip;
 
-	while (z > a)
+	pts = str;
+	ptz = dup + strlen(str);
+
+	*ptz-- = 0;
+
+	while (*pts)
 	{
-		t = str[z];
-		str[z--] = str[a];
-		str[a++] = t;
-	}
-
-	z = strlen(str) - 1;
-
-	for (a = 1 ; a < z ; a++)
-	{
-		if (str[a] == '\\' && str[a + 1] != '\\')
+		switch (*pts)
 		{
-			str[a] = str[a - 1];
-			str[a - 1] = '\\';
+			case '\\':
+				skip = pts[1] ? 2 : 0;
+				break;
+
+			case '\e':
+				skip = skip_vt102_codes(pts);
+				break;
+
+			case '<':
+				skip = is_color_code(pts);
+				break;
+
+			default:
+				skip = 0;
+				break;
+		}
+
+		if (skip)
+		{
+			ptz -= skip;
+			memcpy(ptz + 1, pts, skip);
+			pts += skip;
+		}
+		else
+		{
+			*ptz-- = *pts++;
 		}
 	}
+	strcpy(str, dup);
 
+	str_free(dup);
 }
 
 void mathstring(struct session *ses, char *str)
@@ -1039,7 +1063,7 @@ int string_str_raw_len(struct session *ses, char *str, int start, int end)
 		}
 		else if (HAS_BIT(ses->charset, CHARSET_FLAG_UTF8) && is_utf8_head(&str[raw_cnt]))
 		{
-			tmp_cnt = get_utf8_width(&str[raw_cnt], &width);
+			tmp_cnt = get_utf8_width(&str[raw_cnt], &width, NULL);
 
 			if (str_cnt >= start)
 			{
@@ -1115,7 +1139,7 @@ int string_raw_str_len(struct session *ses, char *str, int raw_start, int raw_en
 		}
 		else if (HAS_BIT(ses->charset, CHARSET_FLAG_UTF8) && is_utf8_head(&str[raw_cnt]))
 		{
-			raw_cnt += get_utf8_width(&str[raw_cnt], &width);
+			raw_cnt += get_utf8_width(&str[raw_cnt], &width, NULL);
 
 			ret_cnt += width;
 		}
@@ -1443,8 +1467,14 @@ void format_string(struct session *ses, char *format, char *arg, char *out)
 						break;
 
 					case 'C':
-						tintin_printf2(ses, "\e[1;31m#echo/#format %%C please use #screen {get} {cols} to get screen width.");
-//						chronosgroupingstring(ses, arglist[i]);
+						if (*arglist[i] == 0)
+						{
+							sprintf(arglist[i], "%d", gtd->screen->cols);
+						}
+						else
+						{
+							sprintf(arglist[i], "%d", get_col_index_arg(ses, arglist[i]));
+						}
 						break;
 
 					case 'D':

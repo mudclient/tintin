@@ -210,7 +210,7 @@
 #define STRING_SIZE        2 * BUFFER_SIZE
 
 #define CLIENT_NAME              "TinTin++"
-#define CLIENT_VERSION           "2.02.12b"
+#define CLIENT_VERSION           "2.02.13b"
 
 
 #define XT_E                            0x27
@@ -586,12 +586,13 @@ enum operators
 #define EVENT_FLAG_VARIABLE           BV19
 #define EVENT_FLAG_VT100              BV20
 
-
 #define TAB_FLAG_FORWARD              BV01
 #define TAB_FLAG_BACKWARD             BV02
 #define TAB_FLAG_COMPLETE             BV03
-#define TAB_FLAG_LIST                 BV04
-#define TAB_FLAG_SCROLLBACK           BV05
+#define TAB_FLAG_CASELESS             BV04
+#define TAB_FLAG_DICTIONARY           BV05
+#define TAB_FLAG_LIST                 BV06
+#define TAB_FLAG_SCROLLBACK           BV07
 
 #define REGEX_FLAG_NONE                  0
 #define REGEX_FLAG_FIX                BV01
@@ -753,12 +754,13 @@ enum operators
 #define MAP_FLAG_BLOCKGRAPHICS        BV10
 #define MAP_FLAG_RESIZE               BV11
 #define MAP_FLAG_SYNC                 BV12
-#define MAP_FLAG_ASCIILENGTH          BV13 // For debugging but might be useful
+#define MAP_FLAG_ASCIILENGTH          BV13
 #define MAP_FLAG_TERRAIN              BV14
 #define MAP_FLAG_UPDATETERRAIN        BV15
 #define MAP_FLAG_DOUBLED              BV16
 #define MAP_FLAG_QUIET                BV17
 #define MAP_FLAG_READ                 BV18
+#define MAP_FLAG_PANCAKE              BV19
 
 #define MAP_SEARCH_NAME                0
 #define MAP_SEARCH_EXITS               1
@@ -1155,20 +1157,12 @@ struct session
 	z_stream              * mccp3;
 	gnutls_session_t        ssl;
 	struct termios          cur_terminal;
+	struct log_data       * log;
 	struct scroll_data    * scroll;
 	struct split_data     * split;
 	struct input_data     * input;
 	char                  * name;
 	char                  * group;
-	FILE                  * logfile;
-	char                  * logname;
-	int                     logmode;
-	FILE                  * lognext_file;
-	char                  * lognext_name;
-	time_t                  lognext_time;
-	FILE                  * logline_file;
-	char                  * logline_name;
-	time_t                  logline_time;
 	char                  * line_capturefile;
 	int                     line_captureindex;
 	int                     gagline;
@@ -1283,6 +1277,22 @@ struct level_data
 	unsigned int            shots;
 	unsigned int            verbatim;
 	unsigned int            verbose;
+};
+
+struct log_data
+{
+	FILE                  * file;
+	char                  * name;
+	int                     mode;
+	FILE                  * next_file;
+	char                  * next_name;
+	time_t                  next_time;
+	FILE                  * line_file;
+	char                  * line_name;
+	time_t                  line_time;
+	char                    stamp_text[100];
+	char                  * stamp_strf;
+	time_t                  stamp_time;
 };
 
 struct split_data
@@ -1610,7 +1620,6 @@ struct window_data
 #define DO_EDIT(edit)          struct session *edit (struct session *ses, char *arg, char *arg1, char *arg2)
 #define DO_HISTORY(history)            void history (struct session *ses, char *arg, char *arg1, char *arg2)
 #define DO_LINE(line)          struct session *line (struct session *ses, char *arg, char *arg1, char *arg2, char *arg3)
-#define DO_LOG(log)                        void log (struct session *ses, char *arg, char *arg1, char *arg2)
 #define DO_MAP(map)                        void map (struct session *ses, char *arg, char *arg1, char *arg2)
 #define DO_PATH(path)                     void path (struct session *ses, char *arg)
 #define DO_PORT(port)          struct session *port (struct session *ses, char *arg, char *arg1, char *arg2)
@@ -1630,7 +1639,6 @@ typedef void            CURSOR  (struct session *ses, char *arg);
 typedef void            DAEMON  (struct session *ses, char *arg, char *arg1, char *arg2);
 typedef struct session *EDIT    (struct session *ses, char *arg, char *arg1, char *arg2);
 typedef void            HISTORY (struct session *ses, char *arg, char *arg1, char *arg2);
-typedef void            LOG     (struct session *ses, char *arg, char *arg1, char *arg2);
 typedef struct session *LINE    (struct session *ses, char *arg, char *arg1, char *arg2, char *arg3);
 typedef void            MAP     (struct session *ses, char *arg, char *arg1, char *arg2);
 typedef void            MSDP    (struct session *ses, struct port_data *buddy, int index);
@@ -1744,13 +1752,6 @@ struct line_type
 {
 	char                  * name;
 	LINE                  * fun;
-	char                  * desc;
-};
-
-struct log_type
-{
-	char                  * name;
-	LOG                   * fun;
 	char                  * desc;
 };
 
@@ -2036,8 +2037,6 @@ extern DO_CURSOR(cursor_set);
 extern DO_CURSOR(cursor_soft_enter);
 extern DO_CURSOR(cursor_suspend);
 extern DO_CURSOR(cursor_tab);
-extern DO_CURSOR(cursor_tab_backward);
-extern DO_CURSOR(cursor_tab_forward);
 
 #endif
 
@@ -2247,6 +2246,7 @@ extern void dump_stack(void);
 extern DO_COMMAND(do_dictionary);
 
 extern int spellcheck_count(struct session *ses, char *in);
+extern int cursor_dictionary_tab_add(int stop_after_first);
 
 #endif
 
@@ -2372,13 +2372,10 @@ extern DO_LINE(line_verbose);
 #ifndef __LOG_H__
 #define __LOG_H__
 
-DO_LOG(log_append);
-DO_LOG(log_info);
-DO_LOG(log_overwrite);
-DO_LOG(log_off);
-DO_LOG(log_remove);
+extern void logheader(struct session *ses, FILE *file, int newline);
+extern void init_log(struct session *ses);
+extern void free_log(struct session *ses);
 
-extern void loginit(struct session *ses, FILE *file, int newline);
 extern void logit(struct session *ses, char *txt, FILE *file, int newline);
 extern void write_html_header(struct session *ses, FILE *fp);
 extern void vt102_to_html(struct session *ses, char *txt, char *out);
@@ -2501,6 +2498,7 @@ extern struct listroot *search_nest_base_ses(struct session *ses, char *arg);
 extern struct listroot *search_nest_root(struct listroot *root, char *arg);
 extern struct listnode *search_base_node(struct listroot *root, char *variable);
 extern struct listnode *search_nest_node(struct listroot *root, char *variable);
+extern struct listnode *search_nest_node_path(struct listroot *root, char *variable, char *path);
 extern struct listnode *search_nest_node_ses(struct session *ses, char *variable);
 extern int search_nest_index(struct listroot *root, char *variable);
 extern struct listroot *update_nest_root(struct listroot *root, char *arg);
@@ -2579,7 +2577,7 @@ int exit_to_dir(struct session *ses, char *name);
 unsigned char pdir(struct listnode *node);
 char *dir_to_exit(struct session *ses, int dir);
 
-extern void check_append_path(struct session *ses, char *forward, char *backward, float delay, int follow);
+extern void check_append_path(struct session *ses, char *forward, char *backward, float delay, int force, int follow);
 
 extern DO_PATH(path_create);
 extern DO_PATH(path_describe);
@@ -2837,7 +2835,6 @@ extern struct event_type event_table[];
 extern struct history_type history_table[];
 extern struct line_type line_table[];
 extern struct list_type list_table[LIST_MAX];
-extern struct log_type log_table[];
 extern struct map_type map_table[];
 extern struct path_type path_table[];
 extern struct port_type port_table[];
@@ -2856,6 +2853,7 @@ extern struct map_legend_group_type map_legend_group_table[];
 #ifndef __TELOPT_H__
 #define __TELOPT_H__
 
+extern void test_gmcp(struct session *ses, char *buf);
 extern  int client_translate_telopts(struct session *ses, unsigned char *src, int cplen);
 extern  int client_write_compressed(struct session *ses, char *txt, int length);
 extern  int client_send_sb_naws(struct session *ses, int cplen, unsigned char *cpsrc);
@@ -2928,6 +2926,7 @@ extern struct scriptroot *push_script_stack(struct session *ses, int list);
 extern void pop_script_stack();
 extern struct listroot *local_list(struct session *ses);
 extern struct session *script_driver(struct session *ses, int list, char *str);
+extern char *view_script(struct session *ses, struct scriptroot *root);
 extern char *script_writer(struct session *ses, char *str);
 extern char *script_viewer(struct session *ses, char *str);
 #endif
@@ -3000,7 +2999,7 @@ extern int get_ascii_width(char *str, int *width);
 extern int is_utf8_head(char *str);
 extern int is_utf8_tail(char *str);
 extern int get_utf8_size(char *str);
-extern int get_utf8_width(char *str, int *width);
+extern int get_utf8_width(char *str, int *width, int *index);
 extern int get_utf8_index(char *str, int *index);
 extern int unicode_to_utf8(int index, char *out);
 extern int utf8_strlen(char *str, int *width);

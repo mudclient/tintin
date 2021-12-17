@@ -518,7 +518,7 @@ int mathexp_tokenize(struct session *ses, char *str, int seed, int debug)
 					case ':':
 						if (debug && wonky == 0)
 						{
-							show_error(gtd->ses, LIST_COMMAND, "\e[1;31m#WARNING: THE : TIME OPERATOR IN #MATH WILL BE REMOVED IN FUTURE RELEASES.");
+							show_error(gtd->ses, LIST_COMMAND, "\e[1;31m#WARNING: COMPUTING {%s}. THE : TIME OPERATOR IN #MATH WILL BE REMOVED IN FUTURE RELEASES.", str);
 						}
 						*pta++ = *pti++;
 						break;
