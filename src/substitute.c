@@ -294,6 +294,8 @@ int valid_escape(struct session *ses, char *str)
 	return FALSE;
 }
 
+#define IS_IDENT(ch) (is_alnum(ch) || (ch) == '_' || (ch) == '-' || (ch) == '.')
+
 int is_variable(struct session *ses, char *str)
 {
 	struct listroot *root;
@@ -317,7 +319,7 @@ int is_variable(struct session *ses, char *str)
 
 	ptt = temp;
 
-	while (is_alnum(str[i]) || str[i] == '_')
+	while (IS_IDENT(str[i]))
 	{
 		*ptt++ = str[i];
 
@@ -357,7 +359,7 @@ int is_function(struct session *ses, char *str)
 
 	ptt = temp;
 
-	while (is_alnum(str[i]) || str[i] == '_')
+	while (IS_IDENT(str[i]))
 	{
 		*ptt++ = str[i];
 
@@ -1128,7 +1130,7 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 					}
 					else
 					{
-						for (ptt = temp ; is_alnum(pti[i]) || pti[i] == '_' ; i++)
+						for (ptt = temp ; IS_IDENT(pti[i]) ; i++)
 						{
 							*ptt++ = pti[i];
 						}
@@ -1290,7 +1292,7 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 					{
 						ptt = temp;
 
-						while (is_alnum(pti[i]) || pti[i] == '_')
+						while (IS_IDENT(pti[i]))
 						{
 							*ptt++ = pti[i];
 
@@ -1396,7 +1398,7 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 					{
 						ptt = temp;
 
-						while (is_alnum(pti[i]) || pti[i] == '_')
+						while (IS_IDENT(pti[i]))
 						{
 							*ptt++ = pti[i];
 
@@ -1530,7 +1532,7 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 					{
 						ptt = temp;
 
-						while (is_alnum(pti[i]) || pti[i] == '_')
+						while (IS_IDENT(pti[i]))
 						{
 							*ptt++ = pti[i];
 
