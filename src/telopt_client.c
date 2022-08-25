@@ -782,7 +782,7 @@ int client_recv_will_echo(struct session *ses, int cplen, unsigned char *cpsrc)
 
 		telnet_printf(ses, 3, "%c%c%c", IAC, DO, TELOPT_ECHO);
 
-		client_telopt_debug(ses, "SENT IAC DO ECHO (SKIPPED)");
+		client_telopt_debug(ses, "SENT IAC DO ECHO");
 	}
 	else
 	{
@@ -1118,8 +1118,8 @@ int client_recv_sb_msdp(struct session *ses, int cplen, unsigned char *src)
 		{
 			strip_vt102_codes(val, plain);
 			client_telopt_debug(ses, "RCVD IAC SB MSDP VAR %-20s VAL %s", var, val);
-			check_all_events(ses, EVENT_FLAG_TELNET, 1, 3, "IAC SB MSDP %s", var, var, val, plain);
-			check_all_events(ses, EVENT_FLAG_TELNET, 0, 3, "IAC SB MSDP", var, val, plain);
+			check_all_events(ses, EVENT_FLAG_TELNET, 1, 4, "IAC SB MSDP %s", var, var, val, plain, ntos(nest));
+			check_all_events(ses, EVENT_FLAG_TELNET, 0, 4, "IAC SB MSDP", var, val, plain, ntos(nest));
 		}
 		i++;
 	}

@@ -327,14 +327,14 @@ char character_table[256] =
 	0,
 	0,
 	0,
-	0,
+	0, // \a
 
+	0, // \b
 	CHAR_FLAG_SPACE, // \t
 	CHAR_FLAG_SPACE, // \n
 	CHAR_FLAG_SPACE, // \v
 	CHAR_FLAG_SPACE, // \f
 	CHAR_FLAG_SPACE, // \r
-	0,
 	0,
 	0,
 
@@ -423,8 +423,8 @@ char character_table[256] =
 	CHAR_FLAG_PRINT|CHAR_FLAG_VAR|CHAR_FLAG_CSI|CHAR_FLAG_ALPHA,
 	CHAR_FLAG_PRINT|CHAR_FLAG_VAR|CHAR_FLAG_CSI|CHAR_FLAG_ALPHA, // 90 Z
 	CHAR_FLAG_PRINT,
-	CHAR_FLAG_PRINT|CHAR_FLAG_CSI, // 93 ]
 	CHAR_FLAG_PRINT,
+	CHAR_FLAG_PRINT|CHAR_FLAG_CSI, // 93 ]
 	CHAR_FLAG_PRINT,
 	CHAR_FLAG_PRINT|CHAR_FLAG_VAR, // 95 _
 
@@ -999,6 +999,7 @@ struct event_type event_table[] =
 	{    "CLASS CREATED",                          0, EVENT_FLAG_CLASS,    "CLASS",     "class creation"             },
 	{    "CLASS DEACTIVATED",                      0, EVENT_FLAG_CLASS,    "CLASS",     "class deactivations"        },
 	{    "CLASS DESTROYED",                        0, EVENT_FLAG_CLASS,    "CLASS",     "class destruction"          },
+	{    "DAEMON ATTACH TIMEOUT",                  0, EVENT_FLAG_SYSTEM,   "SYSTEM",    "daemon attachment timeout"  },
 	{    "DAEMON ATTACHED",                        0, EVENT_FLAG_SYSTEM,   "SYSTEM",    "daemon attachment"          },
 	{    "DAEMON DETACHED",                        0, EVENT_FLAG_SYSTEM,   "SYSTEM",    "daemon detachment"          },
 	{    "DATE",                                   0, EVENT_FLAG_TIME,     "TIME",      "the given date"             },
@@ -1183,7 +1184,7 @@ struct buffer_type buffer_table[] =
 	{    "CLEAR",             buffer_clear,        "Clear buffer."                                  },
 	{    "DOWN",              buffer_down,         "Scroll down one page."                          },
 	{    "END",               buffer_end,          "Scroll down to the end of the buffer."          },
-	{    "FIND",              buffer_find,         "Move to the given string in the buffer."        },
+	{    "FIND",              buffer_find,         "Jump to the given string."                      },
 	{    "GET",               buffer_get,          "Store in given variable a given line or range." },
 	{    "HOME",              buffer_home,         "Scroll up to the start of the buffer."          },
 	{    "INFO",              buffer_info,         "Display statistics about the buffer."           },

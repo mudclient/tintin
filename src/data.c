@@ -625,7 +625,7 @@ int bsearch_alnum_list(struct listroot *root, char *text, int seek)
 
 		if (noi)
 		{
-			srt = (toi < toj) ? -1 : (toi > toj) ? 1 : 0;
+			srt = !noj ? 1 : (toi < toj) ? -1 : (toi > toj) ? 1 : 0;
 		}
 		else if (noj)
 		{
@@ -650,7 +650,6 @@ int bsearch_alnum_list(struct listroot *root, char *text, int seek)
 		{
 			bot = val + 1;
 		}
-
 		val = bot + (top - bot) / 2;
 	}
 
@@ -983,6 +982,11 @@ DO_COMMAND(do_kill)
 	{
 		for (index = 0 ; index < LIST_MAX ; index++)
 		{
+			if (index == LIST_PATHDIR)
+			{
+				continue;
+			}
+
 			if (!HAS_BIT(ses->list[index]->flags, LIST_FLAG_HIDE))
 			{
 				kill_list(ses->list[index]);
@@ -1330,6 +1334,28 @@ DO_COMMAND(do_info)
 
 		switch (*arg1 % 32)
 		{
+			case CTRL_A:
+				if (is_abbrev(arg1, "ARGUMENTS"))
+				{
+					if (is_abbrev(arg2, "SAVE"))
+					{
+						set_nest_node_ses(ses, "info[ARGUMENTS]", "");
+
+						for (index = 0 ; index < gtd->varc ; index++)
+						{
+							add_nest_node_ses(ses, "info[ARGUMENTS]", "{%d}{%s}", index, gtd->vars[index]);
+						}
+					}
+					else
+					{
+						for (index = 0 ; index < gtd->varc ; index++)
+						{
+							tintin_printf2(ses, "#INFO ARGUMENTS: %2d: %s", index, gtd->vars[index]);
+						}
+					}
+				}
+				break;
+
 			case CTRL_B:
 				if (is_abbrev(arg1, "BIG5TOUTF8"))
 				{
@@ -1341,6 +1367,31 @@ DO_COMMAND(do_info)
 				if (is_abbrev(arg1, "CPU"))
 				{
 					show_cpu(ses);
+				}
+				break;
+
+			case CTRL_D:
+				if (is_abbrev(arg1, "DAEMON"))
+				{
+					if (is_abbrev(arg2, "SAVE"))
+					{
+						sprintf(name, "info[DAEMON]");
+
+						set_nest_node_ses(ses, name, "{DETACH_FILE}{%s}{ATTACH_FILE}{%s}", gtd->detach_port > 0 ? gtd->detach_file : "", gtd->attach_sock > 0 ? gtd->attach_file : "");
+
+						show_message(ses, LIST_COMMAND, "#INFO: DATA WRITTEN TO {info[SYSTEM]}");
+					}
+					else
+					{
+						tintin_printf2(ses, "#INFO DAEMON: DETACH UID     = %d", gtd->detach_info.uid);
+						tintin_printf2(ses, "#INFO DAEMON: DETACH GID     = %d", gtd->detach_info.gid);
+						tintin_printf2(ses, "#INFO DAEMON: DETACH PID     = %d", gtd->detach_info.pid);
+						tintin_printf2(ses, "#INFO DAEMON: DETACH_SOCK    = %d", gtd->detach_sock);
+						tintin_printf2(ses, "#INFO DAEMON: DETACH_PORT    = %d", gtd->detach_port);
+						tintin_printf2(ses, "#INFO DAEMON: DETACH_FILE    = %s", gtd->detach_port ? gtd->detach_file : "");
+						tintin_printf2(ses, "#INFO DAEMON: ATTACH_SOCK    = %d", gtd->attach_sock);
+						tintin_printf2(ses, "#INFO DAEMON: ATTACH_FILE    = %s", gtd->attach_sock ? gtd->attach_file : "");
+					}
 				}
 				break;
 
@@ -1405,7 +1456,26 @@ DO_COMMAND(do_info)
 				break;
 
 			case CTRL_M:
-				if (is_abbrev(arg1, "MCCP"))
+				if (is_abbrev(arg1, "MATCHES"))
+				{
+					if (is_abbrev(arg2, "SAVE"))
+					{
+						set_nest_node_ses(ses, "info[MATCHES]", "");
+
+						for (index = 0 ; index < gtd->cmdc ; index++)
+						{
+							add_nest_node_ses(ses, "info[MATCHES]", "{%d}{%s}", index, gtd->cmds[index]);
+						}
+					}
+					else
+					{
+						for (index = 0 ; index < gtd->cmdc ; index++)
+						{
+							tintin_printf2(ses, "#INFO MATCHES: %2d: %s", index, gtd->cmds[index]);
+						}
+					}
+				}
+				else if (is_abbrev(arg1, "MCCP"))
 				{
 					if (ses->mccp2)
 					{
@@ -1609,10 +1679,6 @@ DO_COMMAND(do_info)
 						tintin_printf2(ses, "#INFO SYSTEM: PID            = %d", getpid());
 						tintin_printf2(ses, "#INFO SYSTEM: TERM           = %s", gtd->system->term);
 						tintin_printf2(ses, "#INFO SYSTEM: TINTIN         = %s", gtd->system->tt_dir);
-						tintin_printf2(ses, "#INFO SYSTEM: DETACH_PORT    = %d", gtd->detach_port);
-						tintin_printf2(ses, "#INFO SYSTEM: DETACH_FILE    = %s", gtd->detach_port ? gtd->detach_file : "");
-						tintin_printf2(ses, "#INFO SYSTEM: ATTACH_SOCK    = %d", gtd->attach_sock);
-						tintin_printf2(ses, "#INFO SYSTEM: ATTACH_FILE    = %s", gtd->attach_sock ? gtd->attach_file : "");
 					}
 				}
 				break;

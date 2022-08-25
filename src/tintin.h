@@ -124,6 +124,7 @@
 #define GET_ALL                          1 // stop at semicolon
 #define GET_NST                          2 // nest square brackets
 #define GET_VBT                          4 // ignore semicolon for verbatim mode
+#define GET_SPC                          8 // don't strip spaces
 
 #define TEL_N                            0
 #define TEL_Y                            1
@@ -196,6 +197,8 @@
 
 #define HISTORY_FILE         "history.txt"
 
+#define MALLOC_SIZE                1000000
+#define STRING_SIZE                  80000
 #define BUFFER_SIZE                  40000
 #define INPUT_SIZE                   10000
 #define PATH_SIZE                     4096
@@ -207,10 +210,9 @@
 #define CHAR_SIZE                        5
 #define LIST_SIZE                        2
 
-#define STRING_SIZE        2 * BUFFER_SIZE
 
 #define CLIENT_NAME              "TinTin++"
-#define CLIENT_VERSION           "2.02.13b"
+#define CLIENT_VERSION           "2.02.21b"
 
 
 #define XT_E                            0x27
@@ -601,7 +603,7 @@ enum operators
 
 
 
-#define TINTIN_FLAG_GETNUMBER         BV01 // UNUSED
+#define TINTIN_FLAG_HISTORYUPDATE     BV01
 #define TINTIN_FLAG_SESSIONUPDATE     BV02
 #define TINTIN_FLAG_PROCESSINPUT      BV03
 #define TINTIN_FLAG_INHERITANCE       BV04
@@ -615,6 +617,7 @@ enum operators
 #define TINTIN_FLAG_LOCAL             BV12
 #define TINTIN_FLAG_PRESERVEMACRO     BV13
 #define TINTIN_FLAG_WINCHUPDATE       BV14
+#define TINTIN_FLAG_NOHUP             BV15 // fixes tcsetattr crashes with nohup
 
 #define CONFIG_FLAG_AUTOPATCH         BV01
 #define CONFIG_FLAG_AUTOPROMPT        BV02
@@ -681,7 +684,7 @@ enum operators
 #define LIST_FLAG_NEST                BV13
 #define LIST_FLAG_DEFAULT             LIST_FLAG_MESSAGE
 
-#define NODE_FLAG_ONESHOT             BV01
+#define NODE_FLAG_ONESHOT             BV01 // unused
 
 #define LOG_FLAG_NONE                    0
 #define LOG_FLAG_LINEFEED             BV01
@@ -830,6 +833,7 @@ enum operators
 #define STARTUP_FLAG_ARGUMENT            8
 #define STARTUP_FLAG_NOTITLE            16
 #define STARTUP_FLAG_VERBOSE            32
+#define STARTUP_FLAG_NOHUP              64
 
 #define WRAP_FLAG_NONE                   0
 #define WRAP_FLAG_DISPLAY             BV01
@@ -1111,7 +1115,7 @@ struct tintin_data
 	char                 *  attach_file;
 	int                     attach_pid;
 	int                     attach_sock;
-	int                     daemon;
+//	int                     daemon;
 	char                  * buf;
 	char                  * out;
 	char                  * mud_output_buf;
@@ -1144,6 +1148,8 @@ struct tintin_data
 	char                  * vars[100];
 	char                  * cmds[100];
 	int                     args[100];
+	int                     varc;
+	int                     cmdc;
 	char                    color_reset[COLOR_SIZE];
 };
 
@@ -1437,7 +1443,7 @@ struct map_data
 	int                     global_vnum;
 	struct exit_data      * global_exit;
 	int                     version;
-	short                   display_stamp;
+	unsigned short          display_stamp;
 	int                     nofollow;
 	char                    legend[LEGEND_MAX][LEGEND_SIZE];
 	char                    legend_raw[LEGEND_MAX][LEGEND_SIZE];
@@ -2423,6 +2429,8 @@ extern char *get_str_str(struct str_data *str_ptr);
 extern  int str_len(char *str);
 extern  int str_max(char *str);
 extern  int str_fix(char *str);
+extern  int str_fix_len(char *str, int len);
+
 
 extern char *str_alloc(int len);
 extern void  str_free(char *ptr);
@@ -2504,6 +2512,7 @@ extern int search_nest_index(struct listroot *root, char *variable);
 extern struct listroot *update_nest_root(struct listroot *root, char *arg);
 extern void update_nest_node(struct listroot *root, char *arg);
 extern int delete_nest_node(struct listroot *root, char *variable);
+extern int delete_nest_node_with_wild(struct listroot *root, char *variable);
 extern int get_nest_size_key(struct listroot *root, char *variable, char **result);
 extern int get_nest_size_val(struct listroot *root, char *variable, char **result);
 extern struct listnode *get_nest_node_key(struct listroot *root, char *variable, char **result, int def);
@@ -3032,6 +3041,8 @@ extern int utf8_to_cp949(char *input, char *output);
 
 #ifndef __VARIABLE_H__
 #define __VARIABLE_H__
+
+extern DO_COMMAND(do_replace);
 
 extern  int valid_variable(struct session *ses, char *arg);
 extern  int string_raw_str_len(struct session *ses, char *str, int start, int end);

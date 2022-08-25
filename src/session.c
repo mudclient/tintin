@@ -456,7 +456,7 @@ struct session *new_session(struct session *ses, char *name, char *arg, int desc
 
 	newses->log           = calloc(1, sizeof(struct log_data));
 	init_log(newses);
-	ses->log->mode        = gts->log->mode;
+	newses->log->mode     = gts->log->mode;
 
 	newses->input         = calloc(1, sizeof(struct input_data));
 	init_input(newses, 0, 0, 0, 0);

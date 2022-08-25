@@ -166,7 +166,8 @@ DO_COMMAND(do_test)
 
 	if (!strcmp(arg1, "bla"))
 	{
-		printf("%d", ~1 + 2);
+		tintin_printf(ses, "len: %d", strip_color_strlen(ses, arg));
+//		tintin_printf(ses, "<118>\ufffd", arg2);
 	}
 
 	if (!strcmp(arg1, "rain"))

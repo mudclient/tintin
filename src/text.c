@@ -103,7 +103,7 @@ void print_stdout(int row, int col, char *format, ...)
 		{
 			if (write(gtd->detach_sock, buffer, len) == -1)
 			{
-				printf("error: print_stdout: write:\n");
+				syserr_printf(gtd->ses, "print_stdout: write:");
 			}
 		}
 	}

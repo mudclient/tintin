@@ -155,6 +155,8 @@ DO_COMMAND(do_draw)
 		return ses;
 	}
 
+	arg4 = str_alloc_stack(0);
+
 	box_color = str_alloc_stack(0);
 	txt_color = str_alloc_stack(0);
 
@@ -445,17 +447,26 @@ DO_COMMAND(do_draw)
 		{
 			arg = get_arg_in_braces(ses, arg, arg1, GET_ONE);
 			arg = get_arg_in_braces(ses, arg, arg2, GET_ONE);
-//			arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
-//			arg = sub_arg_in_braces(ses, arg, arg2, GET_ONE, SUB_VAR|SUB_FUN);
+			arg = get_arg_in_braces(ses, arg, arg3, GET_ONE);
+			arg = get_arg_in_braces(ses, arg, arg4, GET_ONE);
 
 			top_row = get_row_index_arg(ses, arg1);
 			top_col = get_col_index_arg(ses, arg2);
+			bot_row = get_row_index_arg(ses, arg3);
+			bot_col = get_col_index_arg(ses, arg4);
 
-			arg = get_arg_in_braces(ses, arg, arg1, GET_ONE);
-			arg = get_arg_in_braces(ses, arg, arg2, GET_ONE);
+			if (!is_math(ses, arg1) || !is_math(ses, arg2) || !is_math(ses, arg3) || !is_math(ses, arg4))
+			{
+				show_error(ses, LIST_COMMAND, "#ERROR: #DRAW NON-NUMERIC SQUARE: %s {%s %s %s %s}",
+					draw_table[index].name,
+					is_math(ses, arg1) ? ntos(top_row) : arg1,
+					is_math(ses, arg2) ? ntos(top_col) : arg2,
+					is_math(ses, arg3) ? ntos(bot_row) : arg3,
+					is_math(ses, arg4) ? ntos(bot_col) : arg4);
 
-			bot_row = get_row_index_arg(ses, arg1);
-			bot_col = get_col_index_arg(ses, arg2);
+				return ses;
+			}
+
 
 			if (top_row == 0 && top_col == 0)
 			{
@@ -1867,7 +1878,7 @@ DO_DRAW(draw_hbar)
 			case 7: ptb += sprintf(ptb, "▉"); break;
 			case 8: ptb += sprintf(ptb, "█"); break;
 		}
-		ptb += sprintf(ptb, "%*s%s}", (bar - cnt) / 8, "", box_color);
+		ptb += snprintf(ptb, BUFFER_SIZE, "%*s%s}", (bar - cnt) / 8, "", box_color);
 	}
 	else
 	{
@@ -2015,7 +2026,7 @@ DO_DRAW(draw_rain)
 				{
 					rand = generate_rand(ses) % max;
 
-					sprintf(arg2, "%s%.*s", lit_color_code(ses, code, 10), utfs[rand], rain[rand]);
+					snprintf(arg2, BUFFER_SIZE, "%s%.*s", lit_color_code(ses, code, 10), utfs[rand], rain[rand]);
 
 					substitute(ses, arg2, arg3, SUB_COL);
 
@@ -2071,7 +2082,7 @@ DO_DRAW(draw_rain)
 
 				if (cnt == node->root->list[col]->val16[1])
 				{
-					sprintf(arg2, "%s%.*s", lit_color_code(ses, code, 5), size, &node->root->list[col]->arg2[row]);
+					snprintf(arg2, BUFFER_SIZE, "%s%.*s", lit_color_code(ses, code, 5), size, &node->root->list[col]->arg2[row]);
 				}
 				else
 				{
@@ -2082,7 +2093,7 @@ DO_DRAW(draw_rain)
 						continue;
 					}
 
-					sprintf(arg2, "%s%.*s", fuzzy_color_code(ses, code), size, &node->root->list[col]->arg2[row]);
+					snprintf(arg2, BUFFER_SIZE, "%s%.*s", fuzzy_color_code(ses, code), size, &node->root->list[col]->arg2[row]);
 				}
 
 				substitute(ses, arg2, arg3, SUB_COL);
@@ -2119,13 +2130,13 @@ DO_DRAW(draw_rain)
 				}
 				else if (node->root->list[col]->val16[0] - cnt < 0)
 				{
-					sprintf(arg2, "%s%.*s", fuzzy_color_code(ses, code), size, &node->root->list[col]->arg2[row]);
+					snprintf(arg2, BUFFER_SIZE, "%s%.*s", fuzzy_color_code(ses, code), size, &node->root->list[col]->arg2[row]);
 					substitute(ses, arg2, arg3, SUB_COL);
 					print_stdout(0, 0, "%s", arg3);
 				}
 				else
 				{
-					sprintf(arg2, "%s%.*s", dim_color_code(ses, code, node->root->list[col]->val16[0] - cnt), size, &node->root->list[col]->arg2[row]);
+					snprintf(arg2, BUFFER_SIZE, "%s%.*s", dim_color_code(ses, code, node->root->list[col]->val16[0] - cnt), size, &node->root->list[col]->arg2[row]);
 					substitute(ses, arg2, arg3, SUB_COL);
 					print_stdout(0, 0, "%s", arg3);
 				}
@@ -2446,7 +2457,8 @@ DO_DRAW(draw_text)
 
 	txt = buf2;
 
-	substitute(ses, arg, buf3, SUB_VAR|SUB_FUN);
+	substitute(ses, arg, buf1, SUB_VAR|SUB_FUN);
+	substitute(ses, buf1, buf3, SUB_ESC|SUB_COL|SUB_LIT);
 
 	arg = buf3;
 
@@ -2463,7 +2475,7 @@ DO_DRAW(draw_text)
 	{
 		while (*arg)
 		{
-			arg = sub_arg_in_braces(ses, arg, buf1, GET_ALL, SUB_COL|SUB_LIT|SUB_ESC|SUB_VAR|SUB_FUN);
+			arg = get_arg_in_braces(ses, arg, buf1, GET_ALL);
 
 			txt += sprintf(txt, "%s\n", buf1);
 
@@ -2472,7 +2484,11 @@ DO_DRAW(draw_text)
 				arg++;
 			}
 		}
-		string_to_font(ses, flags, buf2, buf2);
+
+		if (HAS_BIT(flags, DRAW_FLAG_FAT|DRAW_FLAG_CURSIVE|DRAW_FLAG_SANSSERIF))
+		{
+			string_to_font(ses, flags, buf2, buf2);
+		}
 	}
 
 	if (HAS_BIT(flags, DRAW_FLAG_BOXED|DRAW_FLAG_TOP|DRAW_FLAG_BLANKED|DRAW_FLAG_PRUNED))

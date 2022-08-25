@@ -351,7 +351,7 @@ struct room_data *create_room(struct session *ses, char *format, ...)
 		newroom->weight = 1;
 	}
 
-	if (newroom->vnum)
+	if (newroom->vnum > 0 && newroom->vnum < ses->map->size)
 	{
 		ses->map->room_list[newroom->vnum] = newroom;
 	}
@@ -2305,7 +2305,7 @@ void show_vtmap(struct session *ses)
 		erase_square(ses, top_row, top_col, bot_row - 1, bot_col);
 
 		map_grid_y = 2 + (rows + 2) / 2;
-		map_grid_x = 2 + (cols + 4) / 5;
+		map_grid_x = 2 + (cols + 3) / 5;
 	}
 	else if (HAS_BIT(ses->map->flags, MAP_FLAG_BLOCKGRAPHICS))
 	{
@@ -2377,7 +2377,9 @@ void show_vtmap(struct session *ses)
 					{
 						strcpy(tmp, draw_room(ses, ses->map->grid_rooms[x + map_grid_x * y], line, x, y));
 
-						ptb += sprintf(ptb, "%.*s", string_str_raw_len(ses, tmp, 0, 2), tmp);
+						tmp[string_str_raw_len(ses, tmp, 0, 2)] = 0;
+
+						ptb += sprintf(ptb, "%s", tmp);
 					}
 					else
 					{
@@ -3299,13 +3301,20 @@ char *draw_room(struct session *ses, struct room_data *room, int line, int x, in
 					}
 					else
 					{
-						if (symsize <= 1)
+						switch (symsize)
 						{
-							cat_sprintf(buf, "%s%s%-1s%s", room_left, ses->map->color[MAP_COLOR_SYMBOL], room_symbol, room_right);
-						}
-						else
-						{
-							cat_sprintf(buf, "%s%s%-3s", room_color, ses->map->color[MAP_COLOR_SYMBOL], room_symbol);
+							case 0:
+								cat_sprintf(buf, "%s%s%s %s", room_left, ses->map->color[MAP_COLOR_SYMBOL], room_symbol, room_right);
+								break;
+							case 1:
+								cat_sprintf(buf, "%s%s%s%s", room_left, ses->map->color[MAP_COLOR_SYMBOL], room_symbol, room_right);
+								break;
+							case 2:
+								cat_sprintf(buf, "%s%s%s ", room_color, ses->map->color[MAP_COLOR_SYMBOL], room_symbol);
+								break;
+							case 3:
+								cat_sprintf(buf, "%s%s%s", room_color, ses->map->color[MAP_COLOR_SYMBOL], room_symbol);
+								break;
 						}
 					}
 				}
@@ -5936,7 +5945,7 @@ DO_MAP(map_exitflag)
 	{
 		if (*arg4 == 0)
 		{
-			show_error(ses, LIST_COMMAND, "#SYNTAX #MAP EXITFLAG {%s} {%s} {GET} {<VARIABLE>}.", arg1, arg2);
+			show_error(ses, LIST_COMMAND, "#SYNTAX: #MAP EXITFLAG {%s} {%s} {GET} {<VARIABLE>}.", arg1, arg2);
 		}
 		else
 		{
@@ -6994,7 +7003,14 @@ DO_MAP(map_list)
 
 	searchgrid_find(ses, ses->map->in_room, ses->map->search);
 
-	map_search_compile(ses, arg, var);
+	if (*arg)
+	{
+		map_search_compile(ses, arg, var);
+	}
+	else
+	{
+		map_search_compile(ses, "%*", var);
+	}
 
 	if (*var)
 	{
@@ -7166,7 +7182,7 @@ DO_MAP(map_map)
 	else if (HAS_BIT(ses->map->flags, MAP_FLAG_UNICODEGRAPHICS))
 	{
 		map_grid_y = 2 + (map_grid_y + 1) / 2;
-		map_grid_x = 2 + (map_grid_x + 4) / 5;
+		map_grid_x = 2 + (map_grid_x + 3) / 5;
 	}
 	else if (HAS_BIT(ses->map->flags, MAP_FLAG_BLOCKGRAPHICS))
 	{
@@ -7261,7 +7277,9 @@ DO_MAP(map_map)
 					{
 						strcpy(tmp, draw_room(ses, ses->map->grid_rooms[x + map_grid_x * y], line, x, y));
 
-						str_cat_printf(&gtd->buf, "%.*s", string_str_raw_len(ses, tmp, 0, 2), tmp);
+						tmp[string_str_raw_len(ses, tmp, 0, 2)] = 0;
+
+						str_cat(&gtd->buf, tmp);
 					}
 					else
 					{
@@ -7721,6 +7739,13 @@ DO_MAP(map_resize)
 
 	size = atoi(arg1);
 
+	if (size <= 0)
+	{
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #MAP RESIZE {<MAXIMUM>}.");
+
+		return;
+	}
+
 	if (size <= ses->map->size)
 	{
 		for (room = vnum = 1 ; vnum < ses->map->size ; vnum++)
@@ -7878,7 +7903,7 @@ DO_MAP(map_roomflag)
 	{
 		if (*arg3 == 0)
 		{
-			show_error(ses, LIST_COMMAND, "#SYNTAX #MAP ROOMFLAG {%s} {GET} {<VARIABLE>}.", buf);
+			show_error(ses, LIST_COMMAND, "#SYNTAX: #MAP ROOMFLAG {%s} {GET} {<VARIABLE>}.", buf);
 		}
 		else
 		{
@@ -7888,7 +7913,7 @@ DO_MAP(map_roomflag)
 	}
 	else
 	{
-		show_error(ses, LIST_COMMAND, "#SYNTAX #MAP ROOMFLAG {%s} {[GET|ON|OFF]}.", buf);
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #MAP ROOMFLAG {%s} {[GET|ON|OFF]}.", buf);
 	}
 
 

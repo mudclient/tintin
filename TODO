@@ -1,53 +1,66 @@
-#EVENT {VARIABLE UPDATED inventory[heals][cur]} {#show <118>WORKS}
-#var inventory[heals][cur] 2
-#math inventory[heals][cur] 2
+- Add NO SESSION ACTIVE event
 
-- make connect_retry second based and use session->created
-- #tick arg4 is no longer used but still set?
-- Add names to daemon
+- #split in an action causes misprint
+
+- crash using #cat on a table
+
+- {1} check for lists and a renumber routine.
+
+- #highlight {{[0-9]}} {yellow} #highlight {[} {cyan}
+
+- #map list {variable} {maplist} broke.
+
+- memory allocation has some kind of leak.
+
+- make invis exit flag work with avoid/block set
+
+- https://github.com/scandum/tintin/discussions/99 #return in a #regex
+
+- Fix list numbering after #list filter
+
+- Look into #macro {\x7F} {#cursor clear} triggering on \b.
+
+- Look into handling telnet linemode
+
+- #cursor insert to insert text at cursor
+
+- #foreach {a;;} {x} {#showme ($x)}
+- #var lstA {{1}{a}{2}{b}{3}{}{4}{}};
+  #list {lstA} {simplify} {};
+  #list {lstA} {create} {$lastA}
+
+- Add some more path events, and uninsert option
+
+- Add option to break out of telnet (missing IAC SE), #config telnet on/off ?
+
+- look into invalid { } in MSDP / GMCP handling
+
+- make #draw talign+balign do a vertical calign
+             lalign+ralign do a horizontal calign
+
+- make -g mode not write to disk
+
+- look into #draw boxed map with unicode mode.
+
+- Display room symbol in #map info
 - Add nohup mode
 
 ne room has #map set roomsymbol {<faa>/},
 e room has #map set roomsymbol {<faa>------}
 se room has #map set roomsymbol {<faa>\\}
 
-#var msg {\e[97m123456789ABCDEF\e[96m123456789ABCDEF\e[95m123456789ABCDEF\e[94m123456789ABCDEF123456789ABCDEF123456789ABCDEF};
-#format len %L {$msg};
-#show {msg length: $len};
-
-#math len {$len - 30};
-#show {max length: $len};
-
-#format substr {%.${len}s} $msg;
-#format len %L {$substr};
-#show {msg substr: $len};
-#show $substr;
-
-
-  - look into large variable handling, foreach, once again
-
 ----------------
-
-  - allow tt++ -R {name}
-
-  - #map at 0 should do nothing
+  - add shadow session support with access to all events.
 
   - set_line_screen debug: col = -5 (64) from draw_text(%p,%d,%p,%p,%p)
 
-  - https://wiki.videolan.org/Documentation:Modules/rc/ VLC telnet audio interface
-
   - regex101 like regex tester
-
-  - infinite loop in map.c at row 2091
 
   - check: #var bla { x};#draw scroll box 1 1 3 40 $bla
 
   - set_line_screen stack call triggered on android
 
   - input spell checking, #cursor display ?
-
-  - cp949toutf8 is missing some characters
-  - https://github.com/scandum/tintin/discussions/38#discussioncomment-1258015
 
   - look into named actions as a 4th argument
 
@@ -101,6 +114,8 @@ se room has #map set roomsymbol {<faa>\\}
 
   - tab completion on directory structure.
 
+  - auto align routine that inserts void rooms where needed
+  - look into writing script to drag rooms + void with mouse
   - pancake mode to display rooms at all levels and annotations
   - Store the map filename to differentiate between maps.
   - #map list {<exits>} breaks on rooms that have e mapped to eu.
@@ -273,22 +288,13 @@ se room has #map set roomsymbol {<faa>\\}
 
   - add option to show party members on the map
 
-  - add option to add a delay to each exit for #map run
-
   - map where command that shows relative coordinates.
-
-  - Room creation event
 
   - Add better table support for data fields.
 
   - auto adjust max vnum size of mapper.
 
   - global flag to only show the same area with the mapper.
-
-  - map color setting for hidden exits.
-
-  - Create global exits, (aka portals) like recall, that can be used
-    with #map run.
 
   - Add something to indicate a non standard exit on the ASCII mapper.
 
@@ -306,7 +312,7 @@ se room has #map set roomsymbol {<faa>\\}
 
 * STUFF FOR A RAINY DAY
 
-- Fix up ipv6 support in chat.
+- Fix up IPv6 support in port/chat.
 
 - Look into packet defragmentation for chat.
 
@@ -324,8 +330,6 @@ se room has #map set roomsymbol {<faa>\\}
 * STUFF I'M NOT SURE ABOUT
 
 - Keep last input visible with repeat enter enabled.
-
-- would be nice to have "#map list" show the variable being filtered on, instead of defaulting to roomname ie, I'm currently writing a script to save "#map list {roomnote} {{\w+}}" into a variable, then map get roomnote for each item in the list and display it...would be nice if when listing for a roomnote, it showed the roomnote
 
 -------------------------------------------------------------------------------
 

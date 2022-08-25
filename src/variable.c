@@ -55,7 +55,7 @@ DO_COMMAND(do_variable)
 
 				view_nest_node(node, &str_result, 0, TRUE, TRUE);
 
-				print_lines(ses, SUB_NONE, COLOR_TINTIN "%c" COLOR_COMMAND "%s " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}\n{\n" COLOR_STRING "%s" COLOR_BRACE "}" COLOR_RESET "\n", gtd->tintin_char, list_table[LIST_VARIABLE].name, path, str_result);
+				print_lines(ses, SUB_NONE, COLOR_TINTIN "%c" COLOR_COMMAND "%s " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}\n" COLOR_BRACE "{\n" COLOR_STRING "%s" COLOR_BRACE "}" COLOR_RESET "\n", gtd->tintin_char, list_table[LIST_VARIABLE].name, path, str_result);
 			}
 			else
 			{
@@ -110,7 +110,11 @@ DO_COMMAND(do_unvariable)
 		}
 		else
 		{
-			delete_node_with_wild(ses, LIST_VARIABLE, arg1);
+			if (delete_nest_node_with_wild(ses->list[LIST_VARIABLE], arg1) == FALSE)
+			{
+				show_message(ses, LIST_VARIABLE, "#UNVARIABLE: NO MATCHES FOUND FOR {%s}.", arg1);
+			}
+//			delete_node_with_wild(ses, LIST_VARIABLE, arg1);
 		}
 		arg = sub_arg_in_braces(ses, arg, arg1, GET_ALL, SUB_VAR|SUB_FUN);
 	}
@@ -620,7 +624,7 @@ void headerstring(struct session *ses, char *str, char *columns)
 		memset(fill, '#', max);
 	}
 
-	sprintf(buf, "%.*s%s%.*s%s", (max - len) / 2, fill, str, (max - len) / 2, fill, (max - len) % 2 ? "#" : "");
+	snprintf(buf, BUFFER_SIZE, "%.*s%s%.*s%s", (max - len) / 2, fill, str, (max - len) / 2, fill, (max - len) % 2 ? "#" : "");
 
 	strcpy(str, buf);
 
@@ -807,11 +811,11 @@ void metricgroupingstring(struct session *ses, char *str)
                 }
                 if (val >= 100)
                 {
-                	sprintf(tmp, " %Lf", val);
+                	snprintf(tmp, NUMBER_SIZE, " %Lf", val);
 		}
 		else
 		{
-                	sprintf(tmp, "%Lf", val);
+                	snprintf(tmp, NUMBER_SIZE, "%Lf", val);
 		}
                 sprintf(str, "%.4s%c", tmp, big[index]);
 	}
@@ -822,18 +826,18 @@ void metricgroupingstring(struct session *ses, char *str)
 			val = val * 1000;
 			index++;
 		}
-		sprintf(tmp, "%Lf", val);
+		snprintf(tmp, NUMBER_SIZE, "%Lf", val);
 		sprintf(str, "%.4s%c", tmp, small[index]);
 	}
 	else if (val >= 0)
 	{
 		if (val >= 100)
 		{
-			sprintf(tmp, " %Lf", val);
+			snprintf(tmp, NUMBER_SIZE, " %Lf", val);
 		}
 		else
 		{
-			sprintf(tmp, "%Lf", val);
+			snprintf(tmp, NUMBER_SIZE, "%Lf", val);
 		}
 		sprintf(str, "%.4s%c", tmp, big[index]);
 	}
@@ -841,11 +845,11 @@ void metricgroupingstring(struct session *ses, char *str)
 	{
 		if (val <= -100)
 		{
-			sprintf(tmp, " %Lf", val);
+			snprintf(tmp, NUMBER_SIZE, " %Lf", val);
 		}
 		else
 		{
-			sprintf(tmp, "%Lf", val);
+			snprintf(tmp, NUMBER_SIZE, "%Lf", val);
 		} 
 		sprintf(str, "%.5s%c", tmp, small[index]);
 	}
@@ -860,7 +864,7 @@ void metricgroupingstring(struct session *ses, char *str)
                         val = val / 1000;
                         index++;
                 }
-                sprintf(tmp, "%Lf", val);
+                snprintf(tmp, NUMBER_SIZE, "%Lf", val);
                 sprintf(str, "%.5s%c", tmp, big[index]);
 	}
 
@@ -871,7 +875,7 @@ void metricgroupingstring(struct session *ses, char *str)
 			val = val * 1000;
 			index++;
 		}
-		sprintf(tmp, "%Lf", val);
+		snprintf(tmp, NUMBER_SIZE, "%Lf", val);
 		sprintf(str, "%.5s%c", tmp, small[index]);
 	}
 }
@@ -911,8 +915,8 @@ void wrapstring(struct session *ses, char *str, char *wrap)
 	arg1 = str_alloc_stack(0);
 	arg2 = str_alloc_stack(0);
 
-//	arg = sub_arg_in_braces(ses, str, arg1, GET_ALL, SUB_COL|SUB_LIT|SUB_ESC);
-	arg = sub_arg_in_braces(ses, str, arg1, GET_ALL, SUB_COL|SUB_ESC);
+	arg = sub_arg_in_braces(ses, str, arg1, GET_ALL, SUB_COL|SUB_LIT|SUB_ESC);
+//	arg = sub_arg_in_braces(ses, str, arg1, GET_ALL, SUB_COL|SUB_ESC);
 
 	if (*arg == COMMAND_SEPARATOR)
 	{
@@ -959,7 +963,7 @@ void wrapstring(struct session *ses, char *str, char *wrap)
 		{
 			*pte++ = 0;
 
-			substitute(ses, pts, arg1, SUB_BRA);
+			substitute(ses, pts, arg1, SUB_SEC);
 
 			cat_sprintf(str, "{%d}{%s}", ++cnt, arg1);
 
@@ -970,7 +974,7 @@ void wrapstring(struct session *ses, char *str, char *wrap)
 			pte++;
 		}
 	}
-	substitute(ses, pts, arg1, SUB_BRA);
+	substitute(ses, pts, arg1, SUB_SEC);
 
 	cat_sprintf(str, "{%d}{%s}", ++cnt, arg1);
 
@@ -1068,6 +1072,86 @@ int string_str_raw_len(struct session *ses, char *str, int start, int end)
 			if (str_cnt >= start)
 			{
 				ret_cnt += tmp_cnt;
+			}
+			raw_cnt += tmp_cnt;
+			str_cnt += width;
+		}
+		else
+		{
+			ret_cnt += (str_cnt >= start) ? 1 : 0;
+			raw_cnt++;
+			str_cnt++;
+		}
+	}
+	return ret_cnt;
+}
+
+// stripped range stripped return
+
+int string_str_str_len(struct session *ses, char *str, int start, int end)
+{
+	int raw_cnt, str_cnt, ret_cnt, tmp_cnt, tot_len, width, col_len, skip;
+
+	raw_cnt = str_cnt = ret_cnt = 0;
+
+	tot_len = strlen(str);
+
+	while (raw_cnt < tot_len)
+	{
+		skip = skip_vt102_codes(&str[raw_cnt]);
+
+		if (skip)
+		{
+			raw_cnt += skip;
+
+			continue;
+		}
+
+		col_len = is_color_code(&str[raw_cnt]);
+
+		if (col_len)
+		{
+			raw_cnt += col_len;
+
+			continue;
+		}
+
+		if (str_cnt >= end)
+		{
+			break;
+		}
+
+		if (str[raw_cnt] == '\\')
+		{
+			raw_cnt++;
+			
+			if (str[raw_cnt] == '\\')
+			{
+				ret_cnt += (str_cnt >= start) ? 1 : 0;
+				raw_cnt++;
+				str_cnt++;
+			}
+			continue;
+		}
+
+		if (HAS_BIT(ses->charset, CHARSET_FLAG_EUC) && is_euc_head(ses, &str[raw_cnt]))
+		{
+			tmp_cnt = get_euc_width(ses, &str[raw_cnt], &width);
+
+			if (str_cnt >= start)
+			{
+				ret_cnt += width;
+			}
+			raw_cnt += tmp_cnt;
+			str_cnt += width;
+		}
+		else if (HAS_BIT(ses->charset, CHARSET_FLAG_UTF8) && is_utf8_head(&str[raw_cnt]))
+		{
+			tmp_cnt = get_utf8_width(&str[raw_cnt], &width, NULL);
+
+			if (str_cnt >= start)
+			{
+				ret_cnt += width;
 			}
 			raw_cnt += tmp_cnt;
 			str_cnt += width;
@@ -1355,13 +1439,19 @@ void format_string(struct session *ses, char *format, char *arg, char *out)
 								if (atoi(arg1) < 0)
 								{
 									sprintf(argformat, "%%%d.%d",
-										atoi(arg1) - ((int) strlen(arglist[i]) - string_raw_str_len(ses, arglist[i], 0, -1)),
+										atoi(arg1) - (string_str_raw_len(ses, arglist[i], 0, atoi(arg2)) - string_str_str_len(ses, arglist[i], 0, atoi(arg2))),
+//										atoi(arg1) - ((int) strlen(arglist[i]) - string_str_raw_len(ses, arglist[i], 0, -1)),
 										string_str_raw_len(ses, arglist[i], 0, atoi(arg2)));
 								}
 								else
 								{
+/*									printf("debug: %%%d.%d\n",
+										atoi(arg1) + string_str_raw_len(ses, arglist[i], 0, atoi(arg2)) - string_str_str_len(ses, arglist[i], 0, atoi(arg2)),
+										string_str_raw_len(ses, arglist[i], 0, atoi(arg2)));
+*/
 									sprintf(argformat, "%%%d.%d",
-										atoi(arg1) + ((int) strlen(arglist[i]) - string_raw_str_len(ses, arglist[i], 0, -1)),
+										atoi(arg1) + string_str_raw_len(ses, arglist[i], 0, atoi(arg2)) - string_str_str_len(ses, arglist[i], 0, atoi(arg2)),
+//										atoi(arg1) + ((int) strlen(arglist[i]) - string_raw_str_len(ses, arglist[i], 0, -1)),
 										string_str_raw_len(ses, arglist[i], 0, atoi(arg2)));
 								}
 							}
@@ -1518,7 +1608,7 @@ void format_string(struct session *ses, char *format, char *arg, char *out)
 						break;
 
 					case 'U':
-						sprintf(arglist[i], "%lld", ++gtd->utime);
+						sprintf(arglist[i], "%lld", utime());
 						break;
 
 					case 'X':

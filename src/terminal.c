@@ -35,6 +35,11 @@ void init_terminal(struct session *ses)
 {
 	struct termios io;
 
+	if (HAS_BIT(gtd->flags, TINTIN_FLAG_NOHUP))
+	{
+		return;
+	}
+
 	if (tcgetattr(0, &gtd->old_terminal))
 	{
 		syserr_fatal(-1, "init_terminal: tcgetattr 1");
@@ -85,6 +90,11 @@ void init_terminal(struct session *ses)
 
 void reset_terminal(struct session *ses)
 {
+	if (HAS_BIT(gtd->flags, TINTIN_FLAG_NOHUP))
+	{
+		return;
+	}
+	
 	if (gtd->detach_port == 0)
 	{
 		if (tcsetattr(0, TCSANOW, &gtd->old_terminal))
@@ -159,6 +169,10 @@ void init_terminal_size(struct session *ses)
 					printf("error: init_terminal_size: write:\n");
 				}
 			}
+		}
+		else
+		{
+			init_screen(SCREEN_HEIGHT, SCREEN_WIDTH, SCREEN_HEIGHT * 16, SCREEN_WIDTH * 10);
 		}
 	}
 

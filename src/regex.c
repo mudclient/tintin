@@ -125,35 +125,59 @@ int regexp_compare(struct session *ses, pcre *nodepcre, char *str, char *exp, in
 	switch (flag)
 	{
 		case REGEX_FLAG_CMD:
+			for (i = matches ; i < gtd->cmdc ; i++)
+			{
+				gtd->cmds[i] = restring(gtd->cmds[i], "");
+			}
+
 			for (i = 0 ; i < matches ; i++)
 			{
 				gtd->cmds[i] = restringf(gtd->cmds[i], "%.*s", match[i*2+1] - match[i*2], &str[match[i*2]]);
 			}
+			gtd->cmdc = matches;
 			break;
 
 		case REGEX_FLAG_CMD + REGEX_FLAG_FIX:
+			for (i = matches ; i < gtd->cmdc ; i++)
+			{
+				gtd->cmds[i] = restring(gtd->cmds[i], "");
+			}
+
 			for (i = 0 ; i < matches ; i++)
 			{
 				j = gtd->args[i];
 
 				gtd->cmds[j] = restringf(gtd->cmds[j], "%.*s", match[i*2+1] - match[i*2], &str[match[i*2]]);
 			}
+			gtd->cmdc = matches;
 			break;
 
 		case REGEX_FLAG_ARG:
+			for (i = matches ; i < gtd->varc ; i++)
+			{
+				gtd->vars[i] = restring(gtd->vars[i], "");
+			}
+
 			for (i = 0 ; i < matches ; i++)
 			{
 				gtd->vars[i] = restringf(gtd->vars[i], "%.*s", match[i*2+1] - match[i*2], &str[match[i*2]]);
 			}
+			gtd->varc = matches;
 			break;
 
 		case REGEX_FLAG_ARG + REGEX_FLAG_FIX:
+			for (i = matches ; i < gtd->varc ; i++)
+			{
+				gtd->vars[i] = restring(gtd->vars[i], "");
+			}
+
 			for (i = 0 ; i < matches ; i++)
 			{
 				j = gtd->args[i];
 
 				gtd->vars[j] = restringf(gtd->vars[j], "%.*s", match[i*2+1] - match[i*2], &str[match[i*2]]);
 			}
+			gtd->varc = matches;
 			break;
 	}
 
@@ -308,10 +332,10 @@ int get_regex_range(char *in, char *out, int *var, int *arg)
 				pto += sprintf(pto, "([\\x00-\\x7F\\xFF]");
 				break;
 			case 'w':
-				pto += sprintf(pto, "([a-zA-Z0-9_]");
+				pto += sprintf(pto, "(\\w");
 				break;
 			case 'W':
-				pto += sprintf(pto, "([^a-zA-Z0-9_]");
+				pto += sprintf(pto, "(\\W");
 				break;
 
 			default:
@@ -623,14 +647,14 @@ int tintin_regexp(struct session *ses, pcre *nodepcre, char *str, char *exp, int
 					case 'w':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "([a-zA-Z]*)" : "([a-zA-Z]*?)");
+						strcpy(pto, *pti == 0 ? "(\\w*)" : "(\\w*?)");
 						pto += strlen(pto);
 						break;
 
 					case 'W':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "([^a-zA-Z]*)" : "([^a-zA-Z]*?)");
+						strcpy(pto, *pti == 0 ? "(\\W*)" : "(\\W*?)");
 						pto += strlen(pto);
 						break;
 
@@ -732,13 +756,13 @@ int tintin_regexp(struct session *ses, pcre *nodepcre, char *str, char *exp, int
 
 							case 'w':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "[a-zA-Z]*" : "[a-zA-Z]*?");
+								strcpy(pto, *pti == 0 ? "\\w*" : "\\w*?");
 								pto += strlen(pto);
 								break;
 
 							case 'W':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "[^a-zA-Z]*" : "[^a-zA-Z]*?");
+								strcpy(pto, *pti == 0 ? "\\W*" : "\\W*?");
 								pto += strlen(pto);
 								break;
 
@@ -989,13 +1013,13 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 
 					case 'w':
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "([a-zA-Z]*)" : "([a-zA-Z]*?)");
+						strcpy(pto, *pti == 0 ? "(\\w*)" : "(\\w*?)");
 						pto += strlen(pto);
 						break;
 
 					case 'W':
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "([^a-zA-Z]*)" : "([^a-zA-Z]*?)");
+						strcpy(pto, *pti == 0 ? "(\\W*)" : "(\\W*?)");
 						pto += strlen(pto);
 						break;
 
@@ -1066,13 +1090,13 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 
 							case 'w':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "[a-zA-Z]*" : "[a-zA-Z]*?");
+								strcpy(pto, *pti == 0 ? "\\w*" : "\\w*?");
 								pto += strlen(pto);
 								break;
 
 							case 'W':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "[^a-zA-Z]*" : "[^a-zA-Z]*?");
+								strcpy(pto, *pti == 0 ? "\\W*" : "\\W*?");
 								pto += strlen(pto);
 								break;
 

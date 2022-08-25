@@ -102,7 +102,7 @@ int wait_on_connect(struct session *ses, int sock, int connect_error)
 
 int connect_mud(struct session *ses, char *host, char *port)
 {
-	int sock, error;
+	int sock, error, optval;
 	struct addrinfo *address;
 	static struct addrinfo hints;
 	char ip[100];
@@ -143,6 +143,13 @@ int connect_mud(struct session *ses, char *host, char *port)
 		freeaddrinfo(address);
 
 		return -1;
+	}
+
+	optval = 1;
+
+	if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &optval, sizeof(optval)) < 0)
+	{
+		syserr_printf(ses, "connect_mud: setsockopt:");
 	}
 
 	ses->connect_error = connect(sock, address->ai_addr, address->ai_addrlen);

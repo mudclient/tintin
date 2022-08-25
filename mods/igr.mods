@@ -1,12 +1,63 @@
-Sep 2021        2.02.13
+Jul 2022        2.02.21
 ------------------------------------------------------------------------------
+split.c         Moving the cursor back to the scroll region if #split is used
+                in an #action.
+
+parse.c         No longer echoing shebangs unless tt++ -v is used.
+
+tables.c        Fixed two errors in the ascii table, patch by dzp.
+
+net.c           Added tcp keepalive at the socket level, patch by beinvisible.
+
+Sep 2021        2.02.20
+------------------------------------------------------------------------------
+main.c          Added -H startup option to run tintin in a nohup compatible
+                mode.
+
+list.c          Changed #list explode to support:
+
+                #list {var} {explode} {separator}
+
+                The separator can be {;} or {\n} or anything else. Variables
+                and escape codes in the separator are substituted. This turns
+                a variable into a list using the given separator.
+
+list.c          Updated #list collapse to support:
+
+                #list {var} {collapse} {separator}
+
+                The separator can be {;} or {\n} or anything else. Variables
+                and escape codes in the separator are substituted. This turns
+                a list into a variable.
+
+buffer.c        Updated #buffer find to support:
+
+                #buffer {find} {[number]} {<string>} {[variable]}
+
+                The number must now be -1, -2, etc to search starting from the
+                end of the buffer, and 1, 2, etc to search from the start.
+
+buffer.c        Updated #buffer clear to support:
+
+                #buffer {clear} {[lower bound]} {[upper bound]}
+
+tokenize.c      Increased the buffer size of #foreach to 1 million bytes, can
+                be adjusted in tintin.h by changing MALLOC_SIZE.
+
+data.c          Added #info arguments [save] option that will display all
+                arguments / matches of the most recently fired trigger.
+
+data.c          Added #info matches [save] option that will display all
+                matches of the most recently fired command like #regex.
+
+data.c          #kill all will no longer remove pathdirs.
 
 telopt_client.c Fixed an incorrect rejection response for the charset telopt.
 
-mapper.c        Fixed a problem with #map goto jumping to the room you're
-                currently in on a failed search.
+mapper.c        Fixed #map goto jumping to the room you're currently in on a
+                failed search.
 
-telopt_client.c More gmcp fixes
+telopt_client.c Fixed handling of empty arrays for gmcp.
 
 mapper.c        Added #map flag pancake which will display rooms on the map
                 above and below you while enabled. You can use #map color
@@ -28,8 +79,6 @@ session.c       The SESSION CONNECTED event now triggers after the SESSION
 session.c       Changed GAG SESSION DISCONNECTED to GAG SESSION DESTROYED.
 
 mapper.c        Added the #map info save option.
-
-telopt_client.c Fixed handling of empty arrays for gmcp.
 
 utf8.c          Updated the cp949 to utf8 table with additional characters.
 
@@ -598,7 +647,7 @@ main.c          Configurations and pathdirs are automatically assigned to
                 the CONFIG and PATHDIR class on startup. Somewhat
                 experimental as there may be unforseen complications.
 
-list.c          Added #list <list> collapse and explode
+list.c          Added #list <list> collapse.
 
 mapper.c        Updated #map {} output.
 

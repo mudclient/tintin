@@ -190,7 +190,7 @@ DO_DAEMON(daemon_attach)
 		return;
 	}
 
-	sprintf(sock_file, "%.*s/%.*s.s", PATH_SIZE, filename, NAME_SIZE, arg2);
+	sprintf(sock_file, "%.*s/%.*s.s", PATH_SIZE - 1, filename, NAME_SIZE, arg2);
 
 	if (access(sock_file, F_OK) == -1)
 	{
@@ -311,10 +311,15 @@ DO_DAEMON(daemon_attach)
 	{
 		tintin_printf2(ses, "do_attach: select rds: timeout");
 
-		gtd->attach_sock = close(gtd->attach_sock);
+		check_all_events(gtd->ses, EVENT_FLAG_SYSTEM, 0, 2, "DAEMON ATTACH TIMEOUT", sock_file, ntos(pid));
+
+		gtd->attach_sock = 0;
+//		gtd->attach_sock = close(gtd->attach_sock);
 		
 		return;
 	}
+
+	tintin_printf2(ses, "do_attach: succes");
 
 	return;
 }
@@ -547,7 +552,7 @@ DO_DAEMON(daemon_kill)
 				{
 					pid = atoi(arg + 1);
 
-					sprintf(sock_file, "%.*s/%.*s.s", PATH_SIZE, filename, NAME_SIZE, arg2);
+					sprintf(sock_file, "%.*s/%.*s.s", PATH_SIZE - 1, filename, NAME_SIZE, arg2);
 
 					show_message(ses, LIST_COMMAND, "#DAEMON {%s} KILLED.", sock_file, pid);
 
@@ -617,7 +622,7 @@ DO_DAEMON(daemon_list)
 				{
 					pid = atoi(arg + 1);
 
-					sprintf(sock_file, "%.*s/%.*s.s", PATH_SIZE, filename, NAME_SIZE, arg2);
+					sprintf(sock_file, "%.*s/%.*s.s", PATH_SIZE - 1, filename, NAME_SIZE, arg2);
 
 					tintin_printf2(ses, "%-40s [%6d]", sock_file, pid);
 				}
