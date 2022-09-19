@@ -1588,6 +1588,15 @@ void format_string(struct session *ses, char *format, char *arg, char *out)
 						metricgroupingstring(ses, arglist[i]);
 						break;
 
+					case 'P': {
+						char *strip;
+						substitute(ses, arglist[i], arglist[i], SUB_VAR|SUB_FUN|SUB_ESC|SUB_COL);
+						strip = str_alloc_stack(0);
+						strip_vt102_codes(arglist[i], strip);
+						sprintf(arglist[i], "%s", strip);
+						break;
+					}
+
 					case 'R':
 						if (*arglist[i] == 0)
 						{
@@ -1609,6 +1618,11 @@ void format_string(struct session *ses, char *format, char *arg, char *out)
 
 					case 'U':
 						sprintf(arglist[i], "%lld", utime());
+						break;
+
+					case 'W':
+						substitute(ses, arglist[i], arglist[i], SUB_VAR|SUB_FUN|SUB_ESC|SUB_COL);
+						sprintf(arglist[i], "%d", str_len_str(ses, arglist[i], 0, strlen(arglist[i])));
 						break;
 
 					case 'X':
