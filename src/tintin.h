@@ -2789,6 +2789,7 @@ extern int get_raw_off_str_range_raw_width(struct session *ses, char *str, int s
 
 extern int raw_len_str(struct session *ses, char *str, int start, int end);
 extern int str_len_raw(struct session *ses, char *str, int start, int end);
+extern int str_len_str(struct session *ses, char *str, int start, int end);
 
 extern char *str_ins_str(struct session *ses, char **str, char *ins, int str_start, int str_end);
 
