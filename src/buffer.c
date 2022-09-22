@@ -272,7 +272,7 @@ void add_line_buffer(struct session *ses, char *line, int prompt)
 
 	if (HAS_BIT(ses->flags, SES_FLAG_SNOOP) && ses != gtd->ses)
 	{
-		tintin_printf2(gtd->ses, "%s[%s] %s%s", COLOR_TEXT, ses->name, ses->scroll->input, COLOR_TEXT);
+		tintin_printf2(gtd->ses, "%s[%s] %s%s", COLOR_RESET, ses->name, ses->scroll->input, COLOR_TEXT);
 	}
 
 	if (ses->proxy)

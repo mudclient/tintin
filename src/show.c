@@ -64,7 +64,7 @@ DO_COMMAND(do_showme)
 		return ses;
 	}
 
-	str_cpy_printf(&out, "%s%s%s", COLOR_TEXT, arg1, COLOR_TEXT);
+	str_cpy_printf(&out, "%s%s%s", COLOR_RESET, arg1, COLOR_TEXT);
 
 	tintin_puts3(ses, out, prompt);
 
@@ -100,7 +100,7 @@ DO_COMMAND(do_echo)
 		return ses;
 	}
 
-	str_cpy_printf(&out, "%s%s%s", COLOR_TEXT, arg1, COLOR_TEXT);
+	str_cpy_printf(&out, "%s%s%s", COLOR_RESET, arg1, COLOR_TEXT);
 
 	tintin_puts3(ses, out, prompt);
 
@@ -522,7 +522,7 @@ void tintin_puts2(struct session *ses, char *string)
 
 	output = str_alloc_stack(0);
 
-	str_cpy_printf(&output, "%s%s%s", COLOR_TEXT, string, COLOR_TEXT);
+	str_cpy_printf(&output, "%s%s%s", COLOR_RESET, string, COLOR_TEXT);
 
 	tintin_puts3(ses, output, FALSE);
 

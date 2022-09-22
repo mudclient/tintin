@@ -248,7 +248,7 @@
 #define COLOR_STATEMENT     "\e[38;5;040m" // "<aea>" // green
 #define COLOR_STRING        "\e[38;5;188m" // "<eee>" // white
 //#define COLOR_TEXT          "\e[38;5;122m" // "<cfe>" // pale jade
-#define COLOR_TEXT          "\e[0m" // "<cfe>" // pale jade
+#define COLOR_TEXT          "\e[0m\e[K"    // "<cfe>" // pale jade
 #define COLOR_TINTIN        "\e[38;5;184m" // "<eea>" // yellow
 #define COLOR_REPEAT        "\e[38;5;33m"  // "<acf>" // azure
 

@@ -2155,7 +2155,7 @@ void destroy_screen()
 void print_scroll_region(struct session *ses)
 {
 	char *wrap;
-	int cnt, height, width;
+	int cnt, height, width, region_width, erase_width;
 
 	push_call("print_scroll_region(%p)",ses);
 
@@ -2163,14 +2163,34 @@ void print_scroll_region(struct session *ses)
 
 	save_pos(ses);
 
+    region_width = ses->split->bot_col - ses->split->top_col + 1;
+
 	for (cnt = ses->split->top_row ; cnt < ses->split->bot_row ; cnt++)
 	{
-		print_stdout(0, 0, "\e[%d;%dH\e[%dX%s", cnt, ses->split->top_col, ses->wrap, gtd->screen->line[cnt - 1]->str);
+		char *ansi;
+		ansi = gtd->screen->line[cnt - 1]->str;
+		erase_width = region_width - str_len_str(ses, ansi, 0, strlen(ansi));
+		if (erase_width > 0)
+		{
+			print_stdout(0, 0, "\e[%d;%dH%s\e[%dX", cnt, ses->split->top_col, ansi, erase_width);
+		}
+		else
+		{
+			print_stdout(0, 0, "\e[%d;%dH%s", cnt, ses->split->top_col, ansi);
+		}
 	}
 
 	word_wrap_split(ses, ses->scroll->input, wrap, ses->wrap, 0, 1, WRAP_FLAG_SPLIT, &height, &width);
 
-	print_stdout(0, 0, "\e[%d;%dH\e[%dX%s", cnt, ses->split->top_col, ses->wrap, wrap);
+	erase_width = region_width - str_len_str(ses, wrap, 0, strlen(wrap));
+	if (erase_width > 0)
+	{
+		print_stdout(0, 0, "\e[%d;%dH%s\e[%dX", cnt, ses->split->top_col, wrap, erase_width);
+	}
+	else
+	{
+		print_stdout(0, 0, "\e[%d;%dH%s", cnt, ses->split->top_col, wrap);
+	}
 
 	restore_pos(ses);
 
