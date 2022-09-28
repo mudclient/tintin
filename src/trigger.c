@@ -94,6 +94,15 @@ void check_all_actions(struct session *ses, char *original, char *line, char *bu
 
 			script_driver(ses, LIST_ACTION, buf);
 
+			if (HAS_BIT(ses->config_flags, CONFIG_FLAG_MULTI_TRIGGER))
+			{
+				node = search_nest_node_ses(ses, "result");
+				if (!node || !node->arg2 || strcmp(node->arg2, "ABORT") != 0)
+				{
+					continue;
+				}
+			}
+
 			return;
 		}
 	}

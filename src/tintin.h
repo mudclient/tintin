@@ -647,6 +647,7 @@ enum operators
 #define CONFIG_FLAG_VERBOSE           BV18
 #define CONFIG_FLAG_WORDWRAP          BV19
 #define CONFIG_FLAG_IAC_GA            BV30
+#define CONFIG_FLAG_MULTI_TRIGGER     BV31
 
 
 #define SES_FLAG_BUFFERUPDATE         BV01
