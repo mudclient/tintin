@@ -94,6 +94,12 @@ void check_all_actions(struct session *ses, char *original, char *line, char *bu
 
 			script_driver(ses, LIST_ACTION, buf);
 
+			if (HAS_BIT(ses->config_flags, CONFIG_FLAG_MULTI_TRIGGER))
+			{
+				DEL_BIT(ses->config_flags, CONFIG_FLAG_MULTI_TRIGGER);
+				continue;
+			}
+
 			return;
 		}
 	}
