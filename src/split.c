@@ -198,6 +198,7 @@ void init_split(struct session *ses, int top_row, int top_col, int bot_row, int 
 		}
 
 	}
+
 	if (HAS_BIT(ses->flags, SES_FLAG_READMUD))
 	{
 		goto_pos(ses, ses->split->bot_row, 1);

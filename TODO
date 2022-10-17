@@ -1,3 +1,19 @@
+- Look into #split 1 1 1 1 on termux when hiding / showing keyboard.
+
+- Make WinTin++ 64 bit and double check windows console link opens main.tin
+
+- Add core.evilmog.io on port 4000 to Mudhalla add discord to mssp page.
+
+- Add #path stop/start to #help path, can use stop to stop running.
+
+- #list keys create {};
+  #list keys indexate;
+  crash
+
+- Improve #help class, with regard to classes containing triggers and variables.
+
+- #button {1,1,2,2} error message for using , instead of ;
+
 - Add NO SESSION ACTIVE event
 
 - #split in an action causes misprint

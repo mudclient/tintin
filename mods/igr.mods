@@ -3,7 +3,7 @@ Jul 2022        2.02.21
 split.c         Moving the cursor back to the scroll region if #split is used
                 in an #action.
 
-parse.c         No longer echoing shebangs unless tt++ -v is used.
+parse.c         No longer echoing hashbangs/shebangs unless tt++ -v is used.
 
 tables.c        Fixed two errors in the ascii table, patch by dzp.
 
