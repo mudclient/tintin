@@ -100,7 +100,8 @@ void goto_pos(struct session *ses, int row, int col)
 {
 	if (row < 1 || col < 1)
 	{
-		print_stdout(0, 0, "debug: goto_pos(%d,%d)\n",row,col);
+		tintin_printf2(NULL, "\e[1;31merror: invalid row,col: goto_pos(%d,%d)\n",row,col);
+
 		dump_stack();
 
 		return;

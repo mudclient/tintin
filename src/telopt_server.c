@@ -736,14 +736,23 @@ int process_sb_charset(struct session *ses, struct port_data *buddy, unsigned ch
 
 	val[0] = 0;
 
-	i = 5;
+	i = 4;
 
-	while (i < srclen && src[i] != SE && src[i] != src[4])
+	if (src[3] == CHARSET_REQUEST)
+	{
+		i++;
+	}
+
+	while (i < srclen && src[i] != SE)
 	{
 		pto = val;
 
-		while (i < srclen && src[i] != src[4] && src[i] != IAC)
+		while (i < srclen && src[i] != IAC)
 		{
+			if (src[3] == CHARSET_REQUEST && src[i] == src[4])
+			{
+				break;
+			}
 			*pto++ = src[i++];
 		}
 		*pto = 0;

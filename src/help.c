@@ -1884,8 +1884,8 @@ struct help_type help_table[] =
 		"         Toggles a list on or off. With no arguments it shows your current\n"
 		"         settings, as well as the list names that you can ignore.\n"
 		"\n"
-		"         If you for example set ACTIONS to OFF actions will no longer trigger.\n"
-		"         Not every list can be ignored.\n",
+		"         If you for example use #IGNORE ACTIONS ON actions will no longer\n"
+		"         triger. Not every list can be ignored.\n",
 
 		"class debug info kill message"
 	},
@@ -2445,8 +2445,8 @@ struct help_type help_table[] =
 		"         confuse them with tables. You can convert a brace list to a table\n"
 		"         variable using: #list {bracelist} {create} {{a}{b}{c}} this will look\n"
 		"         internally as: {{1}{a}{2}{b}{3}{c}}. You can then convert this table\n"
-		"         to a simple list using: #list {bracelist} {simplify} {simplelist}\n"
-		"         which will store {a;b;c} in the $simplelist variable.\n"
+		"         back to a simple list using: #list {bracelist} {simplify} which will\n"
+		"         change it to {a;b;c}.\n"
 		"\n"
 		"         Braces cannot easily be escaped in TinTin++. Using \\{ or \\} will not\n"
 		"         work. The reason for this is due to several factors, but primarily\n"
