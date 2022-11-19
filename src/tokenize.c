@@ -313,7 +313,8 @@ char *get_arg_foreach(struct scriptroot *root, struct scriptnode *token)
 
 	if (*token->data->arg == COMMAND_SEPARATOR)
 	{
-		token->data->arg++;
+		*token->data->arg = ' ';
+//		token->data->arg++;
 	}
 
 	return buf;
@@ -921,7 +922,6 @@ struct scriptnode *parse_script(struct scriptroot *root, int lvl, struct scriptn
 					{
 						token->type++;
 					}
-
 					token = parse_script(root, lvl + 1, token->next, token);
 				}
 				continue;

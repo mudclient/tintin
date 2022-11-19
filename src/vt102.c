@@ -659,6 +659,11 @@ char *strip_vt102_strstr(char *str, char *buf, int *len)
 
 	while (*pts)
 	{
+		while (skip_vt102_codes(pts))
+		{
+			pts += skip_vt102_codes(pts);
+		}
+
 		pti = pts;
 		ptm = buf;
 

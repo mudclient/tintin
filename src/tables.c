@@ -913,7 +913,7 @@ struct cursor_type cursor_table[] =
 	{     "PREV WORD",          "Move cursor to the previous word",               "\eb",         CURSOR_FLAG_GET_ALL,     cursor_move_left_word,        ""          },
 	{     "REDRAW INPUT",       "Redraw the input line",                          "",           CURSOR_FLAG_GET_ALL,     cursor_redraw_input,          ""          },
 	{     "RESET MACRO",        "",                                               "",            CURSOR_FLAG_GET_ALL,     cursor_macro,                 "RESET"     }, // obsolete
-	{     "SET",                "Copy given string to input line",                "",            CURSOR_FLAG_GET_ONE,     cursor_set,                   ""          },
+	{     "SET",                "Insert given string at cursor",                  "",            CURSOR_FLAG_GET_ONE,     cursor_set,                   ""          },
 	{     "SOFT ENTER",         "Create a new line in edit mode.",                "\e[13;2u",    CURSOR_FLAG_GET_ALL,     cursor_soft_enter,            ""          },
 	{     "SUSPEND",            "Suspend program, return with fg",                "",           CURSOR_FLAG_GET_ALL,     cursor_suspend,               ""          },
 	{     "TAB",                "<LIST|SCROLLBACK> <BACKWARD|FORWARD>",           "",            CURSOR_FLAG_GET_ONE,     cursor_tab,                   ""          },
@@ -1037,6 +1037,7 @@ struct event_type event_table[] =
 	{    "MINUTE",                                 0, EVENT_FLAG_TIME,     "TIME",      "minute or given minute"     },
 	{    "MONTH",                                  0, EVENT_FLAG_TIME,     "TIME",      "month or given month"       },
 	{    "MOVED ",                                 0, EVENT_FLAG_MOUSE,    "MOUSE",     "mouse is moved"             },
+	{    "NO SESSION ACTIVE",                      0, EVENT_FLAG_INPUT,    "INPUT",     "input on startup session"   },
 	{    "PORT CONNECTION",                        0, EVENT_FLAG_PORT,     "PORT",      "socket connects"            },
 	{    "PORT DISCONNECTION",                     0, EVENT_FLAG_PORT,     "PORT",      "socket disconnects"         },
 	{    "PORT INITIALIZED",                       0, EVENT_FLAG_PORT,     "PORT",      "port is initialized"        },
@@ -1139,30 +1140,6 @@ struct path_type path_table[] =
 	{    "UNZIP",             path_unzip,          "Turn speedwalk into a path."                    },
 	{    "WALK",              path_walk,           "Walk one step forward or backward."             },
 	{    "ZIP",               path_zip,            "Turn path into a speedwalk."                    },
-	{    "",                  NULL,                ""                                               }
-};
-
-struct line_type line_table[] =
-{
-	{    "BACKGROUND",        line_background,     "Execute line without stealing session focus."   },
-	{    "BENCHMARK",         line_benchmark,      "Execute line and provide timing information."   },
-	{    "CAPTURE",           line_capture,        "Capture output in the given variable."          },
-	{    "CONVERT",           line_convert,        "Execute line in convert meta data mode."        },
-	{    "DEBUG",             line_debug,          "Execute line in debug mode."                    },
-	{    "GAG",               line_gag,            "Gag the next line."                             },
-	{    "IGNORE",            line_ignore,         "Execute line with triggers ignored."            },
-	{    "LOCAL",             line_local,          "Execute line with local scope."                 },
-	{    "LOG",               line_log,            "Log the next line or given line."               },
-	{    "LOGMODE",           line_logmode,        "Execute line with given log mode."              },
-	{    "LOGVERBATIM",       line_logverbatim,    "Log the line as plain text verbatim."           },
-	{    "MSDP",              line_msdp,           "Execute line with msdp conversion."             },
-	{    "MULTISHOT",         line_multishot,      "Execute line creating multishot triggers."      },
-	{    "ONESHOT",           line_oneshot,        "Execute line creating oneshot triggers."        },
-	{    "QUIET",             line_quiet,          "Execute line with all system messages off."     },
-	{    "STRIP",             line_strip,          "Execute line with escape codes stripped."       },
-	{    "SUBSTITUTE",        line_substitute,     "Execute line with given substitution."          },
-	{    "VERBATIM",          line_verbatim,       "Execute line as plain text."                    },
-	{    "VERBOSE",           line_verbose,        "Execute line with all system messages on."      },
 	{    "",                  NULL,                ""                                               }
 };
 

@@ -263,6 +263,13 @@ DO_ARRAY(array_create)
 
 	arg = buf;
 
+	if (*arg == 0)
+	{
+		set_nest_node_ses(ses, arg1, "");
+
+		return ses;
+	}
+
 	if (list->root)
 	{
 		free_list(list->root);
@@ -284,13 +291,15 @@ DO_ARRAY(array_create)
 
 			if (*str == COMMAND_SEPARATOR)
 			{
-				str++;
+				*str = ' ';
+//				str++;
 			}
 		}
 
 		if (*arg == COMMAND_SEPARATOR)
 		{
-			arg++;
+			*arg = ' ';
+//			arg++;
 		}
 	}
 	return ses;
@@ -411,8 +420,11 @@ DO_ARRAY(array_filter)
 		return ses;
 	}
 
-	if (list->root)
+	if (list->root && list->root->used)
 	{
+		int numerate = atoi(list->root->list[0]->arg1) == 1 && atoi(list->root->list[list->root->used - 1]->arg1) == list->root->used;
+		int found = 0;
+
 		if (*arg1)
 		{
 			for (index = 0 ; index < list->root->used ; index++)
@@ -420,6 +432,7 @@ DO_ARRAY(array_filter)
 				if (!match(ses, list->root->list[index]->arg2, arg1, SUB_NONE))
 				{
 					delete_index_list(list->root, index--);
+					found = 1;
 				}
 			}
 		}
@@ -431,8 +444,13 @@ DO_ARRAY(array_filter)
 				if (match(ses, list->root->list[index]->arg2, arg2, SUB_NONE))
 				{
 					delete_index_list(list->root, index--);
+					found = 1;
 				}
 			}
+		}
+		if (found && numerate)
+		{
+			array_numerate(ses, list, arg, var, arg1, arg2);
 		}
 	}
 

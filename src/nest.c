@@ -983,6 +983,57 @@ void view_nest_node(struct listnode *node, char **str_result, int nest, int init
 	}
 }
 
+void view_nest_node_json(struct listnode *node, char **str_result, int nest, int initialize)
+{
+	if (initialize == TRUE)
+	{
+		str_cpy(str_result, "");
+	}
+
+	if (node->root == NULL)
+	{
+		str_cat_printf(str_result, "\"%s\"", node->arg2);
+	}
+	else
+	{
+		struct listroot *root = node->root;
+		int i;
+
+		if (initialize)
+		{
+			str_cat_printf(str_result, "%s{\n", indent(nest));
+		}
+		else
+		{
+			str_cat_printf(str_result, "\n%s{\n", indent(nest));
+		}
+
+		nest++;
+
+		for (i = 0 ; i < root->used ; i++)
+		{
+			if (i)
+			{
+				str_cat_printf(str_result, ",\n");
+			}
+			str_cat_printf(str_result, "%s\"%s\" : ", indent(nest), root->list[i]->arg1);
+
+			view_nest_node_json(root->list[i], str_result, nest, FALSE);
+		}
+
+		nest--;
+
+		if (initialize)
+		{
+			str_cat_printf(str_result, "\n%s}\n", indent(nest), "");
+		}
+		else
+		{
+			str_cat_printf(str_result, "\n%s}", indent(nest), "");
+		}
+	}
+}
+
 struct listnode *set_nest_node_ses(struct session *ses, char *arg1, char *format, ...)
 {
 	struct listnode *node;

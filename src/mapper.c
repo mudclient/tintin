@@ -575,6 +575,11 @@ char *get_exit_color(struct session *ses, int room, struct exit_data *exit)
 			}
 		}
 
+		if (HAS_BIT(exit->flags, EXIT_FLAG_INVIS) && *ses->map->color[MAP_COLOR_INVIS])
+		{
+			pop_call();
+			return ses->map->color[MAP_COLOR_INVIS];
+		}
 		if (HAS_BIT(exit->flags, EXIT_FLAG_AVOID) && *ses->map->color[MAP_COLOR_AVOID])
 		{
 			pop_call();
@@ -589,11 +594,6 @@ char *get_exit_color(struct session *ses, int room, struct exit_data *exit)
 		{
 			pop_call();
 			return ses->map->color[MAP_COLOR_HIDE];
-		}
-		if (HAS_BIT(exit->flags, EXIT_FLAG_INVIS) && *ses->map->color[MAP_COLOR_INVIS])
-		{
-			pop_call();
-			return ses->map->color[MAP_COLOR_INVIS];
 		}
 		pop_call();
 		return ses->map->color[MAP_COLOR_EXIT];
@@ -2114,6 +2114,13 @@ void displaygrid_build(struct session *ses, int vnum, int x, int y, int z)
 				{
 					continue;
 				}
+			}
+		}
+		else if (HAS_BIT(ses->map->flags, MAP_FLAG_FAST))
+		{
+			if (node->x < x - 50 || node->x > x + 50 || node->y < x - 50 || node->y > x + 50 || node->z < z - 50 || node->z > z + 50)
+			{
+				continue;
 			}
 		}
 
@@ -4890,6 +4897,14 @@ int spatialgrid_find(struct session *ses, int from, int x, int y, int z)
 			return node->vnum;
 		}
 
+		if (HAS_BIT(ses->map->flags, MAP_FLAG_FAST))
+		{
+			if (node->x < x - 50 || node->x > x + 50 || node->y < x - 50 || node->y > x + 50 || node->z < z - 50 || node->z > z + 50)
+			{
+				continue;
+			}
+		}
+
 		if (HAS_BIT(room->flags, ROOM_FLAG_FOG) && ses->map->in_room != room->vnum)
 		{
 			continue;
@@ -6023,6 +6038,10 @@ DO_MAP(map_flag)
 		{
 			flag = MAP_FLAG_DIRECTION;
 		}
+		else if (is_abbrev(arg1, "fast"))
+		{
+			flag = MAP_FLAG_FAST;
+		}
 		else if (is_abbrev(arg1, "mudfont"))
 		{
 			flag = MAP_FLAG_MUDFONT;
@@ -6083,6 +6102,7 @@ DO_MAP(map_flag)
 		tintin_printf2(ses, "#MAP: AsciiVnums flag is set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_ASCIIVNUMS) ? "ON" : "OFF");
 		tintin_printf2(ses, "#MAP: BlockGraphics flag is set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_BLOCKGRAPHICS) ? "ON" : "OFF");
 		tintin_printf2(ses, "#MAP: Direction flag is set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_DIRECTION) ? "ON" : "OFF");
+		tintin_printf2(ses, "#MAP: Fast flag is set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_FAST) ? "ON" : "OFF");
 		tintin_printf2(ses, "#MAP: MudFont flag is set to %s", HAS_BIT(ses->map->flags, MAP_FLAG_MUDFONT) ? "ON" : "OFF");
 		tintin_printf2(ses, "#MAP: NoFollow flag is set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_NOFOLLOW) ? "ON" : "OFF");
 		tintin_printf2(ses, "#MAP: Pancake flag is set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_PANCAKE) ? "ON" : "OFF");
@@ -6126,6 +6146,10 @@ DO_MAP(map_flag)
 	else if (is_abbrev(arg1, "direction"))
 	{
 		show_message(ses, LIST_COMMAND, "#MAP: Direction flag set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_DIRECTION) ? "ON" : "OFF");
+	}
+	else if (is_abbrev(arg1, "fast"))
+	{
+		show_message(ses, LIST_COMMAND, "#MAP: Fast flag set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_FAST) ? "ON" : "OFF");
 	}
 	else if (is_abbrev(arg1, "mudfont"))
 	{

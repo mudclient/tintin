@@ -729,7 +729,7 @@ int client_send_sb_naws(struct session *ses, int cplen, unsigned char *cpsrc)
 		telnet_printf(ses, 9, "%c%c%c%c%c%c%c%c%c", IAC, SB, TELOPT_NAWS, cols / 256, cols % 256, rows / 256, rows % 256, IAC, SE);
 	}
 
-	client_telopt_debug(ses, "SENT IAC SB NAWS %d %d %d %d", cols / 256, cols % 256, gtd->screen->rows / 256, gtd->screen->rows % 256);
+	client_telopt_debug(ses, "SENT IAC SB NAWS %d %d %d %d", cols / 256, cols % 256, rows / 256, rows % 256);
 
 	return 3;
 }
@@ -1932,7 +1932,7 @@ int client_recv_sb_gmcp(struct session *ses, int cplen, unsigned char *src)
 
 	check_all_events(ses, EVENT_FLAG_TELNET, 0, 3, "IAC SB GMCP", mod, val, json);
 
-	check_all_events(ses, EVENT_FLAG_TELNET, 1, 2, "IAC SB GMCP %s IAC SE", mod, val, json);
+	check_all_events(ses, EVENT_FLAG_TELNET, 1, 3, "IAC SB GMCP %s IAC SE", mod, val, val, json);
 
 	pop_call();
 	return UMIN(i + 1, cplen);

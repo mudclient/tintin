@@ -1243,12 +1243,7 @@ int get_row_index(struct session *ses, int val)
 		val = 1 + gtd->screen->rows + val;
 	}
 
-	if (val > gtd->screen->rows)
-	{
-		val = gtd->screen->rows;
-	}
-
-	return val;
+	return URANGE(1, val, gtd->screen->rows);
 }
 
 
@@ -1274,12 +1269,7 @@ int get_col_index(struct session *ses, int val)
 		val = 1 + gtd->screen->cols + val;
 	}
 
-	if (val > gtd->screen->cols)
-	{
-		val = gtd->screen->cols;
-	}
-
-	return val;
+	return URANGE(1, val, gtd->screen->cols);
 }
 
 

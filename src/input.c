@@ -775,6 +775,14 @@ void convert_meta(char *input, char *output, int eol)
 	{
 		switch (*pti)
 		{
+			case -1:
+				*pto++ = '\\';
+				*pto++ = 'x';
+				*pto++ = 'F';
+				*pto++ = 'F';
+				pti++;
+				break;
+
 			case ASCII_ESC:
 				*pto++ = '\\';
 				*pto++ = 'e';

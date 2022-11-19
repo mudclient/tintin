@@ -764,6 +764,7 @@ enum operators
 #define MAP_FLAG_QUIET                BV17
 #define MAP_FLAG_READ                 BV18
 #define MAP_FLAG_PANCAKE              BV19
+#define MAP_FLAG_FAST                 BV20
 
 #define MAP_SEARCH_NAME                0
 #define MAP_SEARCH_EXITS               1
@@ -1753,14 +1754,6 @@ struct list_type
 	int                     flags;
 };
 
-
-struct line_type
-{
-	char                  * name;
-	LINE                  * fun;
-	char                  * desc;
-};
-
 struct map_type
 {
 	char                  * name;
@@ -2359,6 +2352,7 @@ extern DO_LINE(line_convert);
 extern DO_LINE(line_debug);
 extern DO_LINE(line_gag);
 extern DO_LINE(line_ignore);
+extern DO_LINE(line_json);
 extern DO_LINE(line_local);
 extern DO_LINE(line_log);
 extern DO_LINE(line_logmode);
@@ -2490,8 +2484,8 @@ extern void msdp_command_send(struct session *ses, struct port_data *buddy, int 
 extern void msdp_command_unreport(struct session *ses, struct port_data *buddy, int index);
 extern void msdp_configure_arachnos(struct session *ses, struct port_data *buddy, int index);
 extern void write_msdp_to_descriptor(struct session *ses, struct port_data *buddy, char *src, int length);
-extern  int msdp2json(unsigned char *src, int srclen, char *out);
-extern  int json2msdp(unsigned char *src, int srclen, char *out);
+extern  int msdp2gmcp(unsigned char *src, int srclen, char *out);
+extern  int gmcp2msdp(unsigned char *src, int srclen, char *out);
 extern  int tintin2msdp(char *src, char *out);
 extern void arachnos_devel(struct session *ses, char *fmt, ...);
 extern void arachnos_mudlist(struct session *ses, char *fmt, ...);
@@ -2519,6 +2513,8 @@ extern struct listnode *get_nest_node_key(struct listroot *root, char *variable,
 extern struct listnode *get_nest_node_val(struct listroot *root, char *variable, char **result, int def);
 extern int get_nest_index(struct listroot *root, char *variable, char **result, int def);
 extern void show_nest_node(struct listnode *node, char **result, int initialize);
+
+extern void view_nest_node_json(struct listnode *node, char **str_result, int nest, int initialize);
 extern void view_nest_node(struct listnode *node, char **str_result, int nest, int initialize, int color);
 extern struct listnode *set_nest_node_ses(struct session *ses, char *arg1, char *format, ...);
 extern struct listnode *add_nest_node_ses(struct session *ses, char *arg1, char *format, ...);
@@ -2842,7 +2838,6 @@ extern struct daemon_type daemon_table[];
 extern struct edit_type edit_table[];
 extern struct event_type event_table[];
 extern struct history_type history_table[];
-extern struct line_type line_table[];
 extern struct list_type list_table[LIST_MAX];
 extern struct map_type map_table[];
 extern struct path_type path_table[];

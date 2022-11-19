@@ -276,6 +276,15 @@ DO_COMMAND(do_button)
 
 			node->val16[index] = (short) get_number(ses, arg2);
 
+			if (node->val16[index] == 0)
+			{
+				show_error(ses, LIST_BUTTON, "#ERROR: #BUTTON {%s} IS NOT A VALID SQUARE COORDINATE.", arg1);
+
+				delete_node_list(ses, LIST_BUTTON, node);
+
+				return ses;
+			}
+
 			if (*arg == COMMAND_SEPARATOR)
 			{
 				arg++;

@@ -1,5 +1,27 @@
 Jul 2022        2.02.21
 ------------------------------------------------------------------------------
+line.c          Added #line json <variable> <command> with &0 containing the
+                variable's value translated to json.
+
+telopt_client.c IAC SB GMCP <MODULE>   %0 data      %1 plain data
+                has been changed to
+                IAC SB GMCP <MODULE>   %0 data      %1 data  %2 plain data
+
+trigger.c       Fixed a bug with using #highlight {[}
+
+list.c          Proper lists will be renumbered after using #list filter.
+
+net.c           Added a GAG NO SESSION ACTIVE event to block the NO SESSION
+                ACTIVE message. %0 holds the command.
+
+regex.c         Added %c for regular expressions which captures color codes.
+
+mapper.c        Added #map flag fast which will limit coordinate searches to
+                a 50 room radius. Improves the speed of map drawing and auto
+                linking on large maps. This can result in the mapper failing
+                to auto link if the path connecting two rooms exceeds the
+                search radius.
+
 split.c         Moving the cursor back to the scroll region if #split is used
                 in an #action.
 

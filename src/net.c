@@ -271,14 +271,6 @@ void write_line_mud(struct session *ses, char *line, int size)
 
 	push_call("write_line_mud(%p,%p)",line,ses);
 
-	check_all_events(ses, SUB_SEC|EVENT_FLAG_INPUT, 0, 2, "SEND OUTPUT", line, ntos(size));
-
-	if (check_all_events(ses, SUB_SEC|EVENT_FLAG_CATCH, 0, 2, "CATCH SEND OUTPUT", line, ntos(size)))
-	{
-		pop_call();
-		return;
-	}
-
 	if (ses == gts)
 	{
 		if (HAS_BIT(gtd->flags, TINTIN_FLAG_CHILDLOCK))
@@ -287,8 +279,21 @@ void write_line_mud(struct session *ses, char *line, int size)
 		}
 		else
 		{
-			tintin_printf2(ses, "#NO SESSION ACTIVE. USE: %csession {name} {host} {port} TO START ONE.", gtd->tintin_char);
+			check_all_events(ses, SUB_SEC|EVENT_FLAG_INPUT, 0, 2, "NO SESSION ACTIVE", line, ntos(size));
+
+			if (!check_all_events(ses, SUB_SEC|EVENT_FLAG_GAG, 0, 2, "GAG NO SESSION ACTIVE", line, ntos(size)))
+			{
+				tintin_printf2(ses, "#NO SESSION ACTIVE. USE: %csession {name} {host} {port} TO START ONE.", gtd->tintin_char);
+			}
 		}
+		pop_call();
+		return;
+	}
+
+	check_all_events(ses, SUB_SEC|EVENT_FLAG_INPUT, 0, 2, "SEND OUTPUT", line, ntos(size));
+
+	if (check_all_events(ses, SUB_SEC|EVENT_FLAG_CATCH, 0, 2, "CATCH SEND OUTPUT", line, ntos(size)))
+	{
 		pop_call();
 		return;
 	}

@@ -302,40 +302,43 @@ int get_regex_range(char *in, char *out, int *var, int *arg)
 				continue;
 
 			case 'a':
-				pto += sprintf(pto, "([^\\0]");
+				pto += sprintf(pto, "%s", "([^\\0]");
 				break;
 			case 'A':
-				pto += sprintf(pto, "(\\n");
+				pto += sprintf(pto, "%s", "(\\n");
+				break;
+			case 'c':
+				pto += sprintf(pto, "%s", "((?:\\e\\[[0-9;]*m)");
 				break;
 			case 'd':
-				pto += sprintf(pto, "([0-9]");
+				pto += sprintf(pto, "%s", "([0-9]");
 				break;
 			case 'D':
-				pto += sprintf(pto, "([^0-9]");
+				pto += sprintf(pto, "%s", "([^0-9]");
 				break;
 			case 'p':
-				pto += sprintf(pto, "([\\x20-\\xfe]");
+				pto += sprintf(pto, "%s", "([\\x20-\\xfe]");
 				break;
 			case 'P':
-				pto += sprintf(pto, "([^\\x20-\\xfe]");
+				pto += sprintf(pto, "%s", "([^\\x20-\\xfe]");
 				break;
 			case 's':
-				pto += sprintf(pto, "(\\s");
+				pto += sprintf(pto, "%s", "(\\s");
 				break;
 			case 'S':
-				pto += sprintf(pto, "(\\S");
+				pto += sprintf(pto, "%s", "(\\S");
 				break;
 			case 'u':
-				pto += sprintf(pto, "((?:[\\x00-\\x7F]|[\\xC0-\\xFE][\\x80-\\xC0]{1,3})");
+				pto += sprintf(pto, "%s", "((?:[\\x00-\\x7F]|[\\xC0-\\xFE][\\x80-\\xC0]{1,3})");
 				break;
 			case 'U':
-				pto += sprintf(pto, "([\\x00-\\x7F\\xFF]");
+				pto += sprintf(pto, "%s", "([\\x00-\\x7F\\xFF]");
 				break;
 			case 'w':
-				pto += sprintf(pto, "(\\w");
+				pto += sprintf(pto, "%s", "(\\w");
 				break;
 			case 'W':
-				pto += sprintf(pto, "(\\W");
+				pto += sprintf(pto, "%s", "(\\W");
 				break;
 
 			default:
@@ -405,6 +408,7 @@ int tintin_regexp_check(struct session *ses, char *exp)
 
 					case 'a':
 					case 'A':
+					case 'c':
 					case 'd':
 					case 'D':
 					case 'i':
@@ -429,6 +433,7 @@ int tintin_regexp_check(struct session *ses, char *exp)
 						{
 							case 'a':
 							case 'A':
+							case 'c':
 							case 'd':
 							case 'D':
 							case 'p':
@@ -559,48 +564,47 @@ int tintin_regexp(struct session *ses, pcre *nodepcre, char *str, char *exp, int
 						arg = is_digit(pti[2]) ? (pti[1] - '0') * 10 + (pti[2] - '0') : pti[1] - '0';
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += is_digit(pti[2]) ? 3 : 2;
-						strcpy(pto, *pti == 0 ? "(.*)" : "(.*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "(.*)" : "(.*?)");
 						break;
 
 					case 'a':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "([^\\0]*)" : "([^\\0]*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "([^\\0]*)" : "([^\\0]*?)");
 						break;
 
 					case 'A':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "(\\n*)" : "(\\n*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "(\\n*)" : "(\\n*?)");
+						break;
+
+					case 'c':
+						gtd->args[next_arg(var)] = next_arg(arg);
+						pti += 2;
+						pto += sprintf(pto, "%s", *pti == 0 ? "((?:\\e\\[[0-9;]*m)*)" : "((?:\\e\\[[0-9;]*m)*?)");
 						break;
 
 					case 'd':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "([0-9]*)" : "([0-9]*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "([0-9]*)" : "([0-9]*?)");
 						break;
 
 					case 'D':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "([^0-9]*)" : "([^0-9]*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "([^0-9]*)" : "([^0-9]*?)");
 						break;
 
 					case 'i':
 						pti += 2;
-						strcpy(pto, "(?i)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", "(?i)");
 						break;
 
 					case 'I':
 						pti += 2;
-						strcpy(pto, "(?-i)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", "(?-i)");
 						break;
 
 					case 'p':
@@ -618,51 +622,44 @@ int tintin_regexp(struct session *ses, pcre *nodepcre, char *str, char *exp, int
 					case 's':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "(\\s*)" : "(\\s*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "(\\s*)" : "(\\s*?)");
 						break;
 
 					case 'S':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "(\\S*)" : "(\\S*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "(\\S*)" : "(\\S*?)");
 						break;
 
 					case 'u':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "((?:[\\x00-\\x7F|\\xC0-\\xFE][\\x80-\\xC0]{1,3})*)" : "((?:[\\xC0-\\xFE][\\x80-\\xC0]{1,3})*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "((?:[\\x00-\\x7F|\\xC0-\\xFE][\\x80-\\xC0]{1,3})*)" : "((?:[\\xC0-\\xFE][\\x80-\\xC0]{1,3})*?)");
 						break;
 
 					case 'U':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "(^[\\xF5-\\xFF]*)" : "([\\xF5-\\xFF]*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "(^[\\xF5-\\xFF]*)" : "([\\xF5-\\xFF]*?)");
 						break;
 
 
 					case 'w':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "(\\w*)" : "(\\w*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "(\\w*)" : "(\\w*?)");
 						break;
 
 					case 'W':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "(\\W*)" : "(\\W*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "(\\W*)" : "(\\W*?)");
 						break;
 
 					case '*':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "(.*)" : "(.*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "(.*)" : "(.*?)");
 						break;
 
 					case '+':
@@ -678,15 +675,13 @@ int tintin_regexp(struct session *ses, pcre *nodepcre, char *str, char *exp, int
 					case '.':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
-						strcpy(pto, "(.)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", "(.)");
 						break;
 
 					case '?':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "(.?)" : "(.?" "?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "(.?)" : "(.?" "?)");
 						break;
 
 					case '!':
@@ -694,28 +689,29 @@ int tintin_regexp(struct session *ses, pcre *nodepcre, char *str, char *exp, int
 						{
 							case 'a':
 								gtd->args[next_arg(var)] = next_arg(arg);
-								pti += 2;
-								strcpy(pto, *pti == 0 ? "[^\\0]*" : "[^\\0]*?");
-								pto += strlen(pto);
+								pti += 3;
+								pto += sprintf(pto, "%s", *pti == 0 ? "[^\\0]*" : "[^\\0]*?");
 								break;
 
 							case 'A':
 								gtd->args[next_arg(var)] = next_arg(arg);
-								pti += 2;
-								strcpy(pto, *pti == 0 ? "\\n*" : "\\n*?");
-								pto += strlen(pto);
+								pti += 3;
+								pto += sprintf(pto, "%s", *pti == 0 ? "\\n*" : "\\n*?");
+								break;
+
+							case 'c':
+								pti += 3;
+								pto += sprintf(pto, "%s", *pti == 0 ? "(?:\\e\\[[0-9;]*m)*" : "(?:\\e\\[[0-9;]*m)*?");
 								break;
 
 							case 'd':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "[0-9]*" : "[0-9]*?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? "[0-9]*" : "[0-9]*?");
 								break;
 
 							case 'D':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "[^0-9]*" : "[^0-9]*?");
-									pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? "[^0-9]*" : "[^0-9]*?");
 								break;
 
 							case 'p':
@@ -730,52 +726,44 @@ int tintin_regexp(struct session *ses, pcre *nodepcre, char *str, char *exp, int
 
 							case 's':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "\\s*" : "\\s*?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? "\\s*" : "\\s*?");
 								break;
 
 							case 'S':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "\\S*" : "\\S*?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? "\\S*" : "\\S*?");
 								break;
 
 							case 'u':
 								gtd->args[next_arg(var)] = next_arg(arg);
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "(?:[\\x00-\\x7F]|[\\xC0-\\xFE][\\x80-\\xC0]{1,3})*" : "(?:[\\x00-\\x7F]|[\\xC0-\\xFE][\\x80-\\xC0]{1,3})*?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? "(?:[\\x00-\\x7F]|[\\xC0-\\xFE][\\x80-\\xC0]{1,3})*" : "(?:[\\x00-\\x7F]|[\\xC0-\\xFE][\\x80-\\xC0]{1,3})*?");
 								break;
 
 							case 'U':
 								gtd->args[next_arg(var)] = next_arg(arg);
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "[\\xF5-\\xFF]*" : "[\\xF5-\\xFF]*?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? "[\\xF5-\\xFF]*" : "[\\xF5-\\xFF]*?");
 								break;
 
 							case 'w':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "\\w*" : "\\w*?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? "\\w*" : "\\w*?");
 								break;
 
 							case 'W':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "\\W*" : "\\W*?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? "\\W*" : "\\W*?");
 								break;
 
 							case '?':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? ".?" : ".?" "?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? ".?" : ".?" "?");
 								break;
 
 							case '*':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? ".*" : ".*?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? ".*" : ".*?");
 								break;
 
 							case '+':
@@ -785,8 +773,7 @@ int tintin_regexp(struct session *ses, pcre *nodepcre, char *str, char *exp, int
 
 							case '.':
 								pti += 3;
-								strcpy(pto, ".");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", ".");
 								break;
 
 							case '{':
@@ -949,32 +936,32 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 					case '8':
 					case '9':
 						pti += is_digit(pti[2]) ? 3 : 2;
-						strcpy(pto, *pti == 0 ? "(.*)" : "(.*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "(.*)" : "(.*?)");
+						break;
+
+					case 'c':
+						pti += 2;
+						pto += sprintf(pto, "%s", *pti == 0 ? "((?:\\e\\[[0-9;]*m)*)" : "((?:\\e\\[[0-9;]*m)*?)");
 						break;
 
 					case 'd':
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "([0-9]*)" : "([0-9]*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "([0-9]*)" : "([0-9]*?)");
 						break;
 
 					case 'D':
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "([^0-9]*)" : "([^0-9]*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "([^0-9]*)" : "([^0-9]*?)");
 						break;
 
 					case 'i':
 						pti += 2;
-						strcpy(pto, "(?i)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", "(?i)");
 						break;
 
 					case 'I':
 						pti += 2;
-						strcpy(pto, "(?-i)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", "(?-i)");
 						break;
 
 					case 'p':
@@ -989,50 +976,42 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 						
 					case 's':
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "(\\s*)" : "(\\s*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "(\\s*)" : "(\\s*?)");
 						break;
 
 					case 'S':
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "(\\S*)" : "(\\S*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "(\\S*)" : "(\\S*?)");
 						break;
 
 					case 'u':
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "((?:[\\x00-\\x7F]|[\\xC0-\\xFE][\\x80-\\xC0]{1,3})*)" : "((?:[\\x00-\\x7F]|[\\xC0-\\xFE][\\x80-\\xC0]{1,3})*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "((?:[\\x00-\\x7F]|[\\xC0-\\xFE][\\x80-\\xC0]{1,3})*)" : "((?:[\\x00-\\x7F]|[\\xC0-\\xFE][\\x80-\\xC0]{1,3})*?)");
 						break;
 
 					case 'U':
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "([\\xF5-\\xFF]*)" : "([\\xF5-\\xFF]*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "([\\xF5-\\xFF]*)" : "([\\xF5-\\xFF]*?)");
 						break;
 
 					case 'w':
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "(\\w*)" : "(\\w*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "(\\w*)" : "(\\w*?)");
 						break;
 
 					case 'W':
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "(\\W*)" : "(\\W*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "(\\W*)" : "(\\W*?)");
 						break;
 
 					case '?':
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "(.?)" : "(.?" "?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "(.?)" : "(.?" "?)");
 						break;
 
 					case '*':
 						pti += 2;
-						strcpy(pto, *pti == 0 ? "(.*)" : "(.*?)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", *pti == 0 ? "(.*)" : "(.*?)");
 						break;
 
 					case '+':
@@ -1042,8 +1021,7 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 
 					case '.':
 						pti += 2;
-						strcpy(pto, "(.)");
-						pto += strlen(pto);
+						pto += sprintf(pto, "%s", "(.)");
 						break;
 
 					case '%':
@@ -1054,16 +1032,19 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 					case '!':
 						switch (pti[2])
 						{
+							case 'c':
+								pti += 3;
+								pto += sprintf(pto, "%s", *pti == 0 ? "(?:\\e\\[[0-9;]*m)*" : "(?:\\e\\[[0-9;]*m)*?");
+								break;
+
 							case 'd':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "[0-9]*" : "[0-9]*?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? "[0-9]*" : "[0-9]*?");
 								break;
 
 							case 'D':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "[^0-9]*" : "[^0-9]*?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? "[^0-9]*" : "[^0-9]*?");
 								break;
 
 							case 'p':
@@ -1078,49 +1059,41 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 
 							case 's':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "\\s*" : "\\s*?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? "\\s*" : "\\s*?");
 								break;
 
 							case 'S':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "\\S*" : "\\S*?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? "\\S*" : "\\S*?");
 								break;
 
 							case 'w':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "\\w*" : "\\w*?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? "\\w*" : "\\w*?");
 								break;
 
 							case 'W':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? "\\W*" : "\\W*?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? "\\W*" : "\\W*?");
 								break;
 
 							case '?':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? ".?" : ".?" "?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? ".?" : ".?" "?");
 								break;
 
 							case '*':
 								pti += 3;
-								strcpy(pto, *pti == 0 ? ".*" : ".*?");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", *pti == 0 ? ".*" : ".*?");
 								break;
 
 							case '+':
 								pti += 3 + get_regex_range(&pti[3], pto, NULL, NULL);
-								pto += strlen(pto);
 								break;
 
 							case '.':
 								pti += 3;
-								strcpy(pto, ".");
-								pto += strlen(pto);
+								pto += sprintf(pto, "%s", ".");
 								break;
 
 							case '{':

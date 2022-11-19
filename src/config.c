@@ -881,6 +881,8 @@ DO_CONFIG(config_telnet)
 		}
 		else if (is_abbrev(arg2, "OFF"))
 		{
+			ses->read_len = 0;
+
 			DEL_BIT(ses->telopts, TELOPT_FLAG_DEBUG);
 			DEL_BIT(ses->config_flags, CONFIG_FLAG_TELNET);
 		}

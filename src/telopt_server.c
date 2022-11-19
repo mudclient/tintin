@@ -924,7 +924,7 @@ int process_sb_gmcp(struct session *ses, struct port_data *buddy, unsigned char 
 		return srclen + 1;
 	}
 
-	outlen = json2msdp(src, srclen, out);
+	outlen = gmcp2msdp(src, srclen, out);
 
 	process_sb_msdp(ses, buddy, (unsigned char *) out, outlen);
 

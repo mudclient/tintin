@@ -2,52 +2,7 @@
 
 - Make WinTin++ 64 bit and double check windows console link opens main.tin
 
-- Add core.evilmog.io on port 4000 to Mudhalla add discord to mssp page.
-
-- Add #path stop/start to #help path, can use stop to stop running.
-
-- #list keys create {};
-  #list keys indexate;
-  crash
-
-- Improve #help class, with regard to classes containing triggers and variables.
-
-- #button {1,1,2,2} error message for using , instead of ;
-
-- Add NO SESSION ACTIVE event
-
-- #split in an action causes misprint
-
-- crash using #cat on a table
-
-- {1} check for lists and a renumber routine.
-
-- #highlight {{[0-9]}} {yellow} #highlight {[} {cyan}
-
-- #map list {variable} {maplist} broke.
-
-- memory allocation has some kind of leak.
-
-- make invis exit flag work with avoid/block set
-
-- https://github.com/scandum/tintin/discussions/99 #return in a #regex
-
-- Fix list numbering after #list filter
-
-- Look into #macro {\x7F} {#cursor clear} triggering on \b.
-
 - Look into handling telnet linemode
-
-- #cursor insert to insert text at cursor
-
-- #foreach {a;;} {x} {#showme ($x)}
-- #var lstA {{1}{a}{2}{b}{3}{}{4}{}};
-  #list {lstA} {simplify} {};
-  #list {lstA} {create} {$lastA}
-
-- Add some more path events, and uninsert option
-
-- Add option to break out of telnet (missing IAC SE), #config telnet on/off ?
 
 - look into invalid { } in MSDP / GMCP handling
 
@@ -130,6 +85,7 @@ se room has #map set roomsymbol {<faa>\\}
 
   - tab completion on directory structure.
 
+  - global mapper flag that would imply "Hide" on all exits that change area.
   - auto align routine that inserts void rooms where needed
   - look into writing script to drag rooms + void with mouse
   - pancake mode to display rooms at all levels and annotations
