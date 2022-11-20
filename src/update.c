@@ -1098,7 +1098,7 @@ void terminal_update(void)
 		{
 			DEL_BIT(ses->flags, SES_FLAG_UPDATEVTMAP);
 
-			show_vtmap(ses);
+			show_vtmap(ses, 0);
 
 			check_all_events(ses, EVENT_FLAG_MAP, 0, 0, "MAP UPDATED VTMAP");
 		}

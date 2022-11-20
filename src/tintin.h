@@ -487,6 +487,7 @@ enum operators
 #define INPUT_FLAG_HISTORYBROWSE      BV02
 #define INPUT_FLAG_HISTORYSEARCH      BV03
 #define INPUT_FLAG_CONVERTMETACHAR    BV04
+#define INPUT_FLAG_REDRAW             BV05
 
 #define PORT_FLAG_PRIVATE             BV01
 #define PORT_FLAG_REQUEST             BV02
@@ -1146,6 +1147,7 @@ struct tintin_data
 	char                    tintin_char;
 	char                    verbatim_char;
 	char                    repeat_char;
+	int                     match[303];
 	char                  * vars[100];
 	char                  * cmds[100];
 	int                     args[100];
@@ -2065,7 +2067,7 @@ extern DO_COMMAND(do_map);
 
 extern void delete_room_data(struct room_data *room);
 extern  int follow_map(struct session *ses, char *argument);
-extern void show_vtmap(struct session *ses);
+extern void show_vtmap(struct session *ses, int clear);
 extern void map_mouse_handler(struct session *ses, char *left, char *right, int row, int col, int rev_row, int rev_col, int height, int width);
 extern  int delete_map(struct session *ses);
 

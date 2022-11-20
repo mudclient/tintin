@@ -485,26 +485,28 @@ int check_key(char *input, int len)
 			}
 		}
 
-
-		if (!HAS_BIT(gtd->ses->telopts, TELOPT_FLAG_SGA) || HAS_BIT(gtd->ses->telopts, TELOPT_FLAG_ECHO) || gtd->ses->input->buf[0] == gtd->tintin_char)
+		if (gtd->macro_buf[0] < 32 || gtd->macro_buf[0] == 127)
 		{
-			for (cnt = 0 ; *cursor_table[cnt].fun != NULL ; cnt++)
+			if (!HAS_BIT(gtd->ses->telopts, TELOPT_FLAG_SGA) || HAS_BIT(gtd->ses->telopts, TELOPT_FLAG_ECHO) || gtd->ses->input->buf[0] == gtd->tintin_char)
 			{
-				if (*cursor_table[cnt].code)
+				for (cnt = 0 ; *cursor_table[cnt].fun != NULL ; cnt++)
 				{
-					if (!strcmp(gtd->macro_buf, cursor_table[cnt].code))
+					if (*cursor_table[cnt].code)
 					{
-						cursor_table[cnt].fun(gtd->ses, cursor_table[cnt].arg);
+						if (!strcmp(gtd->macro_buf, cursor_table[cnt].code))
+						{
+							cursor_table[cnt].fun(gtd->ses, cursor_table[cnt].arg);
 
-						gtd->macro_buf[0] = 0;
+							gtd->macro_buf[0] = 0;
 
-						pop_call();
-						return TRUE;
-					}
-					else if (!strncmp(gtd->macro_buf, cursor_table[cnt].code, strlen(gtd->macro_buf)))
-					{
-						pop_call();
-						return TRUE;
+							pop_call();
+							return TRUE;
+						}
+						else if (!strncmp(gtd->macro_buf, cursor_table[cnt].code, strlen(gtd->macro_buf)))
+						{
+							pop_call();
+							return TRUE;
+						}
 					}
 				}
 			}
@@ -1048,7 +1050,7 @@ void input_printf(char *format, ...)
 	char *buf;
 	va_list args;
 
-	if (!HAS_BIT(gtd->ses->input->flags, INPUT_FLAG_HISTORYSEARCH))
+	if (!HAS_BIT(gtd->ses->input->flags, INPUT_FLAG_HISTORYSEARCH) && !HAS_BIT(gtd->ses->input->flags, INPUT_FLAG_REDRAW))
 	{
 		if (!HAS_BIT(gtd->ses->telopts, TELOPT_FLAG_ECHO) && gtd->ses->input->buf[0] != gtd->tintin_char)
 		{

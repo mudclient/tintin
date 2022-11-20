@@ -379,6 +379,30 @@ void banner_test(struct session *ses, char *arg1)
 
 struct session *banner_gui(struct session *ses, char *arg1)
 {
+	char *data;
+	FILE *fp;
+	size_t len;
+
+	fp = open_memstream(&data, (size_t *) &len);
+
+	fputs(tt_gui, fp);
+
+	fclose(fp);
+
+	fp = fmemopen(data, len, "r");
+
+	gtd->level->quiet++;
+
+	ses = read_file(ses, fp, "tt_gui.h");
+
+	gtd->level->quiet--;
+
+	fclose(fp);
+
+	free(data);
+
+	return ses;
+/*
 	char filename[PATH_SIZE];
 	FILE *fp;
 
@@ -396,6 +420,7 @@ struct session *banner_gui(struct session *ses, char *arg1)
 	fclose(fp);
 
 	return command(ses, do_line, "quiet #read %s", filename);
+*/
 }
 
 DO_COMMAND(do_banner)

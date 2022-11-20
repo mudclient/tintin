@@ -2021,23 +2021,21 @@ DO_CURSOR(cursor_redraw_line)
 		return;
 	}
 
+	SET_BIT(gtd->ses->input->flags, INPUT_FLAG_REDRAW);
+
 	if (inputline_editor())
 	{
 		cursor_redraw_singleline(ses, "");
-
-		pop_call();
-		return;
 	}
-
-	if (inputline_multiline())
+	else if (inputline_multiline())
 	{
 		cursor_redraw_multiline(ses, "");
-
-		pop_call();
-		return;
 	}
-
-	cursor_redraw_singleline(ses, "");
+	else
+	{
+		cursor_redraw_singleline(ses, "");
+	}
+	DEL_BIT(gtd->ses->input->flags, INPUT_FLAG_REDRAW);
 
 	pop_call();
 	return;

@@ -705,4 +705,4 @@ char *tt_gui = "#line quiet #port init gui 0\n"
 "	}\n"
 "}\n"
 "\n"
-"gui_init\n";
+"#delay 0 gui_init\n";

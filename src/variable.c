@@ -329,20 +329,14 @@ DO_COMMAND(do_replace)
 				break;
 			}
 
-			ptm = strstr(pti, gtd->cmds[0]);
-
-			if (ptm == NULL)
-			{
-				break;
-			}
-
-			*ptm = 0;
+			ptm = pti + gtd->match[0]; *ptm = 0;
+			ptm = pti + gtd->match[1];
 
 			substitute(ses, arg3, tmp, SUB_CMD|SUB_FUN);
 
 			str_cat_printf(&str, "%s%s", pti, tmp);
 
-			pti = ptm + strlen(gtd->cmds[0]);
+			pti = ptm;
 		}
 		while (tintin_regexp(ses, NULL, pti, arg2, 0, REGEX_FLAG_CMD));
 

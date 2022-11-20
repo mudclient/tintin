@@ -2,19 +2,16 @@
 
 - Make WinTin++ 64 bit and double check windows console link opens main.tin
 
-- Look into handling telnet linemode
-
 - look into invalid { } in MSDP / GMCP handling
 
 - make #draw talign+balign do a vertical calign
              lalign+ralign do a horizontal calign
 
-- make -g mode not write to disk
-
 - look into #draw boxed map with unicode mode.
 
 - Display room symbol in #map info
-- Add nohup mode
+
+- Add option to clear the map
 
 ne room has #map set roomsymbol {<faa>/},
 e room has #map set roomsymbol {<faa>------}

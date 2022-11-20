@@ -93,7 +93,7 @@ DO_COMMAND(do_regexp)
 int regexp_compare(struct session *ses, pcre *nodepcre, char *str, char *exp, int option, int flag)
 {
 	pcre *regex;
-	int i, j, matches, match[303];
+	int i, j, matches;
 
 	if (nodepcre == NULL)
 	{
@@ -109,7 +109,7 @@ int regexp_compare(struct session *ses, pcre *nodepcre, char *str, char *exp, in
 		return FALSE;
 	}
 
-	matches = pcre_exec(regex, NULL, str, strlen(str), 0, 0, match, 303);
+	matches = pcre_exec(regex, NULL, str, strlen(str), 0, 0, gtd->match, 303);
 
 	if (matches <= 0)
 	{
@@ -127,12 +127,13 @@ int regexp_compare(struct session *ses, pcre *nodepcre, char *str, char *exp, in
 		case REGEX_FLAG_CMD:
 			for (i = matches ; i < gtd->cmdc ; i++)
 			{
-				gtd->cmds[i] = restring(gtd->cmds[i], "");
+				*gtd->cmds[i] = 0;
+//				gtd->cmds[i] = restring(gtd->cmds[i], "");
 			}
 
 			for (i = 0 ; i < matches ; i++)
 			{
-				gtd->cmds[i] = restringf(gtd->cmds[i], "%.*s", match[i*2+1] - match[i*2], &str[match[i*2]]);
+				gtd->cmds[i] = restringf(gtd->cmds[i], "%.*s", gtd->match[i*2+1] - gtd->match[i*2], &str[gtd->match[i*2]]);
 			}
 			gtd->cmdc = matches;
 			break;
@@ -140,14 +141,15 @@ int regexp_compare(struct session *ses, pcre *nodepcre, char *str, char *exp, in
 		case REGEX_FLAG_CMD + REGEX_FLAG_FIX:
 			for (i = matches ; i < gtd->cmdc ; i++)
 			{
-				gtd->cmds[i] = restring(gtd->cmds[i], "");
+				*gtd->cmds[i] = 0;
+//				gtd->cmds[i] = restring(gtd->cmds[i], "");
 			}
 
 			for (i = 0 ; i < matches ; i++)
 			{
 				j = gtd->args[i];
 
-				gtd->cmds[j] = restringf(gtd->cmds[j], "%.*s", match[i*2+1] - match[i*2], &str[match[i*2]]);
+				gtd->cmds[j] = restringf(gtd->cmds[j], "%.*s", gtd->match[i*2+1] - gtd->match[i*2], &str[gtd->match[i*2]]);
 			}
 			gtd->cmdc = matches;
 			break;
@@ -155,12 +157,13 @@ int regexp_compare(struct session *ses, pcre *nodepcre, char *str, char *exp, in
 		case REGEX_FLAG_ARG:
 			for (i = matches ; i < gtd->varc ; i++)
 			{
-				gtd->vars[i] = restring(gtd->vars[i], "");
+				*gtd->vars[i] = 0;
+//				gtd->vars[i] = restring(gtd->vars[i], "");
 			}
 
 			for (i = 0 ; i < matches ; i++)
 			{
-				gtd->vars[i] = restringf(gtd->vars[i], "%.*s", match[i*2+1] - match[i*2], &str[match[i*2]]);
+				gtd->vars[i] = restringf(gtd->vars[i], "%.*s", gtd->match[i*2+1] - gtd->match[i*2], &str[gtd->match[i*2]]);
 			}
 			gtd->varc = matches;
 			break;
@@ -168,14 +171,15 @@ int regexp_compare(struct session *ses, pcre *nodepcre, char *str, char *exp, in
 		case REGEX_FLAG_ARG + REGEX_FLAG_FIX:
 			for (i = matches ; i < gtd->varc ; i++)
 			{
-				gtd->vars[i] = restring(gtd->vars[i], "");
+				*gtd->vars[i] = 0;
+//				gtd->vars[i] = restring(gtd->vars[i], "");
 			}
 
 			for (i = 0 ; i < matches ; i++)
 			{
 				j = gtd->args[i];
 
-				gtd->vars[j] = restringf(gtd->vars[j], "%.*s", match[i*2+1] - match[i*2], &str[match[i*2]]);
+				gtd->vars[j] = restringf(gtd->vars[j], "%.*s", gtd->match[i*2+1] - gtd->match[i*2], &str[gtd->match[i*2]]);
 			}
 			gtd->varc = matches;
 			break;

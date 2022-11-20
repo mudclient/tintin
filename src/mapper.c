@@ -2055,7 +2055,7 @@ void displaygrid_build(struct session *ses, int vnum, int x, int y, int z)
 
 	ses->map->display_stamp++;
 
-	for (loop = 0 ; loop < x * y ; loop++)
+	for (loop = x * y - 1 ; loop >= 0 ; loop--)
 	{
 		ses->map->grid_rooms[loop] = NULL;
 		ses->map->grid_vnums[loop] = 0;
@@ -2243,14 +2243,45 @@ void displaygrid_build(struct session *ses, int vnum, int x, int y, int z)
 	return;
 }
 
-void show_vtmap(struct session *ses)
+void get_vtmap_dimensions(struct session *ses, int *top_row, int *top_col, int *bot_row, int *bot_col, int *rows, int *cols)
+{
+	if (HAS_BIT(ses->map->flags, MAP_FLAG_RESIZE))
+	{
+		DEL_BIT(ses->map->flags, MAP_FLAG_RESIZE);
+
+		map_offset(ses, NULL, "", "");
+	}
+
+	if (ses->map->rows > 1 && ses->map->cols > 1)
+	{
+		*top_row = ses->map->top_row;
+		*top_col = ses->map->top_col;
+		*bot_row = ses->map->bot_row;
+		*bot_col = ses->map->bot_col;
+
+		*rows    = ses->map->rows;
+		*cols    = ses->map->cols;
+	}
+	else
+	{
+		*top_row = 1;
+		*top_col = 1;
+		*bot_row = UMAX(1, ses->split->top_row - 2);
+		*bot_col = UMAX(1, gtd->screen->cols);
+
+		*rows    = *bot_row;
+		*cols    = *bot_col;
+	}
+}
+
+void show_vtmap(struct session *ses, int clear)
 {
 	char buf[BUFFER_SIZE], out[BUFFER_SIZE], tmp[BUFFER_SIZE];
 	char *ptb;
 	int x, y, line;
 	int top_row, top_col, bot_row, bot_col, rows, cols, row;
 
-	push_call("show_vtmap(%p)",ses);
+	push_call("show_vtmap(%p,%d)",ses,clear);
 
 	if (ses->map == NULL || !HAS_BIT(ses->map->flags, MAP_FLAG_VTMAP))
 	{
@@ -2270,32 +2301,14 @@ void show_vtmap(struct session *ses)
 		return;
 	}
 
-	if (HAS_BIT(ses->map->flags, MAP_FLAG_RESIZE))
+	get_vtmap_dimensions(ses, &top_row, &top_col, &bot_row, &bot_col, &rows, &cols);
+
+	if (clear)
 	{
-		DEL_BIT(ses->map->flags, MAP_FLAG_RESIZE);
+		erase_square(ses, top_row, top_col, bot_row, bot_col);
 
-		map_offset(ses, NULL, "", "");
-	}
-
-	if (ses->map->rows > 1 && ses->map->cols > 1)
-	{
-		top_row = ses->map->top_row;
-		top_col = ses->map->top_col;
-		bot_row = ses->map->bot_row;
-		bot_col = ses->map->bot_col;
-
-		rows    = ses->map->rows;
-		cols    = ses->map->cols;
-	}
-	else
-	{
-		top_row = 1;
-		top_col = 1;
-		bot_row = UMAX(1, ses->split->top_row - 2);
-		bot_col = gtd->screen->cols;
-
-		rows    = UMAX(1, ses->split->top_row - 2);
-		cols    = gtd->screen->cols;
+		pop_call();
+		return;
 	}
 
 //	print_stdout(0, 0, "\e[%d;%d;%d;%d${", top_row, top_col, bot_row, bot_col);
@@ -5105,26 +5118,7 @@ void map_mouse_handler(struct session *ses, char *arg1, char *arg2, int row, int
 
 	char_height = 1 + height % UMAX(1, gtd->screen->char_height);
 
-	if (ses->map->rows > 1 && ses->map->cols > 1)
-	{
-		top_row = ses->map->top_row;
-		top_col = ses->map->top_col;
-		bot_row = ses->map->bot_row;
-		bot_col = ses->map->bot_col;
-
-		rows    = ses->map->rows;
-		cols    = ses->map->cols;
-	}
-	else
-	{
-		top_row = 1;
-		top_col = 1;
-		bot_row = UMAX(1, ses->split->top_row - 2);
-		bot_col = gtd->screen->cols;
-
-		rows    = UMAX(1, ses->split->top_row - 2);
-		cols    = gtd->screen->cols;
-	}
+	get_vtmap_dimensions(ses, &top_row, &top_col, &bot_row, &bot_col, &rows, &cols);
 
 	y = y - 1;
 	x = x - 1;
@@ -6739,6 +6733,8 @@ DO_MAP(map_leave)
 	}
 	else
 	{
+		show_vtmap(ses, 1);
+
 		ses->map->last_room = ses->map->in_room;
 		ses->map->in_room = 0;
 
@@ -7502,6 +7498,8 @@ DO_MAP(map_offset)
 		ses->map->sav_bot_row = get_number(ses, arg3);
 		ses->map->sav_bot_col = get_number(ses, arg4);
 	}
+
+	show_vtmap(ses, 1);
 
 	ses->map->top_row = get_row_index(ses, ses->map->sav_top_row);
 	ses->map->top_col = get_col_index(ses, ses->map->sav_top_col);
@@ -8567,7 +8565,7 @@ DO_MAP(map_update)
 
 			DEL_BIT(ses->flags, SES_FLAG_UPDATEVTMAP);
 
-			show_vtmap(ses);
+			show_vtmap(ses, 0);
 		}
 		else
 		{
