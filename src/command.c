@@ -266,7 +266,7 @@ struct command_type command_table[] =
 	{    "log",               do_log,               2, TOKEN_TYPE_COMMAND },
 	{    "loop",              do_nop,               3, TOKEN_TYPE_LOOP    },
 	{    "macro",             do_macro,             3, TOKEN_TYPE_COMMAND },
-	{    "map",               do_map,               2, TOKEN_TYPE_COMMAND },
+	{    "map",               do_map,               3, TOKEN_TYPE_COMMAND },
 	{    "math",              do_math,              2, TOKEN_TYPE_COMMAND },
 	{    "message",           do_message,           2, TOKEN_TYPE_COMMAND },
 	{    "nop",               do_nop,               0, TOKEN_TYPE_COMMAND },

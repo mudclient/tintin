@@ -1,5 +1,11 @@
 Jul 2022        2.02.21
 ------------------------------------------------------------------------------
+
+draw.c          If you #draw with both the talign and balign flags set the
+                text will be centered vertically.
+
+mapper.c        Added #map flag symbolgraphics support to #map flag mudfont
+
 line.c          Added #line json <variable> <command> with &0 containing the
                 variable's value translated to json.
 

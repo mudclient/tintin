@@ -683,6 +683,7 @@ enum operators
 #define LIST_FLAG_INHERIT             BV11
 #define LIST_FLAG_REGEX               BV12
 #define LIST_FLAG_NEST                BV13
+#define LIST_FLAG_CASE                BV14
 #define LIST_FLAG_DEFAULT             LIST_FLAG_MESSAGE
 
 #define NODE_FLAG_ONESHOT             BV01 // unused
@@ -1629,7 +1630,7 @@ struct window_data
 #define DO_EDIT(edit)          struct session *edit (struct session *ses, char *arg, char *arg1, char *arg2)
 #define DO_HISTORY(history)            void history (struct session *ses, char *arg, char *arg1, char *arg2)
 #define DO_LINE(line)          struct session *line (struct session *ses, char *arg, char *arg1, char *arg2, char *arg3)
-#define DO_MAP(map)                        void map (struct session *ses, char *arg, char *arg1, char *arg2)
+#define DO_MAP(map)                        void map (struct session *ses, char *arg, char *arg1, char *arg2, char *arg3)
 #define DO_PATH(path)                     void path (struct session *ses, char *arg)
 #define DO_PORT(port)          struct session *port (struct session *ses, char *arg, char *arg1, char *arg2)
 
@@ -1649,7 +1650,7 @@ typedef void            DAEMON  (struct session *ses, char *arg, char *arg1, cha
 typedef struct session *EDIT    (struct session *ses, char *arg, char *arg1, char *arg2);
 typedef void            HISTORY (struct session *ses, char *arg, char *arg1, char *arg2);
 typedef struct session *LINE    (struct session *ses, char *arg, char *arg1, char *arg2, char *arg3);
-typedef void            MAP     (struct session *ses, char *arg, char *arg1, char *arg2);
+typedef void            MAP     (struct session *ses, char *arg, char *arg1, char *arg2, char *arg3);
 typedef void            MSDP    (struct session *ses, struct port_data *buddy, int index);
 typedef void            PATH    (struct session *ses, char *arg);
 typedef struct session *PORT    (struct session *ses, char *arg, char *arg1, char *arg2);

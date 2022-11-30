@@ -499,6 +499,31 @@ int bsearch_alpha_list(struct listroot *root, char *text, int seek)
 	bot = 0;
 	top = root->used;
 
+	if (HAS_BIT(root->flags, LIST_FLAG_CASE))
+	{
+		while (top > 1)
+		{
+			mid = top / 2;
+
+			if (strcasecmp(text, root->list[bot + mid]->arg1) >= 0)
+			{
+				bot += mid;
+			}
+			top -= mid;
+		}
+
+		if (strcasecmp(text, root->list[bot]->arg1) == 0)
+		{
+			return bot + (seek == SEEK_APPEND);
+		}
+
+		if (seek)
+		{
+			return bot + (strcasecmp(text, root->list[bot]->arg1) > 0);
+		}
+		return -1;
+	}
+
 	while (top > 1)
 	{
 		mid = top / 2;

@@ -144,6 +144,11 @@ struct listnode *search_nest_node(struct listroot *root, char *variable)
 
 	arg = get_arg_to_brackets(root->ses, variable, name);
 
+	if (*name == 0)
+	{
+		arg = get_arg_in_brackets(root->ses, arg, name);
+	}
+
 	while (root && *arg)
 	{
 		root = search_nest_root(root, name);
@@ -400,6 +405,11 @@ int get_nest_size(struct listroot *root, char *variable)
 		}
 	}
 
+	if (*name == 0)
+	{
+		arg = get_arg_in_brackets(root->ses, arg, name);
+	}
+
 	while (root && *name)
 	{
 		// Handle regex queries
@@ -480,6 +490,11 @@ int get_nest_size_index(struct listroot *root, char *variable, char **result)
 				return 1;
 			}
 		}
+	}
+
+	if (*name == 0)
+	{
+		arg = get_arg_in_brackets(root->ses, arg, name);
 	}
 
 	while (root && *name)
@@ -567,6 +582,11 @@ int get_nest_size_key(struct listroot *root, char *variable, char **result)
 		}
 	}
 
+	if (*name == 0)
+	{
+		arg = get_arg_in_brackets(root->ses, arg, name);
+	}
+
 	while (root && *name)
 	{
 		// Handle regex queries
@@ -624,7 +644,6 @@ int get_nest_size_key(struct listroot *root, char *variable, char **result)
 				}
 			}
 		}
-
 		root = search_nest_root(root, name);
 
 		if (root)
@@ -659,7 +678,7 @@ int get_nest_size_val(struct listroot *root, char *variable, char **result)
 		{
 			for (index = 0 ; index < root->used ; index++)
 			{
-				str_cat_printf(result, "{%s}", root->list[index]->arg1);
+				str_cat_printf(result, "{%s}", root->list[index]->arg2);
 			}
 			return root->used + 1;
 		}
@@ -671,6 +690,11 @@ int get_nest_size_val(struct listroot *root, char *variable, char **result)
 				return 1;
 			}
 		}
+	}
+
+	if (*name == 0)
+	{
+		arg = get_arg_in_brackets(root->ses, arg, name);
 	}
 
 	while (root && *name)

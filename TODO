@@ -4,18 +4,13 @@
 
 - look into invalid { } in MSDP / GMCP handling
 
-- make #draw talign+balign do a vertical calign
-             lalign+ralign do a horizontal calign
+- mapper.c FAST handling
 
-- look into #draw boxed map with unicode mode.
+- #map exit [both] option
 
-- Display room symbol in #map info
+- some way get a list of vnums within the vtmap.
 
-- Add option to clear the map
-
-ne room has #map set roomsymbol {<faa>/},
-e room has #map set roomsymbol {<faa>------}
-se room has #map set roomsymbol {<faa>\\}
+- add #list filter option with #math support
 
 ----------------
   - add shadow session support with access to all events.
@@ -82,6 +77,7 @@ se room has #map set roomsymbol {<faa>\\}
 
   - tab completion on directory structure.
 
+  - direction field for exits that allow longer than 1x1x1 x/y/z jumps.
   - global mapper flag that would imply "Hide" on all exits that change area.
   - auto align routine that inserts void rooms where needed
   - look into writing script to drag rooms + void with mouse
