@@ -5800,7 +5800,11 @@ void exit_edit(struct session *ses, struct exit_data *exit, char *opt, char *arg
 		{
 			exit->delay = (float) get_number(ses, arg3);
 
-			show_message(ses, LIST_COMMAND, "#MAP %s {%s} : DELAY SET TO {%.3f}", opt, arg1, exit->delay);
+			if (rev_exit)
+			{
+				rev_exit->delay = exit->delay;
+			}
+			show_message(ses, LIST_COMMAND, "#MAP %s {%s} %s: DELAY SET TO {%.3f}", opt, arg1, arg4, exit->delay);
 		}
 	}
 	else if (is_abbrev(arg2, "DIRECTION"))
@@ -5828,7 +5832,11 @@ void exit_edit(struct session *ses, struct exit_data *exit, char *opt, char *arg
 	{
 		exit->flags = (int) get_number(ses, arg3);
 
-		show_message(ses, LIST_COMMAND, "#MAP %s {%s} : FLAGS SET TO {%d}.", opt, arg1, exit->flags);
+		if (rev_exit)
+		{
+			rev_exit->flags = exit->flags;
+		}
+		show_message(ses, LIST_COMMAND, "#MAP %s {%s} %s: FLAGS SET TO {%d}.", opt, arg1, arg4, exit->flags);
 	}
 	else if (is_abbrev(arg2, "GETDATA"))
 	{
@@ -5862,7 +5870,11 @@ void exit_edit(struct session *ses, struct exit_data *exit, char *opt, char *arg
 	{
 		RESTRING(exit->data, arg3);
 
-		show_message(ses, LIST_COMMAND, "#MAP %s {%s} : DATA SET TO {%s}.", opt, arg1, exit->data);
+		if (rev_exit)
+		{
+			RESTRING(rev_exit->data, arg3);
+		}
+		show_message(ses, LIST_COMMAND, "#MAP %s {%s} %s: DATA SET TO {%s}.", opt, arg1, arg4, exit->data);
 	}
 	else if (is_abbrev(arg2, "VNUM"))
 	{
@@ -5893,7 +5905,11 @@ void exit_edit(struct session *ses, struct exit_data *exit, char *opt, char *arg
 		{
 			exit->weight = (float) get_number(ses, arg3);
 
-			show_message(ses, LIST_COMMAND, "#MAP %s {%s} : WEIGHT SET TO {%.3f}", opt, arg1, exit->weight);
+			if (rev_exit)
+			{
+				rev_exit->weight = exit->weight;
+			}
+			show_message(ses, LIST_COMMAND, "#MAP %s {%s} %s: WEIGHT SET TO {%.3f}", opt, arg1, arg4, exit->weight);
 		}
 	}
 	else

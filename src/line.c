@@ -237,7 +237,11 @@ DO_LINE(line_gag)
 			break;
 	}
 
-	show_debug(ses, LIST_GAG, "#DEBUG LINE GAG {%s}", arg1);
+	if (ses->gagline < 0)
+	{
+		ses->gagline = 0;
+	}
+	show_debug(ses, LIST_GAG, "#DEBUG LINE GAG {%s} [%d]", arg1, ses->gagline);
 
 //	SET_BIT(ses->flags, SES_FLAG_GAG);
 

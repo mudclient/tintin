@@ -1,5 +1,15 @@
 Jul 2022        2.02.21
 ------------------------------------------------------------------------------
+line.c          Updated #line gag to support #line gag [amount], you can use
+                + or - to increase or decrease the current amount.
+
+mapper.c        Added {both} option to #map exit and entrance.
+
+list.c          Added #list {var} refine {keep} {remove}. Keep and remove must
+                be a mathematical expression, the keep argument is ignored if
+                {} is used, the remove expression is optional. #list indexate
+                must be used to refine tables. In the expression &0 must be
+                used as the placeholder of the item value being compared.
 
 draw.c          If you #draw with both the talign and balign flags set the
                 text will be centered vertically.
@@ -4211,7 +4221,7 @@ tick.c         wrote a new ticker from scratch, uses alarm(1) to sleep 1
                the 'tick' and 'untick' command for manipulation.
 
 macro.c        added 'macro' and 'unmacro' commands for keybinding, I couldn't
-               figure out how to actually undo the real macro's though
+               figure out how to actually undo the real macros though
                without using a messy hack, so I just skipped that till later
                for now.
 

@@ -104,9 +104,9 @@ void banner_init(struct session *ses, char *arg1)
 		"\n"
 		"  -- Yahoo! Wild Web Rides", arg1);
 
-	banner_website(ses, "Lost Souls", "http://lostsouls.org", arg1);
+	banner_website(ses, "Lost Souls", "https://lostsouls.org", arg1);
 	banner_address(ses, "Lost Souls", "ls lostsouls.org 23", arg1);
-	banner_expires(ses, "Lost Souls", "2027", arg1);
+	banner_expires(ses, "Lost Souls", "2028", arg1);
 
 
 	banner_create(ses, "Legends of Kallisti", arg1);
@@ -122,7 +122,7 @@ void banner_init(struct session *ses, char *arg1)
 		"This is an amazing game that you could literally play for a decade and still\n"
 		"discover more - you won't be disappointed!", arg1);
 
-	banner_website(ses, "Legends of Kallisti", "http://www.KallistiMUD.com", arg1);
+	banner_website(ses, "Legends of Kallisti", "https://www.kallistimud.com", arg1);
 	banner_address(ses, "Legends of Kallisti", "LoK kallistimud.com 4000", arg1);
 	banner_expires(ses, "Legends of Kallisti", "2027", arg1);
 
@@ -155,6 +155,37 @@ void banner_init(struct session *ses, char *arg1)
 	banner_address(ses, "RetroMUD", "rm 96.126.116.118 3000", arg1);
 	banner_expires(ses, "RetroMUD", "2027", arg1);
 
+	banner_create(ses, "Realm of Utopian Dreams (RUD)", arg1);
+
+	banner_desc(ses, "Realm of Utopian Dreams (RUD)",
+		"RUD is a unique ROM-based high-fantasy MUD with character choices for many play\n"
+		"styles from hack-n-slash to roleplay. Each of the races and classes offer\n"
+		"unique spells and skills, unlocked through a tiered remort system with\n"
+		"customization through religion memberships and epic advancements. RUD started\n"
+		"in 1996, always seeking new adventurers to become the next hero, build a home,\n"
+		"start a shop, and eventually become Nobles of the Realm! New players to RUD can\n"
+		"be just as successful as 20+ year veterans. We run quests, plots, and annual\n"
+		"festivals in an ever evolving world. Come build Lantarea with us!", arg1);
+
+	banner_website(ses, "Realm of Utopian Dreams (RUD)", "http://rudmud.com", arg1);
+	banner_address(ses, "Realm of Utopian Dreams (RUD)", "rud rudmud.com 1701", arg1);
+	banner_expires(ses, "Realm of Utopian Dreams (RUD)", "2028", arg1);
+
+	banner_create(ses, "Alter Aeon", arg1);
+
+	banner_desc(ses, "Alter Aeon",
+		"Alter Aeon is a custom multiclass MUD, where each of the character\n"
+		"classes can be combined to make very unique characters.  This huge\n"
+		"fantasy themed game has hundreds of areas and quests, spanning\n"
+		"several continents and outer planar regions.  There are custom spells,\n"
+		"skills, minions, player run shops, boats, PvP, and many other features\n"
+		"for nearly every kind of player.  The game is very friendly to new players\n"
+		"and has extensive support for the blind and visually impaired.", arg1);
+
+	banner_website(ses, "Alter Aeon", "https://www.alteraeon.com", arg1);
+	banner_address(ses, "Alter Aeon", "aa alteraeon.com 3000", arg1);
+	banner_expires(ses, "Alter Aeon", "2028", arg1);
+
 /*
 	banner_create(ses, "New World Ateraan", arg1);
 
@@ -172,21 +203,6 @@ void banner_init(struct session *ses, char *arg1)
 	banner_address(ses, "New World Ateraan", "nwa ateraan.com 4002", arg1);
 	banner_expires(ses, "New World Ateraan", "2026", arg1);
 
-	banner_create(ses, "Realm of Utopian Dreams (RUD)", arg1);
-
-	banner_desc(ses, "Realm of Utopian Dreams (RUD)",
-		"RUD is a unique ROM-based high-fantasy MUD with character choices for many play\n"
-		"styles from hack-n-slash to roleplay. Each of the races and classes offer\n"
-		"unique spells and skills, unlocked through a tiered remort system with\n"
-		"customization through religion memberships and epic advancements. RUD started\n"
-		"in 1996, always seeking new adventurers to become the next hero, build a home,\n"
-		"start a shop, and eventually become Nobles of the Realm! New players to RUD can\n"
-		"be just as successful as 20+ year veterans. We run quests, plots, and annual\n"
-		"festivals in an ever evolving world. Come build Lantarea with us!", arg1);
-
-	banner_website(ses, "Realm of Utopian Dreams (RUD)", "http://rudmud.com", arg1);
-	banner_address(ses, "Realm of Utopian Dreams (RUD)", "rud rudmud.com 1701", arg1);
-	banner_expires(ses, "Realm of Utopian Dreams (RUD)", "2026", arg1);
 
 	banner_create(ses, "Carrion Fields", arg1);
 
@@ -451,10 +467,13 @@ DO_COMMAND(do_banner)
 	{
 		banner_save(ses, arg1);
 	}
+	else if (is_abbrev(arg1, "HELP"))
+	{
+		tintin_printf2(ses, "#SYNTAX: #BANNER {GUI|INIT|LIST|RANDOM|SAVE|TEST}");
+	}	
 	else
 	{
 		banner_list(ses, arg1);
-//		tintin_printf2(ses, "#SYNTAX: #BANNER {INIT|LIST|RANDOM|TEST}");
 	}
 	return ses;
 }

@@ -553,8 +553,10 @@ void check_all_gags(struct session *ses, char *original, char *line)
 			{
 				delete_node_list(ses, LIST_GAG, node);
 			}
-			ses->gagline++;
-
+			if (ses->gagline == 0)
+			{
+				ses->gagline = 1;
+			}
 			return;
 		}
 	}
@@ -813,7 +815,10 @@ int check_all_prompts(struct session *ses, char *original, char *line)
 			{
 				delete_node_list(ses, LIST_PROMPT, node);
 			}
-			ses->gagline = 1;
+			if (ses->gagline == 0)
+			{
+				ses->gagline = 1;
+			}
 		}
 	}
 	return 0;

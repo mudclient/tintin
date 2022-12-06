@@ -503,7 +503,7 @@ void tintin_puts(struct session *ses, char *string)
 
 	do_one_line(string, ses);
 
-	if (ses->gagline)
+	if (ses->gagline > 0)
 	{
 		ses->gagline--;
 
