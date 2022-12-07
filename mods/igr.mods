@@ -1,9 +1,12 @@
 Jul 2022        2.02.21
 ------------------------------------------------------------------------------
+input.c         Fixed memory access violation error reported by dzp.
+
 line.c          Updated #line gag to support #line gag [amount], you can use
                 + or - to increase or decrease the current amount.
 
-mapper.c        Added {both} option to #map exit and entrance.
+mapper.c        Added {both} option to #map exit and entrance where
+                applicable.
 
 list.c          Added #list {var} refine {keep} {remove}. Keep and remove must
                 be a mathematical expression, the keep argument is ignored if

@@ -918,19 +918,15 @@ char *str_convert_meta(char *input, int eol)
 
 void echo_command(struct session *ses, char *line)
 {
-	char buffer[BUFFER_SIZE], output[BUFFER_SIZE];
+	char buffer[BUFFER_SIZE];
 
 	DEL_BIT(ses->telopts, TELOPT_FLAG_PROMPT);
 
 	if (ses->check_output)
 	{
-		strcpy(output, ses->more_output);
+		strcpy(buffer, ses->more_output);
 
 		process_mud_output(ses, buffer, FALSE);
-	}
-	else
-	{
-		strcpy(output, "");
 	}
 
 	if (ses->scroll->line != -1)
@@ -956,10 +952,12 @@ void echo_command(struct session *ses, char *line)
 	}
 	else
 	{
+/*
 		if (strip_vt102_strlen(ses, output) == 0)
 		{
 			return;
 		}
+*/
 		sprintf(buffer, "\e[0m");
 	}
 

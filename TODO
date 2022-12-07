@@ -12,6 +12,12 @@
 
 - grid tables don't handle color codes
 
+- Double check \r\n \n\r removal.
+
+- make sure #cat works on tables.
+
+- update #help LISTS with new #list options.
+
 ----------------
   - add shadow session support with access to all events.
 
