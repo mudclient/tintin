@@ -928,6 +928,10 @@ void echo_command(struct session *ses, char *line)
 
 		process_mud_output(ses, buffer, FALSE);
 	}
+	else
+	{
+		buffer[0] = 0;
+	}
 
 	if (ses->scroll->line != -1)
 	{
@@ -952,12 +956,11 @@ void echo_command(struct session *ses, char *line)
 	}
 	else
 	{
-/*
-		if (strip_vt102_strlen(ses, output) == 0)
+
+		if (strip_vt102_strlen(ses, buffer) == 0)
 		{
 			return;
 		}
-*/
 		sprintf(buffer, "\e[0m");
 	}
 
