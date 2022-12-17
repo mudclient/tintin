@@ -786,7 +786,6 @@ char *get_arg_stop_spaces(struct session *ses, char *string, char *result, int f
 			continue;
 		}
 
-
 		if (*pti == '\\' && pti[1] == COMMAND_SEPARATOR)
 		{
 			*pto++ = *pti++;

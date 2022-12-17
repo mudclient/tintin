@@ -250,7 +250,7 @@ DO_COMMAND(do_cat)
 
 		if ((node = search_nest_node_ses(ses, arg1)) == NULL)
 		{
-			arg = sub_arg_in_braces(ses, arg, str, GET_ALL, SUB_VAR|SUB_FUN);
+//			arg = sub_arg_in_braces(ses, arg, str, GET_ALL, SUB_VAR|SUB_FUN);
 
 			node = set_nest_node(ses->list[LIST_VARIABLE], arg1, "");
 		}

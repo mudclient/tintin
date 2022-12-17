@@ -602,6 +602,11 @@ void scale_drawing(struct session *ses, int *top_row, int *top_col, int *bot_row
 		max_width  = gtd->screen->cols;
 	}
 
+	if (HAS_BIT(flags, DRAW_FLAG_VER))
+	{
+		max_width = 1 + *bot_col - *top_col;
+	}
+
 	if (HAS_BIT(flags, DRAW_FLAG_SCROLL))
 	{
 		max_height = gtd->screen->rows * 10;
@@ -2566,9 +2571,10 @@ DO_DRAW(draw_text)
 	}
 	else
 	{
-		while (*txt && height > rows)
+		while (*txt && height && height > rows)
 		{
 			txt = strchr(txt, '\n');
+
 			txt++;
 			height--;
 		}

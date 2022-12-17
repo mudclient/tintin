@@ -6,17 +6,19 @@
 
 - mapper.c FAST handling
 
-- #map exit [both] option
-
-- Update #help speedwalk to mention #path unzip <v2 speedwalk>
-
 - grid tables don't handle color codes
 
-- Double check \r\n \n\r removal.
+- split the manual and tutorial
 
-- make sure #cat works on tables.
+- might be some issues with vertical splits + ssh
 
-- update #help LISTS with new #list options.
+- have the top help menu alphabetized going down in column order?
+
+- sandbox mode to disable shell integration.
+
+- color patch issues in #help
+
+- improve gui.h
 
 ----------------
   - add shadow session support with access to all events.

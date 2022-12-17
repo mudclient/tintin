@@ -92,7 +92,7 @@ char *help_related(struct session *ses, int index, int html)
 DO_COMMAND(do_help)
 {
 	char buf[BUFFER_SIZE], tmp[BUFFER_SIZE], color[COLOR_SIZE];
-	int cnt, found;
+	int cnt, tut, found;
 
 	arg = get_arg_in_braces(ses, arg, arg1, GET_ALL);
 
@@ -151,6 +151,8 @@ DO_COMMAND(do_help)
 	}
 	else if (!strcasecmp(arg1, "dump"))
 	{
+		// help
+
 		FILE *logfile = fopen("../docs/help.html", "w");
 
 		script_driver(ses, LIST_COMMAND, "#config {log} {html}");
@@ -189,7 +191,110 @@ DO_COMMAND(do_help)
 
 			logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
 
-			sprintf(buf, "<128>         %s\n", help_table[cnt].name);
+			sprintf(buf, "<138>         %s\n", help_table[cnt].name);
+
+			substitute(ses, buf, buf, SUB_ESC|SUB_COL);
+
+			logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
+
+			substitute(ses, help_table[cnt].text, buf, SUB_COL);
+
+			logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
+
+			if (*help_table[cnt].also)
+			{
+				substitute(ses, help_related(ses, cnt, 2), buf, SUB_ESC|SUB_COL);
+
+				logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
+			}
+		}
+		fclose(logfile);
+
+		// tutorial
+
+		int tutorial[3];
+
+		logfile = fopen("../docs/tutorial.html", "w");
+
+		if (HAS_BIT(ses->log->mode, LOG_FLAG_HTML))
+		{
+			write_html_header(ses, logfile);
+		}
+
+		*buf = 0;
+
+		for (cnt = tut = 0 ; *help_table[cnt].name != 0 ; cnt++)
+		{
+			if (help_table[cnt].type != TOKEN_TYPE_STRING)
+			{
+				continue;
+			}
+
+			if (tut && tut % 4 == 0)
+			{
+				substitute(ses, buf, buf, SUB_ESC|SUB_COL);
+
+				logit(ses, "        ", logfile, 0);
+				logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
+
+				*buf = 0;
+			}
+			cat_sprintf(buf, " \\c<a href='#%s'\\c>%-17s\\c</a\\c>", help_table[cnt].name, help_table[cnt].name);
+
+			if (is_abbrev("INDEX",         help_table[cnt].name)) tutorial[0] = cnt;
+			if (is_abbrev("INTRODUCTION",  help_table[cnt].name)) tutorial[1] = cnt;
+
+			tut++;
+		}
+
+		cat_sprintf(buf, "\n\n");
+
+		substitute(ses, buf, buf, SUB_ESC|SUB_COL);
+
+		logit(ses, "        ", logfile, 0);
+		logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
+
+		for (cnt = 0 ; cnt < 2 ; cnt++)
+		{
+			tut = tutorial[cnt];
+
+			sprintf(buf, "\\c<a name='%s'\\c>\\c</a\\c>\n", help_table[tut].name);
+
+			substitute(ses, buf, buf, SUB_ESC|SUB_COL);
+
+			logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
+
+			sprintf(buf, "<138>         %s\n", help_table[tut].name);
+
+			substitute(ses, buf, buf, SUB_ESC|SUB_COL);
+
+			logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
+
+			substitute(ses, help_table[tut].text, buf, SUB_COL);
+
+			logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
+
+			if (*help_table[tut].also)
+			{
+				substitute(ses, help_related(ses, tut, 2), buf, SUB_ESC|SUB_COL);
+
+				logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
+			}
+		}
+
+		for (cnt = 0 ; *help_table[cnt].name != 0 ; cnt++)
+		{
+			if (help_table[cnt].type != TOKEN_TYPE_STRING || cnt == tutorial[0] || cnt == tutorial[1])
+			{
+				continue;
+			}
+			sprintf(buf, "\\c<a name='%s'\\c>\\c</a\\c>\n", help_table[cnt].name);
+
+			substitute(ses, buf, buf, SUB_ESC|SUB_COL);
+
+			logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
+
+			sprintf(buf, "<138>         %s\n", help_table[cnt].name);
 
 			substitute(ses, buf, buf, SUB_ESC|SUB_COL);
 
@@ -323,8 +428,8 @@ struct help_type help_table[] =
 		"         #unaction {\\%*}. Alternatively you could wrap the action inside a\n"
 		"         class, and kill that class when you no longer need the action.\n"
 		"\n"
-		"<178>Comment<278>: You can remove an action with the #unaction command.\n",
-
+		"<178>Comment<278>: You can remove an action with the #unaction command.\n"
+		,
 		"pcre gag highlight prompt substitute"
 	},
 	{
@@ -370,8 +475,8 @@ struct help_type help_table[] =
 		"\n"
 		"         For more information on pattern matching see the section on PCRE.\n"
 		"\n"
-		"<178>Comment<278>: You can remove an alias with the #unalias command.\n",
-
+		"<178>Comment<278>: You can remove an alias with the #unalias command.\n"
+		,
 		"cursor history keypad macro speedwalk tab"
 	},
 	{
@@ -384,8 +489,8 @@ struct help_type help_table[] =
 		"\n"
 		"<178>Example<278>: #all quit\n"
 		"\n"
-		"         Sends 'quit' to all sessions.\n",
-
+		"         Sends 'quit' to all sessions.\n"
+		,
 		"port run session sessionname snoop ssl zap"
 	},
 	{
@@ -419,8 +524,8 @@ struct help_type help_table[] =
 		"         It's possible to adjust the alarm bell volume on some terminals.\n"
 		"\n"
 		"<178>Example<278>: #loop {1} {8} {cnt} {#line substitute variables\n"
-		"           #delay {$cnt} {#show Volume $cnt: #bell volume $cnt;#bell}\n",
-
+		"           #delay {$cnt} {#show Volume $cnt: #bell volume $cnt;#bell}\n"
+		,
 		"screen"
 	},
 	{
@@ -531,8 +636,8 @@ struct help_type help_table[] =
 		"<278>\n"
 		"         Writes the scrollback buffer to the given file.\n"
 		"\n"
-		"<178>Example<278>: #macro {\\e[F} {#buffer end}\n",
-
+		"<178>Example<278>: #macro {\\e[F} {#buffer end}\n"
+		,
 		"echo grep macro showme screen"
 	},
 	{
@@ -572,8 +677,8 @@ struct help_type help_table[] =
 		"\n"
 		"<178>Comment<278>: To see button clicks trigger use #info button on.\n"
 		"\n"
-		"<178>Comment<278>: You can remove a button with the #unbutton command.\n",
-
+		"<178>Comment<278>: You can remove a button with the #unbutton command.\n"
+		,
 		"delay event ticker"
 	},
 	{
@@ -604,17 +709,17 @@ struct help_type help_table[] =
 		"         }\n"
 		"\n"
 		"         This function returns the reverse direction. @reverse_direction{north}\n"
-		"         would return south.\n",
-
+		"         would return south.\n"
+		,
 		"default statements switch"
 	},
 	{
 		"CAT",
 		TOKEN_TYPE_COMMAND,
-		"<178>Command<278>: #cat <178>{<278>variable<178>} {<278>argument<178>}<278>\n"
+		"<178>Command<278>: #cat <178>{<278>variable<178>} {<278>argument<178>}\n"
 		"\n"
-		"         The cat command will concatinate the argument to the given variable.\n",
-		
+		"<278>         The cat command will concatinate the argument to the given variable.\n"
+		,
 		"format function local math replace script variable"
 	},
 
@@ -650,9 +755,9 @@ struct help_type help_table[] =
 		"\n"
 		"\\        An input line starting with a backslash is sent verbatim if you are\n"
 		"         connected to a server. This character can be configured with\n"
-		"         #config, and is itself send verbatim when the verbatim config mode\n"
-		"         is enabled.\n",
-
+		"         #config, and is itself sent verbatim when the verbatim config mode\n"
+		"         is enabled.\n"
+		,
 		"colors escape function mathematics pcre variable"
 	},
 	{
@@ -812,8 +917,8 @@ struct help_type help_table[] =
 		"         colors and <<888>B000000> to <<888>BFFFFFF> for background colors.\n"
 		"\n"
 		"         If the color code exceeds your configured color mode it will be\n"
-		"         downgraded to the closest match.\n",
-
+		"         downgraded to the closest match.\n"
+		,
 		"characters coordinates escape mathematics pcre"
 	},
 	{
@@ -866,8 +971,8 @@ struct help_type help_table[] =
 		"         range, the lower bound (second value) the end. The first index of\n"
 		"         a range is defined as 1. When a negative value is provides the last\n"
 		"         index is defined as -1. This type of argument is used by #buffer\n"
-		"         and #variable.\n",
-
+		"         and #variable.\n"
+		,
 		"characters colors escape mathematics pcre"
 	},
 	{
@@ -894,8 +999,8 @@ struct help_type help_table[] =
 		"         #CONFIG {DEBUG TELNET} {ON|OFF} Shows telnet negotiations y/n.\n"
 		"         #CONFIG {LOG LEVEL}  {LOW|HIGH} LOW logs server output before triggers.\n"
 		"         #CONFIG {INHERITANCE}  {ON|OFF} Session trigger inheritance y/n.\n"
-		"         #CONFIG {MCCP}         {ON|OFF} Enable or disable MCCP support.\n",
-
+		"         #CONFIG {MCCP}         {ON|OFF} Enable or disable MCCP support.\n"
+		,
 		"class line"
 	},
 	{
@@ -921,8 +1026,8 @@ struct help_type help_table[] =
 		"         extra carriage returns.\n"
 		"\n"
 		"         This command is obsolete as you can accomplish the same using #send\n"
-		"         without an argument or #send {}.\n",
-
+		"         without an argument or #send {}.\n"
+		,
 		"forall"
 	},
 	{
@@ -960,8 +1065,8 @@ struct help_type help_table[] =
 		"         <278>BACKWARD    specifies tab completion to go backward\n"
 		"         <278>FORWARD     specifies tab completion to go forward\n"
 		"\n"
-		"         <278>Multiple options can/must be specified at once.\n",
-
+		"         <278>Multiple options can/must be specified at once.\n"
+		,
 		"alias history keypad macro speedwalk tab"
 	},
 	{
@@ -1136,8 +1241,8 @@ struct help_type help_table[] =
 		"         word wrapped and text formatting can be customized with the\n"
 		"         CALIGN, LALIGN, RALIGN, and UALIGN options.\n"
 		"\n"
-		"<178>Example<278>: #draw Blue box 1 1 3 20 {Hello world!}\n",
-
+		"<178>Example<278>: #draw Blue box 1 1 3 20 {Hello world!}\n"
+		,
 		"buffer echo grep showme"
 	},
 
@@ -1268,7 +1373,7 @@ struct help_type help_table[] =
 		"<268>│<178>arrow down               <268>││<178>next input line                             <268>│<278>\n"
 		"<268>└─────────────────────────┘└────────────────────────────────────────────┘<278>\n"
 		
-		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐<278>\n"		
+		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐<278>\n"
 		"<268>│<178>ctrl arrow left          <268>││<178>cursor left word                            <268>│<278>\n"
 		"<268>├─────────────────────────┤├────────────────────────────────────────────┤<278>\n"
 		"<268>│<178>ctrl arrow right         <268>││<178>cursor right word                           <268>│<278>\n"
@@ -1288,13 +1393,13 @@ struct help_type help_table[] =
 		"<268>│<178>ctrl delete              <268>││<178>delete word right                           <268>│<278>\n"
 		"<268>└─────────────────────────┘└────────────────────────────────────────────┘<278>\n"
 		
-		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐<278>\n"		
+		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐<278>\n"	
 		"<268>│<178>end                      <268>││<178>cursor end                                  <268>│<278>\n"
 		"<268>├─────────────────────────┤├────────────────────────────────────────────┤<278>\n"
 		"<268>│<178>ctrl end                 <268>││<178>scroll buffer end                           <268>│<278>\n"
 		"<268>└─────────────────────────┘└────────────────────────────────────────────┘<278>\n"
 
-		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐<278>\n"		
+		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐<278>\n"	
 		"<268>│<178>enter                    <268>││<178>enter                                       <268>│<278>\n"
 		"<268>├─────────────────────────┤├────────────────────────────────────────────┤<278>\n"
 		"<268>│<178>shift-enter              <268>││<178>soft enter                                  <268>│<278>\n"
@@ -1306,18 +1411,18 @@ struct help_type help_table[] =
 		"<268>│<178>ctrl home                <268>││<178>scroll buffer home                          <268>│<278>\n"
 		"<268>└─────────────────────────┘└────────────────────────────────────────────┘<278>\n"
 		
-		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐<278>\n"		
+		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐<278>\n"	
 		"<268>│<178>page up                  <268>││<178>scroll buffer up                            <268>│<278>\n"
 		"<268>├─────────────────────────┤├────────────────────────────────────────────┤<278>\n"
 		"<268>│<178>page down                <268>││<178>scroll buffer down                          <268>│<278>\n"
 		"<268>└─────────────────────────┘└────────────────────────────────────────────┘<278>\n"
 
-		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐<278>\n"		
+		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐<278>\n"	
 		"<268>│<178>tab                      <268>││<178>complete word forward                       <268>│<278>\n"
 		"<268>├─────────────────────────┤├────────────────────────────────────────────┤<278>\n"
 		"<268>│<178>shift-tab                <268>││<178>complete word backward                      <268>│<278>\n"
-		"<268>└─────────────────────────┘└────────────────────────────────────────────┘<278>\n",
-
+		"<268>└─────────────────────────┘└────────────────────────────────────────────┘<278>\n"
+		,
 		"cursor edit macro"
 	},
 
@@ -1772,22 +1877,22 @@ struct help_type help_table[] =
 		"\n"
 		"         Available color names are:\n"
 		"\n"
-		"         <<888>F06B> - azure                 <<888>F08F> - Azure\n"
-		"         <<888>F00B> - blue                  <<888>F00F> - Blue\n"
-		"         <<888>F0BB> - cyan                  <<888>F0FF> - Cyan\n"
-		"         <<888>F000> - ebony                 <<888>F666> - Ebony\n"
-		"         <<888>F0B0> - green                 <<888>F0F0> - Green\n"
-		"         <<888>F0B6> - jade                  <<888>F0F8> - Jade\n"
-		"         <<888>F6B0> - lime                  <<888>F8F0> - Lime\n"
-		"         <<888>FB0B> - magenta               <<888>FF0F> - Magenta\n"
-		"         <<888>FB60> - orange                <<888>FF80> - Orange\n"
-		"         <<888>FB06> - pink                  <<888>FF08> - Pink\n"
-		"         <<888>FB00> - red                   <<888>FF00> - Red\n"
-		"         <<888>F888> - silver                <<888>FDDD> - Silver\n"
-		"         <<888>F860> - tan                   <<888>FDB0> - Tan\n"
-		"         <<888>F60B> - violet                <<888>F80F> - Violet\n"
-		"         <<888>FBBB> - white                 <<888>FFFF> - White\n"
-		"         <<888>FBB0> - yellow                <<888>FFF0> - Yellow\n"
+		"         <<278>F06B> - azure                 <<888>F08F> - Azure\n"
+		"         <<278>F00B> - blue                  <<888>F00F> - Blue\n"
+		"         <<278>F0BB> - cyan                  <<888>F0FF> - Cyan\n"
+		"         <<278>F000> - ebony                 <<888>F666> - Ebony\n"
+		"         <<278>F0B0> - green                 <<888>F0F0> - Green\n"
+		"         <<278>F0B6> - jade                  <<888>F0F8> - Jade\n"
+		"         <<278>F6B0> - lime                  <<888>F8F0> - Lime\n"
+		"         <<278>FB0B> - magenta               <<888>FF0F> - Magenta\n"
+		"         <<278>FB60> - orange                <<888>FF80> - Orange\n"
+		"         <<278>FB06> - pink                  <<888>FF08> - Pink\n"
+		"         <<278>FB00> - red                   <<888>FF00> - Red\n"
+		"         <<278>F888> - silver                <<888>FDDD> - Silver\n"
+		"         <<278>F860> - tan                   <<888>FDB0> - Tan\n"
+		"         <<278>F60B> - violet                <<888>F80F> - Violet\n"
+		"         <<278>FBBB> - white                 <<888>FFFF> - White\n"
+		"         <<278>FBB0> - yellow                <<888>FFF0> - Yellow\n"
 		"\n"
 
 		"         The %1-99 variables can be used as 'wildcards' that will match with any\n"
@@ -1885,12 +1990,50 @@ struct help_type help_table[] =
 		"         settings, as well as the list names that you can ignore.\n"
 		"\n"
 		"         If you for example use #IGNORE ACTIONS ON actions will no longer\n"
-		"         triger. Not every list can be ignored.\n",
-
+		"         triger. Not every list can be ignored.\n"
+		,
 		"class debug info kill message"
 	},
 	{
 		"INDEX",
+		TOKEN_TYPE_STRING,
+		"<acf>"
+		"                   ████████┐██████┐███┐   ██┐████████┐██████┐███┐   ██┐\n"
+		"                   └──██┌──┘└─██┌─┘████┐  ██│└──██┌──┘└─██┌─┘████┐  ██│\n"
+		"                      ██│     ██│  ██┌██┐ ██│   ██│     ██│  ██┌██┐ ██│\n"
+		"                      ██│     ██│  ██│└██┐██│   ██│     ██│  ██│└██┐██│\n"
+		"                      ██│   ██████┐██│ └████│   ██│   ██████┐██│ └████│\n"
+		"                      └─┘   └─────┘└─┘  └───┘   └─┘   └─────┘└─┘  └───┘\n"
+		"                                       ██┐      ██┐\n"
+		"                                       ██│      ██│\n"
+		"                                    ████████┐████████┐\n"
+		"                                    └──██┌──┘└──██┌──┘\n"
+		"                                       ██│      ██│\n"
+		"                                       └─┘      └─┘\n"
+		"\n"
+		"                        <acf>(<abd>T<acf>)<abd>he K<acf>(<abd>I<acf>)<abd>cki<acf>(<abd>N<acf>)<abd> <acf>(<abd>T)ick D<acf>(<abd>I<acf>)<abd>kumud Clie<acf>(<abd>N<acf>)<abd>t\n"
+		"\n"
+		"\n"
+		"<128>         What is TinTin++?\n"
+		"<278>\n"
+		"         TinTin++ is a client program specialized to help playing muds. This is\n"
+		"         a souped up version of TINTIN III with many new features.\n"
+		"\n"
+		"<128>         Giving Credit Where Credit is Due\n"
+		"<278>\n"
+		"         None of this work would be possible, without the work done by Peter\n"
+		"         Unold. He was the author of TINTIN III, the base of TinTin++. Hats off\n"
+		"         to ya Peter. You started the ball rolling.\n"
+		"\n"
+		"<128>         Introduction\n"
+		"<278>\n"
+		"         If you're new to TinTin++ a good place to start is the introduction,\n"
+		"         which should be linked below.\n"
+		,
+		"introduction"
+	},
+	{
+		"INTRODUCTION",
 		TOKEN_TYPE_STRING,
 		"<278>         On this page you'll find an introduction to using TinTin++. Additional\n"
 		"         information can be found in the individual help sections.\n"
@@ -1966,7 +2109,7 @@ struct help_type help_table[] =
 		"         The syntax of the #alias command is almost like alias in csh.\n"
 		"         Use this command to define aliases. The variables %0, %1.. %9 contain\n"
 		"         the arguments to the aliased command as follows:\n"
-		"         the %0 variable contains ALL the arguments.\n"
+		"         the %0 variable contains all the arguments.\n"
 		"         the %1 variable contains the 1st argument\n"
 		"         ....\n"
 		"         the %9 variable contains the 9th argument\n"
@@ -2017,52 +2160,6 @@ struct help_type help_table[] =
 		"         You can remove actions with the #unaction command.\n"
 		"\n"
 		"<128>\n"
-		"         Highlight\n"
-		"\n"
-		"<178>Command<278>: #highlight <178>{<278>text<178>} {<278>color<178>}<278>\n"
-		"\n"
-		"         This command works a bit like #action. The purpose of this command is\n"
-		"         to substitute text from the server with color you provide. This command\n"
-		"         is a simplified version of the #substitute command.\n"
-		"\n"
-		"<178>Example<278>: #high <178>{<278>Snowy<178>} {<278>light yellow<178>}<278>\n"
-		"\n"
-		"<178>Example<278>: #high <178>{<278>%*Snowy%*<178>} {<278>light yellow<178>}<278>\n"
-		"\n"
-		"         Use #unhigh to delete highlights.\n"
-		"\n"
-		"\n"
-		"         Speedwalk\n"
-		"\n"
-		"         If you type a command consisting ONLY of letters and numbers n, e, s,\n"
-		"         w, u, d - then this command can be interpreted as a serie of movement\n"
-		"         commands.\n"
-		"\n"
-		"<178>Example<278>: ssw2n -- go south, south, west, north, north\n"
-		"\n"
-		"         If you have problems with typing some commands that actually ONLY\n"
-		"         consists of these letters, then type them in CAPS. For example when\n"
-		"         checking the NEWS or when asked to enter NEW as your name.\n"
-		"\n"
-		"         You must enable speedwalking with: #config speedwalk on/off.\n"
-		"\n"
-		"<128>\n"
-		"         Ticker\n"
-		"\n"
-		"<178>Command<278>: #ticker <178>{<278>name<178>} {<278>commands<178>} {<278>seconds<178>}<278>\n"
-		"\n"
-		"         The name can be whatever you want it to be, and is only required for\n"
-		"         the unticker command. The commands will be executed every x amount of\n"
-		"         seconds, which is specified in the interval part.\n"
-		"\n"
-		"<178>Example<278>: #tick <178>{<278>tick<178>} {<278>#delay 50 #show 10 SECONDS TO TICK!;#show TICK!!!<178>} {<278>60<178>}<278>\n"
-		"\n"
-		"         This creates a ticker with the name <178>{<278>tick<178>}<278> which will print TICK!!!,\n"
-		"         as well as print a warning when the next tick will occure.\n"
-		"\n"
-		"         You can remove tickers with #untick\n"
-		"\n"
-		"<128>\n"
 		"         Command files\n"
 		"<278>\n"
 		"         When you order TinTin++ to read a command file, it parses all the text\n"
@@ -2079,6 +2176,64 @@ struct help_type help_table[] =
 		"\n"
 		"         #write filename -- write all actions/aliases/substitutes/etc known for\n"
 		"         the current session to a file.\n"
+		"\n"
+		"<178>Example<278>:\n"
+		"         #session x mymud.com 1234\n"
+		"         myname\n"
+		"         mypassword\n"
+		"         #split\n"
+		"         #action {^You are hungry.} {eat bread}\n"
+		"\n"
+		"         If you save the above five lines to a file named 'mymud.tin' you can\n"
+		"         use 'tt++ mymud.tin' to start tintin and execute the file, connecting\n"
+		"         you to your mud, logging in, enabling split mode, and setting an action\n"
+		"         to eat a bread whenever you go hungry.\n"
+		"<128>\n"
+		"<128>\n"
+		"         Highlight\n"
+		"\n"
+		"<178>Command<278>: #highlight <178>{<278>text<178>} {<278>color<178>}<278>\n"
+		"\n"
+		"         This command works a bit like #action. The purpose of this command is\n"
+		"         to substitute text from the server with color you provide. This command\n"
+		"         is a simplified version of the #substitute command.\n"
+		"\n"
+		"<178>Example<278>: #high <178>{<278>Snowy<178>} {<278>light yellow<178>}<278>\n"
+		"\n"
+		"<178>Example<278>: #high <178>{<278>%*Snowy%*<178>} {<278>light yellow<178>}<278>\n"
+		"\n"
+		"         Use #unhigh to delete highlights.\n"
+		"\n"
+		"\n"
+		"<128>         Speedwalk\n"
+		"<278>\n"
+		"         If you type a command consisting ONLY of letters and numbers n, e, s,\n"
+		"         w, u, d - then this command can be interpreted as a serie of movement\n"
+		"         commands.\n"
+		"\n"
+		"<178>Example<278>: ssw2n -- go south, south, west, north, north\n"
+		"\n"
+		"         If you have problems with typing some commands that actually ONLY\n"
+		"         consists of these letters, then type them in CAPS. For example when\n"
+		"         checking the NEWS or when asked to enter NEW as your name.\n"
+		"\n"
+		"         You must enable speedwalking with: #config speedwalk on.\n"
+		"\n"
+		"<128>\n"
+		"         Ticker\n"
+		"\n"
+		"<178>Command<278>: #ticker <178>{<278>name<178>} {<278>commands<178>} {<278>seconds<178>}<278>\n"
+		"\n"
+		"         The name can be whatever you want it to be, and is only required for\n"
+		"         the unticker command. The commands will be executed every x amount of\n"
+		"         seconds, which is specified in the interval part.\n"
+		"\n"
+		"<178>Example<278>: #tick <178>{<278>tick<178>} {<278>#delay 50 #show 10 SECONDS TO TICK!;#show TICK!!!<178>} {<278>60<178>}<278>\n"
+		"\n"
+		"         This creates a ticker with the name <178>{<278>tick<178>}<278> which will print TICK!!!,\n"
+		"         as well as print a warning when the next tick will occure.\n"
+		"\n"
+		"         You can remove tickers with #untick\n"
 		"\n"
 		"<128>\n"
 		"         Repeating Commands\n"
@@ -2140,11 +2295,12 @@ struct help_type help_table[] =
 		"         inside TinTin++ as are available on the website. If you type #help\n"
 		"         without an argument you will see the various available help subjects\n"
 		"         which try to explain the TinTin++ commands and features in greater\n"
-		"         detail.\n"
+		"         detail. Entries in cyan describe commands, while entries in white\n"
+		"         describe various features, often in greater detail.\n"
 		"\n"
 		"<128>\n"
-		"         Enjoy<278>\n",
-
+		"         That's all for the introduction, enjoy<278>\n"
+		,
 		"characters colors coordinates editing escape_codes greeting keypad lists mapping mathematics screen_reader sessionname speedwalk statements suspend time"
 	},
 	{
@@ -2171,15 +2327,15 @@ struct help_type help_table[] =
 		"         #info sessions will show information on all sessions.\n"
 		"         #info system will show some system information.\n"
 		"         #info tokenizer will show information about the script stack.\n"
-		"         #info unicode will show information on the provided character.\n",
-
+		"         #info unicode will show information on the provided character.\n"
+		,
 		"class debug ignore kill message"
 	},
 	{
 		"KEYPAD",
 		TOKEN_TYPE_STRING,
-		"<278>When TinTin++ starts up it sends \\e= to the terminal to enable the terminal's\n"
-		"application keypad mode, which can be disabled using #show {\\e>}\n"
+		"<278>         When TinTin++ starts up it sends \\e= to the terminal to enable the\n"
+		"         terminal's application keypad mode, which can be disabled using #show {\\e>}\n"
 		"\n"
 		"<178>      Configuration A           Configuration B           Configuration C<268>\n"
 		" ╭─────┬─────┬─────┬─────╮ ╭─────┬─────┬─────┬─────╮ ╭─────┬─────┬─────┬─────╮\n"
@@ -2194,28 +2350,29 @@ struct help_type help_table[] =
 		" │<178>0<268>          │<178>.<268>    │     │ │<178>Ins<268>        │<178>Del<268><268>  │     │ │<178>nkp0<268>       │<178>nkp.<268> │     │\n"
 		" ╰───────────┴─────┴─────╯ ╰───────────┴─────┴─────╯ ╰───────────┴─────┴─────╯\n"
 		"<278>\n"
-		"With keypad mode disabled numlock on will give you configuration A, and numlock\n"
-		"off will give you configuration B. With keypad mode enabled you'll get\n"
-		"configuration C.\n"
+		"         With keypad mode disabled numlock on will give you configuration A,\n"
+		"         and numlock off will give you configuration B. With keypad mode\n"
+		"         enabled you'll get configuration C.\n"
 		"\n"
-		"<178>Terminals that support keypad mode"
+		"<178>         Terminals that support keypad mode"
 		"\n"
-		"<278>Linux Console, PuTTY, Eterm, aterm.\n"
+		"<278>         Linux Console, PuTTY, MinTTY, Eterm, aterm.\n"
 		"\n"
-		"<178>Terminals that do not support keypad mode\n"
+		"<178>         Terminals that do not support keypad mode\n"
 		"\n"
-		"<278>RXVT on Cygwin, Windows Console, Gnome Terminal, Konsole.\n"
+		"<278>         RXVT on Cygwin, Windows Console, Gnome Terminal, Konsole.\n"
 		"\n"
-		"<178>Peculiar Terminals\n"
+		"<178>         Peculiar Terminals\n"
 		"\n"
-		"<278>RXVT requires turning off numlock to enable configuration C.\n"
+		"<278>         RXVT requires turning off numlock to enable configuration C.\n"
 		"\n"
-		"Xterm may require disabling Alt/NumLock Modifiers (num-lock) in the ctrl-left\n"
-		"click menu. Or edit ~/.Xresources and add XTerm*VT100.numLock:false\n"
+		"         Xterm may require disabling Alt/NumLock Modifiers (num-lock) in the\n"
+		"         ctrl left-click menu. Or edit ~/.Xresources and add\n"
+		"         XTerm*VT100.numLock:false\n"
 		"\n"
-		"Mac OS X Terminal requires enabling 'strict vt100 keypad behavior' in\n"
-		"Terminal -> Window Settings -> Emulation.\n",
-		
+		"         Mac OS X Terminal requires enabling 'strict vt100 keypad behavior' in\n"
+		"         Terminal -> Window Settings -> Emulation.\n"
+		,
 		"colors coordinates escape mathematics pcre"
 	},
 	{
@@ -2231,8 +2388,8 @@ struct help_type help_table[] =
 		"         With two arguments the triggers in the chosen list that match the\n"
 		"         given pattern will be removed.\n"
 		"\n"
-		"<178>Example<278>: #kill alias %*test*\n",
-
+		"<178>Example<278>: #kill alias %*test*\n"
+		,
 		"class debug ignore info message"
 	},
 	{
@@ -2311,8 +2468,8 @@ struct help_type help_table[] =
 		"         <278>  Argument is executed with most system messages enabled.\n"
 		"\n"
 		"         When using #line log and logging in html format use \\c< \\c> \\c& \\c\" to\n"
-		"         log a literal < > & and \".\n",
-
+		"         log a literal < > & and \".\n"
+		,
 		"class config"
 	},
 	{
@@ -2368,8 +2525,8 @@ struct help_type help_table[] =
 		"         directly access the size of a list using &var[].\n"
 		"\n"
 		"         You can directly access elements in a list variable using $var[+1],\n"
-		"         $var[+2], $var[-1], etc.\n",
-
+		"         $var[+2], $var[-1], etc.\n"
+		,
 		"break continue foreach loop parse repeat return while"
 	},
 
@@ -2377,158 +2534,164 @@ struct help_type help_table[] =
 		"LISTS",
 		TOKEN_TYPE_STRING,
 		"<278>         There are several different types of lists in tintin which behave in a\n"
-		"         fairly universal manner. To properly explain lists it's easiest to\n"
-		"         explain the most basic variable type first before discussing more\n"
-		"         complex types.\n"
+		"<278>         fairly universal manner. To properly explain lists it's easiest to\n"
+		"<278>         explain the most basic variable type first before discussing more\n"
+		"<278>         complex types.\n"
 		"\n"
-		"       - Basic variable: The standard key = value variable.\n"
+		"<278>       - Basic variable: The standard key = value variable.\n"
 		"\n"
-		"       - Simple list: A string that contains semicolon delimited fields.\n"
-		"         {a;b;c}. Can be saved as a variable.\n"
+		"<278>       - Simple list: A string that contains semicolon delimited fields.\n"
+		"<278>         {a;b;c}. Can be saved as a variable.\n"
 		"\n"
-		"       - Brace list: A string in which fields are delimited with braces.\n"
-		"         {a}{b}{c}. Brace lists cannot be stored as a variable because tables\n"
-		"         use braces as well, they must be stored as a simple list instead.\n"
+		"<278>       - Brace list: A string in which fields are delimited with braces.\n"
+		"<278>         {a}{b}{c}. Brace lists cannot be stored as a variable because tables\n"
+		"<278>         use braces as well, they must be stored as a simple list instead.\n"
 		"\n"
-		"       - Table: Think of this as variables nested within another variable. Or\n"
-		"          as variables contained within another variable.\n"
+		"<278>       - Table: Think of this as variables nested within another variable. Or\n"
+		"<278>          as variables contained within another variable.\n"
 		"\n"
-		"       - List: A table that uses integers for its indexes. Also known as an\n"
-		"         array. The #list command is a utility command for using tables as\n"
-		"         arrays.\n"
-		"<128>\n"
-		"         Simple Variables\n"
+		"<278>       - List: A table that uses integers for its indexes. Also known as an\n"
+		"<278>         array. The #list command is a utility command for using tables as\n"
+		"<278>         arrays.\n"
+		"\n"
+		"<128>         Simple Variables\n"
 		"<278>\n"
-		"<178>Example:<278>\n"
-		"         #variable {simple} {Hello World!}\n"
-		"         #show $simple\n"
+		"<178>Example:\n"
+		"<278>         #variable {simple} {Hello World!}\n"
+		"<278>         #show $simple\n"
 		"\n"
-		"         To see if the 'simple' variable exists you can use &simple which will\n"
-		"         display 0 if the variable does not exist, or the variable's index if\n"
-		"         it exists.\n"
+		"<278>         To see if the 'simple' variable exists you can use &{simple} which\n"
+		"<278>         will display 0 if the variable does not exist, or the variable's index\n"
+		"<278>         if it exists.\n"
 		"\n"
-		"         If you have multiple variables they are sorted alphabetically and\n"
-		"         numerically. While it's not all that relevant for simple variables,\n"
-		"         the first variable has index 1, the second variable index 2, and so\n"
-		"         on.\n"
+		"<278>         If you have multiple variables they are sorted alphabetically and\n"
+		"<278>         numerically. While it's not all that relevant for simple variables,\n"
+		"<278>         the first variable has index 1, the second variable index 2, and so\n"
+		"<278>         on.\n"
 		"\n"
-		"         Variable names need to start with a letter and only exist of letters,\n"
-		"         numbers, and underscores. If you need to use a non standard variable\n"
-		"         name this is possible using braces.\n"
+		"<278>         Variable names need to start with a letter and only exist of letters,\n"
+		"<278>         numbers, and underscores. If you need to use a non standard variable\n"
+		"<278>         name this is possible using braces.\n"
 		"\n"
 		"<178>Example: <278>#variable {:)} {Happy Happy!};#show ${:)}\n"
 		"\n"
-		"         Variables can be accessed using their index. While primarily useful\n"
-		"         for tables it is possible to do this for simple variables. Use +1 for\n"
-		"         the first variable, +2 for the second variable, etc. Use -1 for the\n"
-		"         last variable, -2 for the second last variable, etc.\n"
+		"<278>         Variables can be accessed using their index. While primarily useful\n"
+		"<278>         for tables it is possible to do this for simple variables. Use +1 for\n"
+		"<278>         the first variable, +2 for the second variable, etc. Use -1 for the\n"
+		"<278>         last variable, -2 for the second last variable, etc.\n"
 		"\n"
-		"<178>Example:<278> #show The first variable is: ${+1}\n"
-		"<128>\n"
-		"         Removing Variables\n"
+		"<178>Example:<278> #show The first variable is: *{+1} with value: ${+1}\n"
+		"\n"
+		"<128>         Removing Variables\n"
 		"<278>\n"
-		"         To remove a variable, use #unvariable or #unvar (every command can be\n"
-		"         abbreviated). It's possible to remove multiple variables at once\n"
-		"         using #unvar {var 1} {var 2} {etc}\n"
+		"<278>         To remove a variable, use #unvariable or #unvar (every command can be\n"
+		"<278>         abbreviated). It's possible to remove multiple variables at once\n"
+		"<278>         using #unvar {var 1} {var 2} {etc}\n"
 		"\n"
-		"         Variables are unique to each session, so if you have multiple\n"
-		"         sessions, removing a variable from one session won't remove it from\n"
-		"         other sessions.\n"
+		"<278>         Variables are unique to each session, so if you have multiple\n"
+		"<278>         sessions, removing a variable from one session won't remove it from\n"
+		"<278>         other sessions.\n"
 		"\n"
-		"         If you remove a table variable, all variables contained within that\n"
-		"         table variable are removed as well.\n"
-		"<128>\n"
-		"         Simple Lists\n"
+		"<278>         If you remove a table variable, all variables contained within that\n"
+		"<278>         table variable are removed as well.\n"
+		"\n"
+		"<128>         Simple Lists\n"
 		"<278>\n"
-		"         A simple list is a string that contains semicolon delimited fields.\n"
-		"         Commands can be entered as simple lists, for example:\n"
-		"         #show {a};#show {b} will execute a single line as two commands.\n"
+		"<278>         A simple list is a string that contains semicolon delimited fields.\n"
+		"<278>         Commands can be entered as simple lists, for example:\n"
+		"<278>         #show {a};#show {b} will execute a single line as two commands.\n"
 		"\n"
-		"         Several commands take a simple list as their input, these are:\n"
-		"         #foreach, #line substitute, #path load, #list create, and #highlight.\n"
-		"<128>\n"
-		"         Brace Lists\n"
+		"<278>         Several commands take a simple list as their input, these are:\n"
+		"<278>         #foreach, #line substitute, #path load, #list create, and #highlight.\n"
+		"\n"
+		"<128>         Brace Lists\n"
 		"<278>\n"
-		"         A brace list is a string in which fields are delimited with braces.\n"
-		"         Most commands take a brace list for their arguments, for example:\n"
-		"         #session {x} {mud.com} {1234} {mud.tin}. The session command takes\n"
-		"         4 arguments, the 4th argument (command file) is optional.\n"
+		"<278>         A brace list is a string in which fields are delimited with braces.\n"
+		"<278>         Most commands take a brace list for their arguments, for example:\n"
+		"<278>         #session {x} {mud.com} {1234} {mud.tin}. The session command takes\n"
+		"<278>         4 arguments, the 4th argument (command file) is optional.\n"
 		"\n"
-		"         Commands that take a simple list as their input will also accept a\n"
-		"         brace list, keep in mind you'll have to embed the brace list in an\n"
-		"         extra set of braces, for example: #path load {{n}{s}{w}{w}}, which is\n"
-		"         identical to: #path load {n;s;w;w}.\n"
+		"<278>         Commands that take a simple list as their input will also accept a\n"
+		"<278>         brace list, keep in mind you'll have to embed the brace list in an\n"
+		"<278>         extra set of braces, for example: #path load {{n}{s}{w}{w}}, which is\n"
+		"<278>         identical to: #path load {n;s;w;w}.\n"
 		"\n"
-		"         Brace lists cannot be stored as variables because TinTin++ will\n"
-		"         confuse them with tables. You can convert a brace list to a table\n"
-		"         variable using: #list {bracelist} {create} {{a}{b}{c}} this will look\n"
-		"         internally as: {{1}{a}{2}{b}{3}{c}}. You can then convert this table\n"
-		"         back to a simple list using: #list {bracelist} {simplify} which will\n"
-		"         change it to {a;b;c}.\n"
+		"<278>         Brace lists cannot be stored as variables because TinTin++ will\n"
+		"<278>         confuse them with tables. You can convert a brace list to a table\n"
+		"<278>         variable using: #list {bracelist} {create} {{a}{b}{c}} this will look\n"
+		"<278>         internally as: {{1}{a}{2}{b}{3}{c}}. You can then convert this table\n"
+		"<278>         back to a simple list using: #list {bracelist} {simplify} which will\n"
+		"<278>         change it to {a;b;c}.\n"
 		"\n"
-		"         Braces cannot easily be escaped in TinTin++. Using \\{ or \\} will not\n"
-		"         work. The reason for this is due to several factors, but primarily\n"
-		"         backward compatibility. To escape braces you must define them using\n"
-		"         hexadecimal notation using \\x7B and \\x7D. See #help escape for a list\n"
-		"         of escape options, and the help file will also remind you of how to\n"
-		"         escape braces.\n"
-		"<128>\n"
-		"         Tables\n"
+		"<278>         Braces cannot easily be escaped in TinTin++. Using \\{ or \\} will not\n"
+		"<278>         work. The reason for this is due to several factors, but primarily\n"
+		"<278>         backward compatibility. To escape braces you must define them using\n"
+		"<278>         hexadecimal notation using \\x7B and \\x7D. See #help escape for a list\n"
+		"<278>         of escape options, and the help file will also remind you of how to\n"
+		"<278>         escape braces.\n"
+		"\n"
+		"<128>         Tables\n"
 		"<278>\n"
-		"         Tables are key/value pairs stored within a variable. Tables are also\n"
-		"         known as associative arrays, dictionaries, maps, nested variables,\n"
-		"         structures, and probably a couple of other names. There are several\n"
-		"         ways to create and access tables.\n"
+		"<278>         Tables are key/value pairs stored within a variable. Tables are also\n"
+		"<278>         known as associative arrays, dictionaries, maps, nested variables,\n"
+		"<278>         structures, and probably a couple of other names. There are several\n"
+		"<278>         ways to create and access tables.\n"
 		"\n"
 		"<178>Example:<278> #variable {friendlist} {{bob}{bob@mail.com} {bubba}{sunset@gmail.com}}\n"
 		"\n"
-		"         This will create a friendlist with two entries, the key is the name of\n"
-		"         the friend, the value is the email address of the friend. You can see\n"
-		"         the email address of bob using: #show {$friendlist[bob]}. You can\n"
-		"         also define this table as following:\n"
+		"<278>         This will create a friendlist with two entries, the key is the name of\n"
+		"<278>         the friend, the value is the email address of the friend. You can see\n"
+		"<278>         the email address of bob using: #show {$friendlist[bob]}. You can\n"
+		"<278>         also define this table as following:\n"
 		"\n"
 		"<178>Example:<278>\n"
-		"         #variable {friendlist[bob]} {bob@mail.com}\n"
-		"         #variable {friendlist[bubba]} {sunset@gmail.com}\n"
+		"<278>         #variable {friendlist[bob]} {bob@mail.com}\n"
+		"<278>         #variable {friendlist[bubba]} {sunset@gmail.com}\n"
 		"\n"
-		"         This would create the exact same table as the single line declaration\n"
-		"         used previously. To see the first key in the table use:\n"
-		"         *friendlist[+1], to see the first value in the table use:\n"
-		"         $friendlist[+1]. To see the size of the table use &friendlist[]. To\n"
-		"         print a bracelist of all friends use *friendlist[%*], to print a\n"
-		"         bracelist of all friends whose name starts with the letter 'a' you\n"
-		"         would use: *friendlist[a%*]. Similarly to see the number of friends\n"
-		"         you have whose name ends with the letter 'b' you would use:\n"
-		"         &friendlist[%*b].\n"
+		"<278>         This would create the exact same table as the single line declaration\n"
+		"<278>         used previously. To see the first key in the table use:\n"
+		"<278>         *friendlist[+1], to see the first value in the table use:\n"
+		"<278>         $friendlist[+1]. To see the size of the table use &friendlist[]. To\n"
+		"<278>         print a bracelist of all friends use *friendlist[], to print a\n"
+		"<278>         bracelist of all friends whose name starts with the letter 'a' you\n"
+		"<278>         would use: *friendlist[a%*]. Similarly to see the number of friends\n"
+		"<278>         you have whose name ends with the letter 'b' you would use:\n"
+		"<278>         &friendlist[%*b].\n"
 		"\n"
-		"         See #help regexp for a brief overview of regular expression options.\n"
-		"         While TinTin++ supports PCRE (perl-compatible regular expressions), it\n"
-		"         embeds them within its own regular expression syntax that is simpler\n"
-		"         and less invasive, while still allowing the full power of PCRE for\n"
-		"         those who need it.\n"
+		"<278>         See #help regexp for a brief overview of regular expression options.\n"
+		"<278>         While TinTin++ supports PCRE (perl-compatible regular expressions), it\n"
+		"<278>         embeds them within its own regular expression syntax that is simpler\n"
+		"<278>         and less invasive, while still allowing the full power of PCRE for\n"
+		"<278>         those who need it.\n"
 		"\n"
 		"<178>Example:<278> #unvariable {friendlist[bubba]}\n"
 		"\n"
-		"         This would remove {bubba} from the friendlist. To remove the entire\n"
-		"         friendlist you would use: #unvariable {friendlist}.\n"
+		"<278>         This would remove {bubba} from the friendlist. To remove the entire\n"
+		"<278>         friendlist you would use: #unvariable {friendlist}.\n"
 		"\n"
 		"<178>Example:<278> #variable {friendlist} {{bob} {{email}{bob@ma.il} {phone}{123456789}}}\n"
 		"\n"
-		"         There is no limit to the number of nests, simply add more braces. To\n"
-		"         see Bob's email in this example you would use:\n"
-		"         #show {$friendlist[bob][email]}.\n"
-		"<278>\n"
-		"         Lists\n"
+		"<278>         There is no limit to the number of nests, simply add more braces. To\n"
+		"<278>         see Bob's email in this example you would use:\n"
+		"<278>         #show {$friendlist[bob][email]}.\n"
 		"\n"
-		"         Tables are sorted alphabetically with the exception of numbers which\n"
-		"         are sorted numerically. If you want to determine the sorting order\n"
-		"         yourself you can use use the #list command which helps you to use\n"
-		"         tables as arrays.\n"
+		"<278>         To merge two tables the #cat command can be used.\n"
+		"<178>Example:\n"
+		"<278>         #variable {bli} {{a}{1}{b}{2}}\n"
+		"<278>         #variable {blo} {{c}{3}{d}{4}}\n"
+		"<278>         #cat {blo} {$bli}\n"
+		"\n"
+		"<128>         Lists\n"
+		"\n"
+		"<278>         Tables are sorted alphabetically with the exception of numbers which\n"
+		"<278>         are sorted numerically. If you want to determine the sorting order\n"
+		"<278>         yourself you can use use the #list command which helps you to use\n"
+		"<278>         tables as arrays.\n"
 		"\n"
 		"<178>Example:<278> #action {%1 chats %2} {#list chats add {%0}}\n"
 		"\n"
-		"         Each time a chat is received it's added to the end of the 'chats' list\n"
-		"         variable. If you type #variable chats this might look like:\n"
+		"<278>         Each time a chat is received it's added to the end of the 'chats' list\n"
+		"<278>         variable. If you type #variable chats this might look like:\n"
 		"\n"
 		"         <138>#<168>VARIABLE <258>{<178>chats<258>}\n"
 		"         {\n"
@@ -2537,35 +2700,35 @@ struct help_type help_table[] =
 		"                 {<178>3<258>} {<178>Bubba chats Bye<258>}\n"
 		"                 {<178>4<258>} {<178>Bob chats bub bye<258>}\n"
 		"         }\n"
-		"<128>\n"
-		"         Parsing\n"
+		"\n"
+		"<128>         Parsing\n"
 		"<278>\n"
-		"         There are various ways to parse lists and tables, using either #loop,\n"
-		"         #foreach, #while, or #<number>.\n"
+		"<278>         There are various ways to parse lists and tables, using either #loop,\n"
+		"<278>         #foreach, #while, or #<number>.\n"
 		"\n"
-		"         #loop takes two numeric arguments, incrementing or decrementing the\n"
-		"         first number until it matches the second number. The value of the loop\n"
-		"         counter is stored in the provided variable.\n"
+		"<278>         #loop takes two numeric arguments, incrementing or decrementing the\n"
+		"<278>         first number until it matches the second number. The value of the loop\n"
+		"<278>         counter is stored in the provided variable.\n"
 		"\n"
-		"         #foreach takes either a simple list or a brace list as its first\n"
-		"         argument. Foreach will go through each item in the list and store the\n"
-		"         value in the provided variable.\n"
+		"<278>         #foreach takes either a simple list or a brace list as its first\n"
+		"<278>         argument. Foreach will go through each item in the list and store the\n"
+		"<278>         value in the provided variable.\n"
 		"\n"
-		"         #while will perform an if check on the first argument, if the result\n"
-		"         is true it will execute the commands in the second argument. Then it\n"
-		"         performs an if check on the first argument again. It will continue to\n"
-		"         repeat until the if check returns 0 or the loop is interrupted with a\n"
-		"         control flow command. It takes special care to avoid infinite loops.\n"
+		"<278>         #while will perform an if check on the first argument, if the result\n"
+		"<278>         is true it will execute the commands in the second argument. Then it\n"
+		"<278>         performs an if check on the first argument again. It will continue to\n"
+		"<278>         repeat until the if check returns 0 or the loop is interrupted with a\n"
+		"<278>         control flow command. It takes special care to avoid infinite loops.\n"
 		"\n"
-		"         #<number> will execute the provided argument 'number' times. For\n"
-		"         example: #4 {#show beep! \\a}\n"
+		"<278>         #<number> will execute the provided argument 'number' times. For\n"
+		"<278>         example: #4 {#show beep! \\a}\n"
 		"\n"
-		"         Here are some examples.\n"
+		"<278>         Here are some examples.\n"
 		"\n"
 		"<178>Example:<278> #list friends create {bob;bubba;zorro}\n"
 		"\n"
-		"         Internally this looks like {{1}{bob}{2}{bubba}{3}{zorro}} and the\n"
-		"         list can be parsed in various ways.\n"
+		"<278>         Internally this looks like {{1}{bob}{2}{bubba}{3}{zorro}} and the\n"
+		"<278>         list can be parsed in various ways.\n"
 		"\n"
 		"<178>Example:<278> #foreach {$friends[%*]} {name} {#show $name}\n"
 		"\n"
@@ -2574,117 +2737,122 @@ struct help_type help_table[] =
 		"<178>Example:<278> #loop {1} {&friends[]} {i} {#show $friends[+$i]}\n"
 		"\n"
 		"<178>Example:<278> #math i 1;#while {&friends[+$i]} {#show $friends[+$i];\n"
-		"         #math i $i + 1}\n"
+		"<278>         #math i $i + 1}\n"
 		"\n"
 		"<178>Example:<278> #math i 1;#&friends[] {#show $friends[+$i];#math i $i + 1}\n"
 		"\n"
-		"         Each of the five examples above performs the same task; printing the\n"
-		"         three names in the friends list.\n"
+		"<278>         Each of the five examples above performs the same task; printing the\n"
+		"<278>         three names in the friends list.\n"
 		"\n"
-		"         If you want to get a better look at what goes on behind the scenes\n"
-		"         while executing scripts you can use '#debug all on'. To stop seeing\n"
-		"         debug information use '#debug all off'.\n"
-		"<128>\n"
-		"         List Tables\n"
+		"<278>         If you want to get a better look at what goes on behind the scenes\n"
+		"<278>         while executing scripts you can use '#debug all on'. To stop seeing\n"
+		"<278>         debug information use '#debug all off'.\n"
+		"\n"
+		"<128>         List Tables\n"
+		"\n"
+		"<278>         List tables are also known as databases and the #list command has\n"
+		"<278>         several options to manipulate them.\n"
+		"\n"
+		"<278>         For these options to work properly all tables need to have identical\n"
+		"<278>         keys. Here is an example list table.\n"
+		"\n"
+		"<278>         #var {friendlist}\n"
+		"<278>         {\n"
+		"<278>             {1}{{name}{bob} {age}{54}}\n"
+		"<278>             {2}{{name}{bubba} {age}{21}}\n"
+		"<278>             {3}{{name}{pamela} {age}{36}}\n"
+		"<278>         }\n"
+		"\n"
+		"<278>         To sort the list table by age you would use:\n"
+		"\n"
+		"<278>         #list friendlist indexate age\n"
+		"<278>         #list friendlist order\n"
+		"\n"
+		"<278>         To remove everyone whose name starts with a 'b' you would use:\n"
+		"\n"
+		"<278>         #list friendlist indexate name\n"
+		"<278>         #list friendlist filter {} {b%*}\n"
+		"\n"
+		"<278>         The filter option only supports regular expressions. To filter\n"
+		"<278>         using mathematics you would loop through the list backwards:\n"
+		"\n"
+		"<278>         #loop &friendlist[] 1 index\n"
+		"<278>         {\n"
+		"<278>             #if {$friendlist[+$index][age] < 30}\n"
+		"<278>             {\n"
+		"<278>                 #list friendlist delete $index\n"
+		"<278>             }\n"
+		"<278>         }\n"
+		"\n"
+		"<278>         Alternatively you can use the refine option.\n"
+		"\n"
+		"<278>         #list friendlist indexate age\n"
+		"<278>         #list friendlist refine {&0 >= 30}\n"
+		"\n"
+		"<278>         To add an item to a list table there are two options:\n"
+		"\n"
+		"<278>         #list friendlist add {{{name}{hobo} {age}{42}}}\n"
+		"<278>         #list friendlist insert -1 {{name}{hobo} {age}{42}}\n"
+		"\n"
+		"<128>         Optimization\n"
 		"<278>\n"
-                "         List tables are also known as databases and the #list command has\n"
-                "         several options to manipulate them.\n"
-                "\n"
-                "         For these options to work properly all tables need to have identical\n"
-                "         keys. Here is an example list table.\n"
-                "\n"
-                "         #var {friendlist}\n"
-                "         {\n"
-                "             {1}{{name}{bob} {age}{54}}\n"
-                "             {2}{{name}{bubba} {age}{21}}\n"
-                "             {3}{{name}{pamela} {age}{36}}\n"
-                "         }\n"
-                "\n"
-                "         To sort the list table by age you would use:\n"
-                "\n"
-                "         #list friendlist indexate age\n"
-                "         #list friendlist order\n"
-                "\n"
-                "         To remove everyone whose name starts with a 'b' you would use:\n"
-                "\n"
-                "         #list friendlist indexate name\n"
-                "         #list friendlist filter {} {b%*}\n"
-                "\n"
-                "         The filter option only supports regular expressions. To filter\n"
-                "         using mathematics you would loop through the list backwards:\n"
-                "\n"
-                "         #loop &friendlist[] 1 index\n"
-                "         {\n"
-                "             #if {$friendlist[+$index][age] < 30}\n"
-                "             {\n"
-                "                 #list friendlist delete $index\n"
-                "             }\n"
-                "         }\n"
-                "\n"
-                "         To add an item to a list table there are two options:\n"
-                "\n"
-                "         #list friendlist add {{{name}{hobo} {age}{42}}}\n"
-                "         #list friendlist insert -1 {{name}{hobo} {age}{42}}\n"
-		"<128>\n"
-		"         Optimization\n"
-		"<278>\n"
-		"         TinTin++ tables are exceptionally fast while they remain under 100\n"
-		"         items. Once a table grows beyond 10000 items there can be performance\n"
-		"         issues when inserting and removing items in the beginning or middle of\n"
-		"         the table.\n"
+		"<278>         TinTin++ tables are exceptionally fast while they remain under 100\n"
+		"<278>         items. Once a table grows beyond 10000 items there can be performance\n"
+		"<278>         issues when inserting and removing items in the beginning or middle of\n"
+		"<278>         the table.\n"
 		"\n"
-		"         The plan is to eventually implement an indexable and flexible data\n"
-		"         structure for large tables.\n"
+		"<278>         The plan is to eventually implement an indexable and flexible data\n"
+		"<278>         structure for large tables.\n"
 		"\n"
-		"         If you load a large table from file it's important to make sure it's\n"
-		"         sorted, when using #write to save a table it's automatically sorted.\n"
+		"<278>         If you load a large table from file it's important to make sure it's\n"
+		"<278>         sorted, when using #write to save a table it's automatically sorted.\n"
 		"\n"
-		"         If you notice performance issues on large tables it's relatively easy\n"
-		"         to create a hash table.\n"
+		"<278>         If you notice performance issues on large tables it's relatively easy\n"
+		"<278>         to create a hash table.\n"
 		"\n"
 		"<178>Example:<278>\n"
 		"\n"
-		"         #alias {sethash}\n"
-		"         {\n"
-		"         	#format hash %H %1;\n"
-		"         	#math hash1 $hash % 100;\n"
-		"         	#math hash2 $hash / 100 % 100;\n"
-		"         	#var hashtable[$hash1][$hash2][%1] %2\n"
-		"         }\n"
+		"<278>         #alias {sethash}\n"
+		"<278>         {\n"
+		"<278>             #format hash %H %1;\n"
+		"<278>             #math hash1 $hash % 100;\n"
+		"<278>             #math hash2 $hash / 100 % 100;\n"
+		"<278>             #var hashtable[$hash1][$hash2][%1] %2\n"
+		"<278>         }\n"
 		"\n"
-		"         #function {gethash}\n"
-		"         {\n"
-		"         	#format hash %H %1;\n"
-		"         	#math hash1 $hash % 100;\n"
-		"         	#math hash2 $hash / 100 % 100;\n"
-		"         	#return $hashtable[$hash1][$hash2][%1]\n"
-		"         }\n"
+		"<278>         #function {gethash}\n"
+		"<278>         {\n"
+		"<278>             #format hash %H %1;\n"
+		"<278>             #math hash1 $hash % 100;\n"
+		"<278>             #math hash2 $hash / 100 % 100;\n"
+		"<278>             #return $hashtable[$hash1][$hash2][%1]\n"
+		"<278>         }\n"
 		"\n"
-		"         #alias {test}\n"
-		"         {\n"
-		"         	sethash bli hey;\n"
-		"         	sethash bla hi;\n"
-		"         	sethash blo hello;\n"
-		"         	#show The value of bla is: @gethash{bla}\n"
-		"         }\n"
+		"<278>         #alias {test}\n"
+		"<278>         {\n"
+		"<278>             sethash bli hey;\n"
+		"<278>             sethash bla hi;\n"
+		"<278>             sethash blo hello;\n"
+		"<278>             #show The value of bla is: @gethash{bla}\n"
+		"<278>         }\n"
 		"\n"
-		"         The above script will rapidly store and retrieve over 1 million items.\n"
-		"         Looping through a hash table is relatively easy as well.\n"
+		"<278>         The above script will rapidly store and retrieve over 1 million items.\n"
+		"<278>         Looping through a hash table is relatively easy as well.\n"
 		"\n"
 		"<178>Example:<278>\n"
 		"\n"
-		"         #alias {showhash}\n"
-		"         {\n"
-		"         	#foreach {*hashtable[%*]} {hash1}\n"
-		"         	{\n"
-		"         		#foreach {*hashtable[$hash1][%*]} {hash2}\n"
-		"         		{\n"
-		"         			#echo {%-20s = %s}\n"
-		"                                        {hashtable[$hash1][$hash2]}\n"
-		"                                        {$hashtable[$hash1][$hash2]}\n"
-		"         		}\n"
-		"         	}\n"
-		"        }\n",
+		"<278>         #alias {showhash}\n"
+		"<278>         {\n"
+		"<278>             #foreach {*hashtable[%*]} {hash1}\n"
+		"<278>             {\n"
+		"<278>                 #foreach {*hashtable[$hash1][%*]} {hash2}\n"
+		"<278>                 {\n"
+		"<278>                     #echo {%-20s = %s}\n"
+		"<278>                                        {hashtable[$hash1][$hash2]}\n"
+		"<278>                                        {$hashtable[$hash1][$hash2]}\n"
+		"<278>                 }\n"
+		"<278>             }\n"
+		"<278>        }\n",
 		
 		"break continue foreach loop parse repeat return while"
 	},
@@ -2706,8 +2874,8 @@ struct help_type help_table[] =
 		"\n"
 		"<178>Example<278>: #alias {swap} {#local x %0;#replace x {e} {u};#show $x}\n"
 		"\n"
-		"<178>Comment<278>: You can remove a local variable with the #unlocal command.\n",
-
+		"<178>Comment<278>: You can remove a local variable with the #unlocal command.\n"
+		,
 		"format function math replace script variable"
 	},
 
@@ -2741,8 +2909,8 @@ struct help_type help_table[] =
 		"         <178>#log timestamp <format>\n"
 		"         <278>  When set the timestamp will be prepended to each line logged to file.\n"
 		"         <278>  The format will be formatted as a date using the strftime format\n"
-		"         <278>  specifiers as described in #help time.\n",
-
+		"         <278>  specifiers as described in #help time.\n"
+		,
 		"read scan textin time write"
 	},
 
@@ -2759,8 +2927,8 @@ struct help_type help_table[] =
 		"         This equals 'get all 1.corpse;get all 2.corpse;get all 3.corpse'.\n"
 		"\n"
 		"<178>Example<278>: #loop 3 1 cnt {drop $cnt\\.key}\n"
-		"         This equals 'drop 3.key;drop 2.key;drop 1.key'.\n",
-
+		"         This equals 'drop 3.key;drop 2.key;drop 1.key'.\n"
+		,
 		"break continue foreach list parse repeat return while"
 	},
 	{
@@ -2794,8 +2962,8 @@ struct help_type help_table[] =
 		"         If this is the case you can still use the keypad, but instead of the\n"
 		"         arrow keys use ctrl b, f, p, and n.\n"
 		"\n"
-		"<178>Comment<278>: You can remove a macro with the #unmacro command.\n",
-
+		"<178>Comment<278>: You can remove a macro with the #unmacro command.\n"
+		,
 		"alias cursor history keypad speedwalk tab"
 	},
 	{
@@ -3122,8 +3290,8 @@ struct help_type help_table[] =
 		"\n"
 		"         <178>#map write <filename> [force]\n"
 		"         <278>  Will save the map, if you want to save a map to a .tin file\n"
-		"         <278>  you must provide the {force} argument.\n",
-
+		"         <278>  you must provide the {force} argument.\n"
+		,
 		"path pathdir speedwalk"
 	},
 
@@ -3158,8 +3326,10 @@ struct help_type help_table[] =
 		"         To see the map you can use #map map. It's annoying to have to\n"
 		"         constantly type #map map however. Instead it's possible to use #split\n"
 		"         to display a vt100 map. To do so execute:\n"
+		"\n"
 		"         <178>#split 16 1\n"
 		"         #map flag vtmap on<278>\n"
+		"\n"
 		"         The first command sets the top split lines to 16 and the bottom split\n"
 		"         line to 1. If you want a smaller or larger map display you can use a\n"
 		"         different value than 16.\n"
@@ -3169,13 +3339,15 @@ struct help_type help_table[] =
 		"         standard display which uses UTF-8 box drawing characters, results may\n"
 		"         vary depending on the font used.\n"
 		"\n"
-		"         If your terminal supports UTF-8 you can also give #Map flag unicode on\n"
+		"         If your terminal supports UTF-8 you can also give #map flag unicode on\n"
 		"         a try.\n"
 		"\n"
 		"         If you want to display the map in a different location of the screen\n"
 		"         use something like:\n"
+		"\n"
 		"         <178>#split 0 1 0 -80\n"
 		"         #map offset 1 81 -4 -1<278>\n"
+		"\n"
 		"         This will display the map on the right side of the screen, if the\n"
 		"         width of the screen is wide enough.\n"
 		"<178>\n"
@@ -3200,8 +3372,13 @@ struct help_type help_table[] =
 		"         automatically. Once the room name is set you can use #map goto with\n"
 		"         the room name to visit it. If there are two rooms with the same name\n"
 		"         #map goto will go to the most nearby room. If you want to always go\n"
-		"         to the same room you should memorize the room number. You can further\n"
-		"         narrow down the matches by providing additional arguments, for example:\n"
+		"         to the same room you should memorize the room number or create a\n"
+		"         landmark.\n"
+		"<178>\n"
+		"         #map landmark firstroom 1\n"
+		"<278>\n"
+		"         You can further narrow down the matches by providing additional\n"
+		"         arguments, for example:\n"
 		"<178>\n"
 		"         #map goto {dark alley} {roomexits} {n;e} {roomarea} {Haddock Ville}\n"
 		"<278>\n"
@@ -3224,7 +3401,11 @@ struct help_type help_table[] =
 		"         The run command will have tintin find the shortest path to the given\n"
 		"         location and execute the movement commands to get there. You can\n"
 		"         provide a delay in seconds with floating point precision, for example:\n"
-		"         <178>#map run {dark alley} {0.5}<278>\n"
+		"<178>\n"
+		"         #map run {dark alley} {0.5}\n"
+		"<278>\n"
+		"         This will make you walk towards the nearest dark alley with 0.5 second\n"
+		"         intervals. Typical MUDs accept commands at 0.25 second intervals.\n"
 		"<178>\n"
 		"         #map insert {direction} {flag}\n"
 		"<278>\n"
@@ -3236,8 +3417,8 @@ struct help_type help_table[] =
 		"         visit.\n"
 		"\n"
 		"         It's also possible to align rooms using void rooms. This is easily\n"
-		"         done using #map insert north void.\n",
-
+		"         done using #map insert north void.\n"
+		,
 		"map path pathdir"
 	},
 
@@ -3308,8 +3489,8 @@ struct help_type help_table[] =
 		"\n"
 		"<178>Example<278>: #action {%0 tells %1}\n"
 		"           {#if {{%0} == {Bubba} && $afk} {reply I'm away, my friend.}}\n"
-		"         When you are away from keyboard, it will only reply to your friend.\n",
-
+		"         When you are away from keyboard, it will only reply to your friend.\n"
+		,
 		"cat format function local mathematics replace script variable"
 	},
 
@@ -3364,8 +3545,8 @@ struct help_type help_table[] =
 		"Strings must be encased in double quotes or braces. The > >= < <= operators\n"
 		"perform basic string comparisons. The == != operators perform regular\n"
 		"expressions, with the argument on the left being the string, and the argument\n"
-		"on the right being the regex. For example {bla} == {%*a} would evaluate as 1.\n",
-
+		"on the right being the regex. For example {bla} == {%*a} would evaluate as 1.\n"
+		,
 		"math regexp"
 	},
 
@@ -3376,8 +3557,8 @@ struct help_type help_table[] =
 		"\n"
 		"         This will show the message status of all your lists if typed without an\n"
 		"         argument. If you set for example VARIABLES to OFF you will no longer be\n"
-		"         spammed when correctly using the #VARIABLE and #UNVARIABLE commands.\n",
-
+		"         spammed when correctly using the #VARIABLE and #UNVARIABLE commands.\n"
+		,
 		"class debug ignore info kill"
 	},
 
@@ -3442,8 +3623,8 @@ struct help_type help_table[] =
 		"         Available MSDP events can be queried using the MSDP protocol\n"
 		"         as described in the specification.\n"
 		"<178>\n"
-		"         https://tintin.sourceforge.io/protocols/msdp\n",
-
+		"         https://tintin.sourceforge.io/protocols/msdp\n"
+		,
 		"event port"
 	},
 
@@ -3499,8 +3680,8 @@ struct help_type help_table[] =
 		"\n"
 		"         This would make you start a reply when clicking on a tell.\n"
 		"\n"
-		"<178>Website<278>: https://tintin.mudhalla.net/protocols/mslp\n",
-
+		"<178>Website<278>: https://tintin.mudhalla.net/protocols/mslp\n"
+		,
 		"event port"
 	},
 
@@ -3522,8 +3703,8 @@ struct help_type help_table[] =
 		"         For commenting out an entire trigger and especially large sections of\n"
 		"         triggers you would want to use /* text */\n"
 		"\n"
-		"<178>Example<278>: #nop This is the start of my script file.\n",
-
+		"<178>Example<278>: #nop This is the start of my script file.\n"
+		,
 		"read"
 	},
 	{
@@ -3535,8 +3716,8 @@ struct help_type help_table[] =
 		"         the given string.  The value of the current character is stored in the\n"
 		"         provided variable.\n"
 		"\n"
-		"<178>Example<278>: #parse {hello world} {char} {#show $char}\n",
-
+		"<178>Example<278>: #parse {hello world} {char} {#show $char}\n"
+		,
 		"break continue foreach list loop repeat return while"
 	},
 	{
@@ -3566,8 +3747,8 @@ struct help_type help_table[] =
 		"         walk     Take one step forward or backward.\n"
 		"         zip      Turn the path into a speedwalk.\n"
 		"\n"
-		"<178>Example<278>: #path ins {unlock n;open n} {unlock s;open s}\n",
-
+		"<178>Example<278>: #path ins {unlock n;open n} {unlock s;open s}\n"
+		,
 		"map pathdir speedwalk"
 	},
 	{
@@ -3788,8 +3969,8 @@ struct help_type help_table[] =
 		"\n"
 		"         This covers the basics. PCRE has more options, most of which are\n"
 		"         somewhat obscure, so you'll have to read a PCRE manual for additional\n"
-		"         information.\n",
-
+		"         information.\n"
+		,
 		"map path"
 	},
 
@@ -3841,8 +4022,8 @@ struct help_type help_table[] =
 		"         new session dedicated to receiving socket connections at the given\n"
 		"         port number without built-in support for a communication protocol.\n"
 		"\n"
-		"         You can init with 0 as the port number to create a dummy session.\n",
-
+		"         You can init with 0 as the port number to create a dummy session.\n"
+		,
 		"all chat run session sessionname snoop ssl zap"
 	},
 
@@ -3862,6 +4043,10 @@ struct help_type help_table[] =
 		"         #prompt will write to the default split line, which is one row above\n"
 		"         the input line, typically at row -2.\n"
 		"\n"
+		"         If the row number is set to 0, #prompt will behave like #substitute.\n"
+		"         This is useful to let tintin know that a prompt was received so you\n"
+		"         can use #config packet_patch with minimal interference.\n"
+		"\n"
 		"         The col number is optional and can be used to set the column index.\n"
 		"         A positive col number draws the given number of columns from the left,\n"
 		"         while a negative col number draws from the right. If you leave the\n"
@@ -3876,8 +4061,8 @@ struct help_type help_table[] =
 		"<178>Comment<278>: See <178>#help substitute<278> for more information on text\n"
 		"         substitutions.\n"
 		"\n"
-		"<178>Comment<278>: You can remove a prompt with the #unprompt command.\n",
-
+		"<178>Comment<278>: You can remove a prompt with the #unprompt command.\n"
+		,
 		"action gag highlight substitute"
 	},
 	{
@@ -3892,8 +4077,8 @@ struct help_type help_table[] =
 		"         This however means you must always match every { with a } for the read\n"
 		"         command to work.\n"
 		"\n"
-		"         You can comment out triggers using /* text */\n",
-
+		"         You can comment out triggers using /* text */\n"
+		,
 		"log scan textin write"
 	},
 	{
@@ -3908,6 +4093,10 @@ struct help_type help_table[] =
 		"\n"
 		"         Variables are stored in &1 to &99 with &0 holding the matched\n"
 		"         substring.\n"
+		"\n"
+		"         The #regex command is not a proper statement like #if, when using\n"
+		"         #return or #break in the {true} argument it won't terminate any loop\n"
+		"         the #regex command is nested within.\n"
 		"\n"
 		"       ^ force match of start of line.\n"
 		"       $ force match of end of line.\n"
@@ -3958,8 +4147,8 @@ struct help_type help_table[] =
 		"\n"
 		"<178>Example<278>: #regexp {bli bla blo} {bli {.*} blo} {#show &1}\n"
 		"\n"
-		"<178>Comment<278>: Like an alias or function #regex has its own scope.\n",
-
+		"<178>Comment<278>: Like an alias or function #regex has its own scope.\n"
+		,
 		"pcre replace"
 	},
 
@@ -3986,8 +4175,8 @@ struct help_type help_table[] =
 		"         Variables are stored in &1 to &99 with &0 holding the entire matched\n"
 		"         substring.\n"
 		"\n"
-		"<178>Example<278>: #function rnd #math result 1d9;#replace test {%.} {@rnd{}}\n",
-
+		"<178>Example<278>: #function rnd #math result 1d9;#replace test {%.} {@rnd{}}\n"
+		,
 		"cat format function local math script variable"
 	},
 	{
@@ -3999,8 +4188,8 @@ struct help_type help_table[] =
 		"         executed.\n"
 		"\n"
 		"         If used inside a #function you can use #return with an argument to both\n"
-		"         break out of the function and set the result variable.\n",
-
+		"         break out of the function and set the result variable.\n"
+		,
 		"break continue foreach list loop parse repeat while"
 	},
 	{
@@ -4016,8 +4205,8 @@ struct help_type help_table[] =
 		"         is loaded prior to execution.\n"
 		"\n"
 		"<178>Example<278>: #run {somewhere} {ssh someone@somewhere.com}\n"
-		"<178>Example<278>: #run {something} {tail -f chats.log}\n",
-
+		"<178>Example<278>: #run {something} {tail -f chats.log}\n"
+		,
 		"all port session sessionname snoop ssl zap"
 	},
 	{
@@ -4076,8 +4265,8 @@ struct help_type help_table[] =
 		"\n"
 		"           Actions, highlights, and substitutions will trigger as normal, and it\n"
 		"           is possible to create an action to execute #scan abort to prematurely\n"
-		"           stop the scan.\n",
-
+		"           stop the scan.\n"
+		,
 		"read textin"
 	},
 
@@ -4147,8 +4336,8 @@ struct help_type help_table[] =
 		"         <278>  Set the title, label, or both. Only title works on Windows.\n"
 		"\n"
 		"         <178>#screen swap\n"
-		"         <278>  Swap the input and scroll region.\n",
-
+		"         <278>  Swap the input and scroll region.\n"
+		,
 		"bell"
 	},
 
@@ -4165,8 +4354,8 @@ struct help_type help_table[] =
 		"         http://tintin.sourceforge.net/protocols/mtts\n"
 		"\n"
 		"         With the screen reader mode enabled TinTin++ will try to remove visual\n"
-		"         elements where possible.\n",
-
+		"         elements where possible.\n"
+		,
 		"config"
 	},
 
@@ -4187,8 +4376,8 @@ struct help_type help_table[] =
 		"<178>Example<278>: #script {ruby -e 'print \"#show hello world\"'}\n"
 		"<178>Example<278>: #script {python -c 'print \"#show hello world\"'}\n"
 		"<178>Example<278>: #script {php -r 'echo \"#show hello world\"'}\n"
-		"<178>Example<278>: #script {path} {pwd};#show The path is $path[1].\n",
-
+		"<178>Example<278>: #script {path} {pwd};#show The path is $path[1].\n"
+		,
 		"format function local math replace variable"
 	},
 
@@ -4198,8 +4387,8 @@ struct help_type help_table[] =
 		"<178>Command<278>: #send <178>{<278>text<178>}<278>\n"
 		"\n"
 		"         Sends the text directly to the server, useful if you want to start\n"
-		"         with an escape code.\n",
-
+		"         with an escape code.\n"
+		,
 		"textin"
 	},
 
@@ -4240,34 +4429,46 @@ struct help_type help_table[] =
 		"         The startup session is named 'gts' and can be used for relog scripts.\n"
 		"         Do keep in mind that tickers do not work in the startup session.\n"
 		"\n"
-		"<178>Example<278>: #event {SESSION DISCONNECTED} {#gts #delay 10 #ses %0 tintin.net 4321}\n",
-
+		"<178>Example<278>: #event {SESSION DISCONNECTED} {#gts #delay 10 #ses %0 tintin.net 4321}\n"
+		,
 		"all port run sessionname snoop ssl zap"
 	},
 
 	{
 		"SESSIONNAME",
 		TOKEN_TYPE_STRING,
-		"<178>Syntax<278>: #[sessionname] <178>{<278>commands<178>}<278>\n"
+		"<178>Syntax<278>:  #[sessionname] <178>{<278>commands<178>}<278>\n"
 		"\n"
-		"You can create multiple sessions with the #session command. By default only one\n"
-		"session is active, meaning commands you input are executed in the active\n"
-		"session. While all sessions receive output, only output sent to the active\n"
-		"session is displayed.\n"
+		"         You can create multiple sessions with the #session command. By default\n"
+		"         only one session is active, meaning commands you input are executed in\n"
+		"         the active session. While all sessions receive output, only output sent\n"
+		"         to the active session is displayed.\n"
 		"\n"
-		"When you create a session with the #session command you must specify a session\n"
-		"name, the session name, prepended with a hashtag, can be used to activate the\n"
-		"session when used without an argument. If an argument is given it will be\n"
-		"executed by that session as a command, the session will not be activated.\n"
+		"         When you create a session with the #session command you must specify a\n"
+		"         session name, the session name, prepended with a hashtag, can be used\n"
+		"         to activate the session when used without an argument. If an argument\n"
+		"         is given it will be executed by that session as a command, the session\n"
+		"         will not be activated.\n"
 		"\n"
 		"<178>Example<278>: #ses one tintin.net 23;#ses two tintin.net 23;#one;#two grin\n"
 		"\n"
-		"This will create two sessions, the session that was created last (two in this\n"
-		"case) will be automatically activated upon creation. Using #one, session one is\n"
-		"activated. Using #two grin, the grin social will be executed by session two,\n"
-		"session one will remain the active session.\n",
-		
-		"all port run session snoop ssl zap"
+		"         This will create two sessions, the session that was created last (two\n"
+		"         in this case) will be automatically activated upon creation. Using\n"
+		"         #one, session one is activated. Using #two grin, the grin social will\n"
+		"         be executed by session two, session one will remain the active session.\n"
+		"\n"
+		"         If you send a variable to another session it will be substituted before\n"
+		"         being passed. If you want the variable value of the receiving session\n"
+		"         to be used you need to use '$${variable}' to properly escape it.\n"
+		"\n"
+		"<178>Syntax<278>:  @[sessionname]<178>{<278>substitution<178>}<278>\n"
+		"\n"
+		"         If you want to pull the value of a variable from another session you\n"
+		"         can do so in a similar way as you would use a #function call. Using\n"
+		"         #showme {@two{$test}} in session one would print the value of $test,\n"
+		"         as defined by session two.\n"
+		,
+		"suspend"
 	},
 
 	{
@@ -4285,8 +4486,8 @@ struct help_type help_table[] =
 		"<178>Example<278>: #tick {TICK} {#delay 50 #show 10 SECONDS TO TICK!!!} {60}\n"
 		"\n"
 		"<178>Comment<278>: The #prompt helpfile contains more information on using the\n"
-		"         option {row} and {col} arguments.\n",
-
+		"         option {row} and {col} arguments.\n"
+		,
 		"buffer draw echo grep prompt"
 	},
 	{
@@ -4304,8 +4505,8 @@ struct help_type help_table[] =
 		"         By using the scroll argument you will snoop the session's scroll\n"
 		"         region which will overwrite the display of whichever session is active.\n"
 		"         You can change the size and location of a session's scroll region by\n"
-		"         using the #split and #screen scrollregion commands.\n",
-
+		"         using the #split and #screen scrollregion commands.\n"
+		,
 		"all port run session sessionname ssl zap"
 	},
 	{
@@ -4332,6 +4533,11 @@ struct help_type help_table[] =
 		"         be written as 1n1e1s1w, which then allows 2ne2e to execute ne;ne;e;e.\n"
 		"\n"
 		"         Speedwalks entered on the input line continue to use the v1 system.\n"
+		"\n"
+		"         The #path load command is backward compatible with v1 speedwalks and\n"
+		"         to load v2 speedwalks the #path unzip command needs to be used, unless\n"
+		"         the speedwalk was saved using #path save in which case a v2 compatible\n"
+		"         format is used that can also contain timing data.\n"
 		"\n"
 		"<178>Example<278>: #path unzip 3n1e2nw\n"
 		"<178>Example<278>: #map move 3ne1d\n",
@@ -4392,11 +4598,14 @@ struct help_type help_table[] =
 		"         columns will be used for the scrolling region, leaving a right bar\n"
 		"         with a width of 20 columns.\n"
 		"\n"
+		"         To avoid displaying problems it's suggesed to use #prompt to capture\n"
+		"         the prompt sent by the MUD.\n"
+		"\n"
 		"<178>Comment<278>: You can display text on the split line(s) with the #prompt and\n"
 		"         #show {line} {row} commands.\n"
 		"\n"
-		"<178>Comment<278>: You can remove split mode with the #unsplit command.\n",
-
+		"<178>Comment<278>: You can remove split mode with the #unsplit command.\n"
+		,
 		"echo prompt showme"
 	},
 	{
@@ -4405,8 +4614,8 @@ struct help_type help_table[] =
 		"<178>Command<278>: #ssl <178>{<278>name<178>} {<278>host<178>} {<278>port<178>} {<278>file<178>}\n"
 		"\n"
 		"         Starts a secure socket telnet session with the given name, host, port,\n"
-		"         and optional file name.\n",
-
+		"         and optional file name.\n"
+		,
 		"all port run sessionname snoop ssl zap"
 	},
 	{
@@ -4427,8 +4636,8 @@ struct help_type help_table[] =
 		"         #parse {string} {variable} {commands}\n"
 		"         #return {value}\n"
 		"         #switch {expression} {commands}\n"
-		"         #while {expression} {commands}\n",
-
+		"         #while {expression} {commands}\n"
+		,
 		"commands help info"
 	},
 	{
@@ -4463,8 +4672,8 @@ struct help_type help_table[] =
 		"\n"
 		"<178>Comment<278>: See '#help colors', for more information.\n"
 		"\n"
-		"<178>Comment<278>: You can remove a substitution with the #unsubstitute command.\n",
-
+		"<178>Comment<278>: You can remove a substitution with the #unsubstitute command.\n"
+		,
 		"action gag highlight prompt"
 	},
 	{
@@ -4535,8 +4744,8 @@ struct help_type help_table[] =
 		"          are listed at #help escape. Escapes are typically escaped when text\n"
 		"          leaves the client, by being send to a server, the shell, being\n"
 		"          displayed on the screen, or being processed as part of a regex.\n"
-		"          Escapes try to mimic escapes in PCRE when possible.\n",
-
+		"          Escapes try to mimic escapes in PCRE when possible.\n"
+		,
 		"characters colors escapes info pcre",
 	},
 	{
@@ -4548,9 +4757,9 @@ struct help_type help_table[] =
 		"         return to tintin, type 'fg' at the shell prompt.\n"
 		"\n"
 		"         While suspended your tintin sessions will freeze. To keep a\n"
-		"         suspended session running use the #detach command.\n",
-
-		"end"
+		"         suspended session running use the #daemon command.\n"
+		,
+		"sessionname"
 	},
 	{
 		"SWITCH",
@@ -4568,8 +4777,8 @@ struct help_type help_table[] =
 		"         If the 'default' command is found and no 'case' statement has been\n"
 		"         matched the default command's argument is executed.\n"
 		"\n"
-		"<178>Example<278>: #switch {1d4} {#case 1 cackle;#case 2 smile;#default giggle}\n",
-
+		"<178>Example<278>: #switch {1d4} {#case 1 cackle;#case 2 smile;#default giggle}\n"
+		,
 		"statements"
 	},
 	{
@@ -4577,8 +4786,8 @@ struct help_type help_table[] =
 		TOKEN_TYPE_COMMAND,
 		"<178>Command<278>: #system <178>{<278>command<178>}<278>\n"
 		"\n"
-		"         Executes the command specified as a shell command.\n",
-
+		"         Executes the command specified as a shell command.\n"
+		,
 		"detach script run"
 	},
 	{
@@ -4594,8 +4803,8 @@ struct help_type help_table[] =
 		"         Tabbing behavior can be modified with the #cursor tab command which\n"
 		"         by default is bound to the tab key.\n"
 		"\n"
-		"<178>Comment<278>: You can remove a tab with the #untab command.\n",
-
+		"<178>Comment<278>: You can remove a tab with the #untab command.\n"
+		,
 		"alias cursor history keypad macro speedwalk"
 	},
 	{
@@ -4608,8 +4817,8 @@ struct help_type help_table[] =
 		"         writing.\n"
 		"\n"
 		"         The delay is in seconds and takes a floating point number which is\n"
-		"         cumulatively applied to each outgoing line.\n",
-
+		"         cumulatively applied to each outgoing line.\n"
+		,
 		"scan send"
 	},
 	{
@@ -4623,8 +4832,8 @@ struct help_type help_table[] =
 		"\n"
 		"<178>Comment<278>: Tickers don't work in the startup session.\n"
 		"\n"
-		"<178>Comment<278>: You can remove a ticker with the #unticker command.\n",
-
+		"<178>Comment<278>: You can remove a ticker with the #unticker command.\n"
+		,
 		"delay event"
 	},
 	{
@@ -4664,8 +4873,8 @@ struct help_type help_table[] =
 		"         %y  2 digit numeric year. (70 ... 38)\n"
 		"         %Y  4 digit numeric year. (1970 ... 2038)\n"
 		"         %z  5 digit timezone offset. (-1200 ... +1400)\n"
-		"         %Z  Abbreviated name of the time zone.\n",
-
+		"         %Z  Abbreviated name of the time zone. (CET, GMT, etc)\n"
+		,
 		"echo event format"
 	},
 	{
@@ -4729,8 +4938,8 @@ struct help_type help_table[] =
 		"         #var {hp} {{self}{34}} {{target}{46}} or if you want to get creative\n"
 		"         the equivalent of #var hp[self] 34;#var {hp} {$hp} {{target}{46}}.\n"
 		"\n"
-		"<178>Comment<278>: You can remove a variable with the #unvariable command.\n",
-
+		"<178>Comment<278>: You can remove a variable with the #unvariable command.\n"
+		,
 		"cat format function local math replace script"
 	},
 	{
@@ -4749,14 +4958,13 @@ struct help_type help_table[] =
 		"         nest it inside a trigger, like an alias or action.\n"
 		"\n"
 		"         The conditional is evaluated exactly the same as in the 'math' command.\n"
-                "\n"
-                "<178>Example<278>: #math cnt 0;#while {$cnt < 20} {#math cnt $cnt + 1;say $cnt}\n"
 		"\n"
-		"<178>Comment<278>: See '#help math', for more information.\n",
-
+		"<178>Example<278>: #math cnt 0;#while {$cnt < 20} {#math cnt $cnt + 1;say $cnt}\n"
+		"\n"
+		"<178>Comment<278>: See '#help math', for more information.\n"
+		,
 		"statements"
 	},
-                                                                                                   
 	{
 		"WRITE",
 		TOKEN_TYPE_COMMAND,
@@ -4767,8 +4975,8 @@ struct help_type help_table[] =
 		"\n"
 		"         By default you cannot write to .map files to prevent accidentally\n"
 		"         overwriting a map file. Use the FORCE argument to ignore this\n"
-		"         protection.\n",
-
+		"         protection.\n"
+		,
 		"log read scan textin"
 	},
 	{
@@ -4778,15 +4986,15 @@ struct help_type help_table[] =
 		"\n"
 		"         Kill your current session.  If there is no current session, it will\n"
 		"         cause the program to terminate. If you provide an argument it'll zap\n"
-		"         the given session instead.\n",
-
+		"         the given session instead.\n"
+		,
 		"all port run session sessionname snoop ssl"
 	},
 	{
 		"",
 		TOKEN_TYPE_COMMAND,
-		"",
-
+		""
+		,
 		""
 	}
 };

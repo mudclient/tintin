@@ -809,15 +809,19 @@ int check_all_prompts(struct session *ses, char *original, char *line)
 
 			show_debug(ses, LIST_PROMPT, "#DEBUG PROMPT {%s}", node->arg1);
 
-			split_show(ses, original, node->arg3, node->arg4);
+			if (strcmp(node->arg3, "0"))
+			{
+				split_show(ses, original, node->arg3, node->arg4);
+
+				if (ses->gagline == 0)
+				{
+					ses->gagline = 1;
+				}
+			}
 
 			if (node->shots && --node->shots == 0)
 			{
 				delete_node_list(ses, LIST_PROMPT, node);
-			}
-			if (ses->gagline == 0)
-			{
-				ses->gagline = 1;
 			}
 		}
 	}

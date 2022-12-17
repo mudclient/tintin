@@ -1,6 +1,15 @@
 Jul 2022        2.02.21
 ------------------------------------------------------------------------------
-input.c         Fixed memory access violation error reported by dzp.
+draw.c          #draw SCALED will only scale vertically when combined with the
+                VERTICAL flag.
+
+                combined with 
+gui.h           Updated the connection manager (tt++ -g) with new sponsors and
+                some bug fixes.
+
+trigger.c       #prompt with a row argument of 0 will behave like #substitute.
+
+input.c         Fixed memory access violation identified by dzp.
 
 line.c          Updated #line gag to support #line gag [amount], you can use
                 + or - to increase or decrease the current amount.

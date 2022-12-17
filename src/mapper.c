@@ -8816,7 +8816,7 @@ DO_MAP(map_write)
 		{
 			DEL_BIT(ses->map->room_list[index]->flags, ROOM_FLAG_PATH);
 
-			fprintf(file, "\nR {%5d} {%d} {%s} {%s} {%s} {%s} {%s} {%s} {%s} {%s} {%.3f} {%s}\n",
+			fprintf(file, "\nR {%d}{%d}{%s}{%s}{%s}{%s}{%s}{%s}{%s}{%s}{%.3f}{%s}\n",
 				ses->map->room_list[index]->vnum,
 				ses->map->room_list[index]->flags,
 				ses->map->room_list[index]->color,
@@ -8832,7 +8832,7 @@ DO_MAP(map_write)
 
 			for (exit = ses->map->room_list[index]->f_exit ; exit ; exit = exit->next)
 			{
-				fprintf(file, "E {%5d} {%s} {%s} {%d} {%d} {%s} {%.3f} {%s} {%.2f}\n",
+				fprintf(file, "E {%d}{%s}{%s}{%d}{%d}{%s}{%.3f}{%s}{%.2f}\n",
 					exit->vnum,
 					exit->name,
 					exit->cmd,

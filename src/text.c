@@ -330,6 +330,7 @@ int word_wrap_split(struct session *ses, char *textin, char *textout, int wrap, 
 	*width     = 0;
 	cur_col    = 1;
 	cur_space  = cur_col;
+	*pto       = 0;
 
 	if (HAS_BIT(flags, WRAP_FLAG_SPLIT) && end == 0)
 	{
