@@ -1139,17 +1139,29 @@ DO_SCREEN(screen_set)
 	{
 		screen_osc("0", arg2);
 	}
-	else if (is_abbrev(arg1, "COLS"))
+	else if (is_abbrev(arg1, "COLS") && is_math(ses, arg2))
 	{
-		gtd->screen->cols = get_number(ses, arg2);
+		init_resize(gts, gtd->screen->rows, get_number(ses, arg2), gtd->screen->height, gtd->screen->width / gtd->screen->cols * get_number(ses, arg2));
+
+		for (ses = gts->next ; ses ; ses = ses->next)
+		{
+			init_resize(ses, gtd->screen->rows, gtd->screen->cols, gtd->screen->height, gtd->screen->width);
+		}
+//		gtd->screen->cols = get_number(ses, arg2);
 	}
 	else if (is_abbrev(arg1, "LABEL"))
 	{
 		screen_osc("1", arg2);
 	}
-	else if (is_abbrev(arg1, "ROWS"))
+	else if (is_abbrev(arg1, "ROWS") && is_math(ses, arg2))
 	{
-		gtd->screen->rows = get_number(ses, arg2);
+		init_resize(gts, get_number(ses, arg2), gtd->screen->cols, gtd->screen->height / gtd->screen->rows * get_number(ses, arg2), gtd->screen->width);
+
+		for (ses = gts->next ; ses ; ses = ses->next)
+		{
+			init_resize(ses, gtd->screen->rows, gtd->screen->cols, gtd->screen->height, gtd->screen->width);
+		}
+//		gtd->screen->rows = get_number(ses, arg2);
 	}
 	else if (is_abbrev(arg1, "TITLE"))
 	{
@@ -1157,7 +1169,7 @@ DO_SCREEN(screen_set)
 	}
 	else
 	{
-		show_error(ses, LIST_COMMAND, "#SYNTAX: #SCREEN {SET} {COLS|ROWS|LABEL|NAME|TITLE}");
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #SCREEN {SET} {COLS|ROWS|LABEL|NAME|TITLE} {<ARG>}");
 	}
 }
 

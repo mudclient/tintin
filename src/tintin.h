@@ -1671,6 +1671,7 @@ struct charset_type
 {
 	char                  * name;
 	char                  * html;
+	char                  * mnes;
 	int                     flags;
 };
 
@@ -2886,6 +2887,7 @@ extern void  refresh_session_terminal(struct session *ses);
 extern void  echo_on(struct session *ses);
 extern void  echo_off(struct session *ses);
 extern void  init_terminal_size(struct session *ses);
+extern void  init_resize(struct session *ses, int rows, int cols, int height, int width);
 extern  int  get_scroll_rows(struct session *ses);
 extern  int  get_scroll_cols(struct session *ses);
 extern char *get_charset(struct session *ses);

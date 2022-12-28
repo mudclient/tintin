@@ -72,22 +72,22 @@ struct substitution_type substitution_table[] =
 
 struct charset_type charset_table[] =
 {
-	{    "ASCII",         "iso-8859-1",  0                 },
-	{    "UTF-8",         "utf-8",       CHARSET_FLAG_UTF8 },
-	{    "BIG-5",         "big-5",       CHARSET_FLAG_BIG5 },
-	{    "GBK-1",         "gb18030",     CHARSET_FLAG_GBK1 },
-	{    "CP949",         "cp949",       CHARSET_FLAG_CP949 },
+	{    "ASCII",         "iso-8859-1",  "ASCII",      0                  },
+	{    "UTF-8",         "utf-8",       "UTF-8",      CHARSET_FLAG_UTF8  },
+	{    "BIG-5",         "big-5",       "BIG-5",      CHARSET_FLAG_BIG5  },
+	{    "GBK-1",         "gb18030",     "GB18030",    CHARSET_FLAG_GBK1  },
+	{    "CP949",         "cp949",       "CP949",      CHARSET_FLAG_CP949 },
 
-	{    "BIG5TOUTF8",    "utf-8",       CHARSET_FLAG_UTF8|CHARSET_FLAG_BIG5TOUTF8 },
-	{    "CP1251TOUTF8",  "utf-8",       CHARSET_FLAG_UTF8|CHARSET_FLAG_CP1251TOUTF8 },
-	{    "CP437TOUTF8",   "utf-8",       CHARSET_FLAG_UTF8|CHARSET_FLAG_FANSITOUTF8 },
-	{    "CP949TOUTF8",   "utf-8",       CHARSET_FLAG_UTF8|CHARSET_FLAG_CP949TOUTF8 },
-	{    "FANSITOUTF8",   "utf-8",       CHARSET_FLAG_UTF8|CHARSET_FLAG_FANSITOUTF8 },
-	{    "GBK1TOUTF8",    "utf-8",       CHARSET_FLAG_UTF8|CHARSET_FLAG_GBK1TOUTF8 },
-	{    "ISO1TOUTF8",    "utf-8",       CHARSET_FLAG_UTF8|CHARSET_FLAG_ISO1TOUTF8 },
-	{    "ISO2TOUTF8",    "utf-8",       CHARSET_FLAG_UTF8|CHARSET_FLAG_ISO2TOUTF8 },
-	{    "KOI8TOUTF8",    "utf-8",       CHARSET_FLAG_UTF8|CHARSET_FLAG_KOI8TOUTF8 },
-	{    "",              "",            0 }
+	{    "BIG5TOUTF8",    "utf-8",       "BIG-5",      CHARSET_FLAG_UTF8|CHARSET_FLAG_BIG5TOUTF8   },
+	{    "CP1251TOUTF8",  "utf-8",       "CP1251",     CHARSET_FLAG_UTF8|CHARSET_FLAG_CP1251TOUTF8 },
+	{    "CP437TOUTF8",   "utf-8",       "CP437",      CHARSET_FLAG_UTF8|CHARSET_FLAG_FANSITOUTF8  },
+	{    "CP949TOUTF8",   "utf-8",       "CP949",      CHARSET_FLAG_UTF8|CHARSET_FLAG_CP949TOUTF8  },
+	{    "FANSITOUTF8",   "utf-8",       "CP437",      CHARSET_FLAG_UTF8|CHARSET_FLAG_FANSITOUTF8  },
+	{    "GBK1TOUTF8",    "utf-8",       "GB18030",    CHARSET_FLAG_UTF8|CHARSET_FLAG_GBK1TOUTF8   },
+	{    "ISO1TOUTF8",    "utf-8",       "ISO-8859-1", CHARSET_FLAG_UTF8|CHARSET_FLAG_ISO1TOUTF8   },
+	{    "ISO2TOUTF8",    "utf-8",       "ISO-8859-2", CHARSET_FLAG_UTF8|CHARSET_FLAG_ISO2TOUTF8   },
+	{    "KOI8TOUTF8",    "utf-8",       "KOI-8",      CHARSET_FLAG_UTF8|CHARSET_FLAG_KOI8TOUTF8   },
+	{    "",              "",            "",           0 }
 };
 
 struct config_type config_table[] =

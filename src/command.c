@@ -27,15 +27,63 @@
 
 struct command_type command_table[];
 
+size_t command_size();
+
 DO_COMMAND(do_commands)
 {
-	int cmd;
+	int cmd, size, rows, cols, row, col;
+
+	size = command_size();
+	rows = UMAX(1, ses->wrap / 20);
+	cols = size / rows + (size % rows > 0);
 
 	arg = sub_arg_in_braces(ses, arg, arg1, GET_ALL, SUB_VAR|SUB_FUN);
 
 	tintin_header(ses, 0, " %s ", "COMMANDS");
 
-	for (cmd = 0 ; *command_table[cmd].name != 0 ; cmd++)
+	for (cmd = col = 0 ; col < cols ; col++)
+	{
+		if (*arg1 == 0 && !HAS_BIT(ses->config_flags, CONFIG_FLAG_SCREENREADER))
+		{
+			cmd = col;
+		}
+
+		for (row = 0 ; row < rows && cmd < size ; row++)
+		{
+			if (*arg1 && !is_abbrev(arg1, command_table[cmd].name))
+			{
+				row--;
+				cmd++;
+				continue;
+			}
+
+			if (command_table[cmd].type == TOKEN_TYPE_COMMAND)
+			{
+				cat_sprintf(arg2, "%s%-20s", COLOR_COMMAND, command_table[cmd].name);
+			}
+			else
+			{
+				cat_sprintf(arg2, "%s%-20s", COLOR_STATEMENT, command_table[cmd].name);
+			}
+
+			if (*arg1 == 0 && !HAS_BIT(ses->config_flags, CONFIG_FLAG_SCREENREADER))
+			{
+				cmd += cols;
+			}
+			else
+			{
+				cmd++;
+			}
+
+			if (row + 1 == rows || cmd >= size)
+			{
+				tintin_puts2(ses, arg2);
+				*arg2 = 0;
+				break;
+			}
+		}
+	}
+/*	for (cmd = 0 ; *command_table[cmd].name != 0 ; cmd++)
 	{
 		if (*arg1 && !is_abbrev(arg1, command_table[cmd].name))
 		{
@@ -57,7 +105,7 @@ DO_COMMAND(do_commands)
 			cat_sprintf(arg2, "%s%20s", COLOR_STATEMENT, command_table[cmd].name);
 		}
 	}
-
+*/
 	if (*arg2)
 	{
 		tintin_puts2(ses, arg2);
@@ -319,3 +367,8 @@ struct command_type command_table[] =
 	{    "zap",               do_zap,               1, TOKEN_TYPE_COMMAND },
 	{    "",                  NULL,                 0, TOKEN_TYPE_COMMAND }
 };
+
+size_t command_size()
+{
+	return sizeof(command_table) / sizeof(command_table[0]) - 1;
+}

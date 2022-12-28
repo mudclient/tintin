@@ -89,10 +89,12 @@ char *help_related(struct session *ses, int index, int html)
 	return buf;
 }
 
+size_t help_size();
+
 DO_COMMAND(do_help)
 {
-	char buf[BUFFER_SIZE], tmp[BUFFER_SIZE], color[COLOR_SIZE];
-	int cnt, tut, found;
+	char buf[BUFFER_SIZE], color[COLOR_SIZE];
+	int cnt, tut, found, rows, cols, size, col, row;
 
 	arg = get_arg_in_braces(ses, arg, arg1, GET_ALL);
 
@@ -102,45 +104,57 @@ DO_COMMAND(do_help)
 
 		*buf = 0;
 
-		for (cnt = 0 ; *help_table[cnt].name != 0 ; cnt++)
+		size = help_size();
+		rows = UMAX(1, ses->wrap / 16);
+		cols = size / rows + (size % rows > 0);
+
+		for (cnt = col = 0 ; col < cols ; col++)
 		{
-			switch (help_table[cnt].type)
+			if (!HAS_BIT(ses->config_flags, CONFIG_FLAG_SCREENREADER))
 			{
-				case TOKEN_TYPE_STATEMENT:
-//					strcpy(color, COLOR_STATEMENT);
-//					break;
-				case TOKEN_TYPE_CONFIG:
-//					strcpy(color, COLOR_CONFIG);
-//					break;
-				case TOKEN_TYPE_COMMAND:
-					strcpy(color, COLOR_COMMAND);
+				cnt = col;
+			}
+
+			for (row = 0 ; row < rows ; row++)
+			{
+				switch (help_table[cnt].type)
+				{
+					case TOKEN_TYPE_STATEMENT:
+//						strcpy(color, COLOR_STATEMENT);
+//						break;
+					case TOKEN_TYPE_CONFIG:
+//						strcpy(color, COLOR_CONFIG);
+//						break;
+					case TOKEN_TYPE_COMMAND:
+						strcpy(color, COLOR_COMMAND);
+						break;
+					case TOKEN_TYPE_STRING:
+						strcpy(color, COLOR_STRING);
+						break;
+					default:
+						strcpy(color, "");
+						break;
+				}
+
+				if (HAS_BIT(gtd->flags, TINTIN_FLAG_MOUSETRACKING))
+				{
+					cat_sprintf(buf, "\e]68;6;;%s\a\e[4m%s%s\e[24m%.*s", help_table[cnt].name, color, help_table[cnt].name, 16 - (int) strlen(help_table[cnt].name), "                ");
+				}
+				else
+				{
+					cat_sprintf(buf, "%s%-16s", color, help_table[cnt].name);
+				}
+				cnt += HAS_BIT(ses->config_flags, CONFIG_FLAG_SCREENREADER) ? 1 : cols;
+
+				if (row + 1 == rows || cnt >= size)
+				{
+					print_lines(ses, SUB_COL, "<088>%s<088>\n", buf);
+
+					*buf = 0;
+
 					break;
-
-				case TOKEN_TYPE_STRING:
-					strcpy(color, COLOR_STRING);
-					break;
-
-				default:
-					strcpy(color, "");
-					break;
+				}
 			}
-
-			if (HAS_BIT(gtd->flags, TINTIN_FLAG_MOUSETRACKING))
-			{
-				sprintf(tmp, "%.*s\e]68;6;;%s\a\e[4m%s%s\e[24m", 16 - (int) strlen(help_table[cnt].name), "                ", help_table[cnt].name, color, help_table[cnt].name);
-			}
-			else
-			{
-				sprintf(tmp, "%s%16s", color, help_table[cnt].name);
-			}
-
-			if (strip_vt102_strlen(ses, buf) + 16 > ses->wrap)
-			{
-				print_lines(ses, SUB_COL, "<088>%s<088>\n", buf);
-
-				*buf = 0;
-			}
-			cat_sprintf(buf, "%s", tmp);
 		}
 
 		if (*buf)
@@ -164,19 +178,32 @@ DO_COMMAND(do_help)
 
 		*buf = 0;
 
-		for (cnt = 0 ; *help_table[cnt].name != 0 ; cnt++)
+		size = help_size();
+		rows = 5;
+		cols = size / rows + (size % rows > 0);
+
+		for (cnt = col = 0 ; col < cols ; col++)
 		{
-			if (cnt && cnt % 5 == 0)
+			cnt = col;
+
+			for (row = 0 ; row < rows ; row++)
 			{
-				substitute(ses, buf, buf, SUB_ESC|SUB_COL);
+				cat_sprintf(buf, " \\c<a href='#%s'\\c>%15s\\c</a\\c>", help_table[cnt].name, help_table[cnt].name);
 
-				logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
+				cnt += cols;
 
-				*buf = 0;
+				if (row + 1 == rows || cnt >= size)
+				{
+					substitute(ses, buf, buf, SUB_ESC|SUB_COL);
+
+					logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
+
+					*buf = 0;
+
+					break;
+				}
 			}
-			cat_sprintf(buf, " \\c<a href='#%s'\\c>%15s\\c</a\\c>", help_table[cnt].name, help_table[cnt].name);
 		}
-
 		cat_sprintf(buf, "\n\n");
 
 		substitute(ses, buf, buf, SUB_ESC|SUB_COL);
@@ -212,7 +239,7 @@ DO_COMMAND(do_help)
 
 		// tutorial
 
-		int tutorial[3];
+		int tutorial[size];
 
 		logfile = fopen("../docs/tutorial.html", "w");
 
@@ -221,32 +248,59 @@ DO_COMMAND(do_help)
 			write_html_header(ses, logfile);
 		}
 
-		*buf = 0;
+		tut = 2;
 
-		for (cnt = tut = 0 ; *help_table[cnt].name != 0 ; cnt++)
+		for (cnt = 0 ; cnt < size ; cnt++)
 		{
 			if (help_table[cnt].type != TOKEN_TYPE_STRING)
 			{
 				continue;
 			}
 
-			if (tut && tut % 4 == 0)
+			if (is_abbrev("INDEX", help_table[cnt].name))
 			{
-				substitute(ses, buf, buf, SUB_ESC|SUB_COL);
-
-				logit(ses, "        ", logfile, 0);
-				logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
-
-				*buf = 0;
+				tutorial[0] = cnt;
 			}
-			cat_sprintf(buf, " \\c<a href='#%s'\\c>%-17s\\c</a\\c>", help_table[cnt].name, help_table[cnt].name);
-
-			if (is_abbrev("INDEX",         help_table[cnt].name)) tutorial[0] = cnt;
-			if (is_abbrev("INTRODUCTION",  help_table[cnt].name)) tutorial[1] = cnt;
-
-			tut++;
+			else if (is_abbrev("INTRODUCTION", help_table[cnt].name))
+			{
+				tutorial[1] = cnt;
+			}
+			else
+			{
+				tutorial[tut++] = cnt;
+			}
 		}
+		size = tut;
+		rows = 5;
+		cols = size / rows + (size % rows > 0);
 
+		*buf = 0;
+
+		for (cnt = col = 0 ; col < cols ; col++)
+		{
+			cnt = col;
+
+			for (row = 0 ; row < rows ; row++)
+			{
+				tut = tutorial[cnt];
+
+				cat_sprintf(buf, " \\c<a href='#%s'\\c>%-15s\\c</a\\c>", help_table[tut].name, help_table[tut].name);
+
+				cnt += cols;
+
+				if (row + 1 == rows || cnt >= size)
+				{
+					substitute(ses, buf, buf, SUB_ESC|SUB_COL);
+
+					logit(ses, "        ", logfile, 0);
+					logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
+
+					*buf = 0;
+
+					break;
+				}
+			}
+		}
 		cat_sprintf(buf, "\n\n");
 
 		substitute(ses, buf, buf, SUB_ESC|SUB_COL);
@@ -254,7 +308,7 @@ DO_COMMAND(do_help)
 		logit(ses, "        ", logfile, 0);
 		logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
 
-		for (cnt = 0 ; cnt < 2 ; cnt++)
+		for (cnt = 0 ; cnt < size ; cnt++)
 		{
 			tut = tutorial[cnt];
 
@@ -277,36 +331,6 @@ DO_COMMAND(do_help)
 			if (*help_table[tut].also)
 			{
 				substitute(ses, help_related(ses, tut, 2), buf, SUB_ESC|SUB_COL);
-
-				logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
-			}
-		}
-
-		for (cnt = 0 ; *help_table[cnt].name != 0 ; cnt++)
-		{
-			if (help_table[cnt].type != TOKEN_TYPE_STRING || cnt == tutorial[0] || cnt == tutorial[1])
-			{
-				continue;
-			}
-			sprintf(buf, "\\c<a name='%s'\\c>\\c</a\\c>\n", help_table[cnt].name);
-
-			substitute(ses, buf, buf, SUB_ESC|SUB_COL);
-
-			logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
-
-			sprintf(buf, "<138>         %s\n", help_table[cnt].name);
-
-			substitute(ses, buf, buf, SUB_ESC|SUB_COL);
-
-			logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
-
-			substitute(ses, help_table[cnt].text, buf, SUB_COL);
-
-			logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
-
-			if (*help_table[cnt].also)
-			{
-				substitute(ses, help_related(ses, cnt, 2), buf, SUB_ESC|SUB_COL);
 
 				logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
 			}
@@ -924,10 +948,10 @@ struct help_type help_table[] =
 	{
 		"COMMANDS",
 		TOKEN_TYPE_COMMAND,
-		"<178>Command<278>: #commands <178>{<278>regex<178>}\n"
+		"<178>Command<278>: #commands <178>{<278>abbreviation<178>}\n"
 		"<278>\n"
-		"         Shows all commands or all commands matching the given search\n"
-		"         string.\n",
+		"         Shows all commands, or all commands starting with the given\n"
+		"         abbreviation.\n"
 		
 		"help info statements"
 	},
@@ -1573,20 +1597,18 @@ struct help_type help_table[] =
 		"\n"
 		"         <128>MOUSE EVENTS<278>\n"
 		"\n"
-		"         DOUBLE-CLICKED <MOUSE> %0 row %1 col %2 -row %3 -col %4 word %5 line\n"
-		"         LONG-CLICKED <MOUSE>   %0 row %1 col %2 -row %3 -col %4 word %5 line\n"
-		"         MOVED <MOUSE>          %0 row %1 col %2 -row %3 -col %4 word %5 line\n"
-		"         PRESSED <MOUSE>        %0 row %1 col %2 -row %3 -col %4 word %5 line\n"
-		"         SHORT-CLICKED <MOUSE>  %0 row %1 col %2 -row %3 -col %4 word %5 line\n"
-		"         RELEASED <MOUSE>       %0 row %1 col %2 -row %3 -col %4 word %5 line\n"
-		"         SCROLLED <MOUSE>       %0 row %1 col %2 -row %3 -col %4 word %5 line\n"
-		"         TRIPLE-CLICKED <MOUSE> %0 row %1 col %2 -row %3 -col %4 word %5 line\n"
+		"         <178>DOUBLE-CLICKED <MOUSE> <278>%0 row %1 col %2 -row %3 -col %4 word %5 line\n"
+		"         <178>LONG-CLICKED <MOUSE>   <278>%0 row %1 col %2 -row %3 -col %4 word %5 line\n"
+		"         <178>MOVED <MOUSE>          <278>%0 row %1 col %2 -row %3 -col %4 word %5 line\n"
+		"         <178>PRESSED <MOUSE>        <278>%0 row %1 col %2 -row %3 -col %4 word %5 line\n"
+		"         <178>SHORT-CLICKED <MOUSE>  <278>%0 row %1 col %2 -row %3 -col %4 word %5 line\n"
+		"         <178>RELEASED <MOUSE>       <278>%0 row %1 col %2 -row %3 -col %4 word %5 line\n"
+		"         <178>SCROLLED <MOUSE>       <278>%0 row %1 col %2 -row %3 -col %4 word %5 line\n"
+		"         <178>TRIPLE-CLICKED <MOUSE> <278>%0 row %1 col %2 -row %3 -col %4 word %5 line\n"
 		"\n"
 		"         <178>MAP <MOUSE EVENT>\n"
 		"         <278>  Mouse events can be prefixed with MAP to only trigger when the mouse\n"
 		"         <278>  event occurs inside the VT100 map region.\n"
-		"\n"
-
 		"\n"
 		"         <178>SWIPED [DIR]\n"
 		"         <278>  %0 dir  %1 button  %2 row  %3 col  %4 -row  %5 -col\n"
@@ -1594,16 +1616,16 @@ struct help_type help_table[] =
 		"\n"
 		"         <128>OUTPUT EVENTS\n"
 		"\n"
-		"         <178>BUFFER UPDATE,  DISPLAY UPDATE\n"
+		"         <178>BUFFER UPDATE<278>, <178>DISPLAY UPDATE\n"
 		"         <278>  These events have no additional arguments.\n"
 		"\n"
-		"         RECEIVED LINE          %0 raw text %1 plain text\n"
-		"         RECEIVED OUTPUT        %0 raw text\n"
-		"         RECEIVED PROMPT        %0 raw text %1 plain text\n"
+		"         <178>RECEIVED LINE          <278>%0 raw text %1 plain text\n"
+		"         <178>RECEIVED OUTPUT        <278>%0 raw text\n"
+		"         <178>RECEIVED PROMPT        <278>%0 raw text %1 plain text\n"
 		"\n"
 		"         <128>PORT EVENTS\n"
 		"\n"
-		"         <178>CHAT MESSAGE,  PORT MESSAGE\n"
+		"         <178>CHAT MESSAGE<278>, <178>PORT MESSAGE\n"
 		"         <278>  %0 raw text  %1 plain text\n"
 		"\n"
 		"         <178>PORT CONNECTION        <278>%0 name %1 ip %2 port\n"
@@ -1613,67 +1635,66 @@ struct help_type help_table[] =
 		"\n"
 		"         <128>SCAN EVENTS<278>\n"
 		"\n"
-		"         SCAN CSV HEADER        %0 all args %1 arg1 %2 arg2 .. %99 arg99\n"
-		"         SCAN CSV LINE          %0 all args %1 arg1 %2 arg3 .. %99 arg99\n"
-		"         SCAN TSV HEADER        %0 all args %1 arg1 %2 arg3 .. %99 arg99\n"
-		"         SCAN TSV LINE          %0 all args %1 arg1 %2 arg3 .. %99 arg99\n"
+		"         <178>SCAN CSV HEADER        <278>%0 all args %1 arg1 %2 arg2 .. %99 arg99\n"
+		"         <178>SCAN CSV LINE          <278>%0 all args %1 arg1 %2 arg3 .. %99 arg99\n"
+		"         <178>SCAN TSV HEADER        <278>%0 all args %1 arg1 %2 arg3 .. %99 arg99\n"
+		"         <178>SCAN TSV LINE          <278>%0 all args %1 arg1 %2 arg3 .. %99 arg99\n"
 		"\n"
 		"         <128>SCREEN EVENTS<278>\n"
 		"\n"
-		"         <178>SCREEN FOCUS\n"
-		"         <278>  %0 focus (0 or 1)\n"
-		"\n"
-		"         SCREEN LOCATION        %0 rows %1 cols  %2 height %3 width\n"
+		"         <178>SCREEN DIMENSIONS      <278>%0 height %1 width\n"
+		"         <178>SCREEN FOCUS           <278>%0 focus (0 or 1)\n"
+		"         <178>SCREEN LOCATION        <278>%0 rows %1 cols  %2 height %3 width\n"
 		"\n"
 		"         <178>SCREEN MOUSE LOCATION\n"
 		"         <278>  %0 row  %1 col  %2 -row  %3 -col  %4 pix row  %5 pix col\n"
 		"         <278>  %6 -pix row  %7 -pix col  %8 location\n"
 		"\n"
-		"         SCREEN RESIZE          %0 rows %1 cols %2 height %3 width\n"
-		"         SCREEN SPLIT           %0 top row %1 top col %2 bot row %3 bot col\n"
-		"         SCREEN UNSPLIT         %0 top row %1 top col %2 bot row %3 bot col\n"
+		"         <178>SCREEN RESIZE          <278>%0 rows %1 cols %2 height %3 width\n"
+		"         <178>SCREEN SIZE            <278>%0 rows %1 cols\n"
+		"         <178>SCREEN SPLIT           <278>%0 top row %1 top col %2 bot row %3 bot col\n"
+		"         <178>SCREEN UNSPLIT         <278>%0 top row %1 top col %2 bot row %3 bot col\n"
 		"\n"
 		"         <128>SESSION EVENTS<278>\n"
 		"\n"
-		"         SESSION ACTIVATED      %0 name\n"
-		"         SESSION CONNECTED      %0 name %1 host %2 ip %3 port %4 file\n"
-		"         SESSION CREATED        %0 name %1 host %2 ip %3 port %4 file\n"
-		"         SESSION DEACTIVATED    %0 name\n"
-		"         SESSION DISCONNECTED   %0 name %1 host %2 ip %3 port\n"
-		"         SESSION TIMED OUT      %0 name %1 host %2 ip %3 port\n"
-		"\n"
+		"         <178>SESSION ACTIVATED      <278>%0 name\n"
+		"         <178>SESSION CONNECTED      <278>%0 name %1 host %2 ip %3 port %4 file\n"
+		"         <178>SESSION CREATED        <278>%0 name %1 host %2 ip %3 port %4 file\n"
+		"         <178>SESSION DEACTIVATED    <278>%0 name\n"
+		"         <178>SESSION DISCONNECTED   <278>%0 name %1 host %2 ip %3 port\n"
+		"         <178>SESSION TIMED OUT      <278>%0 name %1 host %2 ip %3 port\n"
 		"\n"
 		"         <128>SYSTEM EVENTS<278>\n"
 		"\n"
-		"         DAEMON ATTACH TIMEOUT  %0 file %1 pid\n"
-		"         DAEMON ATTACHED        %0 file %1 pid\n"
-		"         DAEMON DETACHED        %0 file %1 pid\n"
-		"         PROGRAM START          %0 startup arguments\n"
-		"         PROGRAM TERMINATION    %0 goodbye message\n"
+		"         <178>DAEMON ATTACH TIMEOUT  <278>%0 file %1 pid\n"
+		"         <178>DAEMON ATTACHED        <278>%0 file %1 pid\n"
+		"         <178>DAEMON DETACHED        <278>%0 file %1 pid\n"
+		"         <178>PROGRAM START          <278>%0 startup arguments\n"
+		"         <178>PROGRAM TERMINATION    <278>%0 goodbye message\n"
 		"\n"
-		"         READ ERROR             %0 filename %1 error message\n"
-		"         READ FILE              %0 filename\n"
-		"         WRITE ERROR            %0 filename %1 error message\n"
-		"         WRITE FILE             %0 filename\n"
+		"         <178>READ ERROR             <278>%0 filename %1 error message\n"
+		"         <178>READ FILE              <278>%0 filename\n"
+		"         <178>WRITE ERROR            <278>%0 filename %1 error message\n"
+		"         <178>WRITE FILE             <278>%0 filename\n"
 		"\n"
-		"         SYSTEM CRASH           %0 message\n"
-		"         SYSTEM ERROR           %0 name %1 system msg %2 error %3 error msg\n"
-		"         UNKNOWN COMMAND        %0 raw text\n"
-		"         SIGUSR                 %0 signal\n"
+		"         <178>SYSTEM CRASH           <278>%0 message\n"
+		"         <178>SYSTEM ERROR           <278>%0 name %1 system msg %2 error %3 error msg\n"
+		"         <178>UNKNOWN COMMAND        <278>%0 raw text\n"
+		"         <178>SIGUSR                 <278>%0 signal\n"
 		"\n"
 		"         <128>TELNET EVENTS\n"
 		"\n"
 		"         <178>IAC <EVENT>\n"
 		"         <278>  IAC TELNET events are made visible using #config telnet info.\n"
 		"\n"
-		"         <178>IAC SB GMCP            %0 module    %1 data  %2 plain data\n"
-		"         <178>IAC SB GMCP <MODULE>                %1 data  %2 plain data\n"
-		"         <178>IAC SB MSSP            %0 variable  %1 data\n"
-		"         <178>IAC SB MSDP            %0 variable  %1 data  %2 plain data\n"
-		"         <178>IAC SB MSDP [VAR]      %0 variable  %1 data  %2 plain data\n"
-		"         <178>IAC SB NEW-ENVIRON     %0 variable  %1 data  %2 plain data\n"
-		"         <178>IAC SB ZMP <VAR>       %0 variable  %1 data\n"
-		"         <178>IAC SB <VAR>           %0 variable  %1 raw data  %2 plain data\n"
+		"         <178>IAC SB GMCP            <278>%0 module    %1 data  %2 plain data\n"
+		"         <178>IAC SB GMCP <MODULE>   <278>             %1 data  %2 plain data\n"
+		"         <178>IAC SB MSSP            <278>%0 variable  %1 data\n"
+		"         <178>IAC SB MSDP            <278>%0 variable  %1 data  %2 plain data\n"
+		"         <178>IAC SB MSDP [VAR]      <278>%0 variable  %1 data  %2 plain data\n"
+		"         <178>IAC SB NEW-ENVIRON     <278>%0 variable  %1 data  %2 plain data\n"
+		"         <178>IAC SB ZMP <VAR>       <278>%0 variable  %1 data\n"
+		"         <178>IAC SB <VAR>           <278>%0 variable  %1 raw data  %2 plain data\n"
 		"\n"
 		"         <128>TIME EVENTS\n"
 		"\n"
@@ -1686,12 +1707,12 @@ struct help_type help_table[] =
 
 		"         <128>VARIABLE EVENTS<278>\n"
 		"\n"
-		"         VARIABLE UPDATE <VAR>  %0 name %1 new value %2 path\n"
-		"         VARIABLE UPDATED <VAR> %0 name %1 new value %2 path\n"
+		"         <178>VARIABLE UPDATE <VAR>  <278>%0 name %1 new value %2 path\n"
+		"         <178>VARIABLE UPDATED <VAR> <278>%0 name %1 new value %2 path\n"
 		"\n"
 		"         <128>VT100 EVENTS<278>\n"
 		"\n"
-		"         VT100 SCROLL REGION    %0 top row %1 bot row %2 rows %3 cols %4 wrap\n"
+		"         <178>VT100 SCROLL REGION    <278>%0 top row %1 bot row %2 rows %3 cols %4 wrap\n"
 		"\n"
 		"         To see all events trigger use #info event on. Since this can get\n"
 		"         rather spammy it's possible to gag event info messages.\n"
@@ -2011,7 +2032,7 @@ struct help_type help_table[] =
 		"                                       ██│      ██│\n"
 		"                                       └─┘      └─┘\n"
 		"\n"
-		"                        <acf>(<abd>T<acf>)<abd>he K<acf>(<abd>I<acf>)<abd>cki<acf>(<abd>N<acf>)<abd> <acf>(<abd>T)ick D<acf>(<abd>I<acf>)<abd>kumud Clie<acf>(<abd>N<acf>)<abd>t\n"
+		"                       <acf>(<abd>T<acf>)<abd>he K<acf>(<abd>I<acf>)<abd>cki<acf>(<abd>N<acf>)<abd> <acf>(<abd>T)ickin D<acf>(<abd>I<acf>)<abd>kumud Clie<acf>(<abd>N<acf>)<abd>t\n"
 		"\n"
 		"\n"
 		"<128>         What is TinTin++?\n"
@@ -4122,7 +4143,7 @@ struct help_type help_table[] =
 		"\n"
 		"      %a match zero to any number of characters including newlines.\n"
 		"      %A match zero to any number of newlines.\n"
-		"      %c match zero to any number of color codes.\n"
+		"      %c match zero to any number of ansi color codes.\n"
 		"      %p match zero to any number of printable characters.\n"
 		"      %P match zero to any number of non printable characters.\n"
 		"      %u match zero to any number of unicode characters.\n"
@@ -4346,15 +4367,15 @@ struct help_type help_table[] =
 		TOKEN_TYPE_STRING,
 		"<178>Command<278>: #config <178>{<278>SCREEN READER<178>} {<278>ON|OFF<178>}<278>\n"
 		"\n"
-		"         Screen reader mode is enabled by using #config screen on.  The main\n"
-		"         purpose of the screen reader mode is to report to servers that a\n"
-		"         screen reader is being used by utilizing the MTTS standard.  The MTTS\n"
-		"         specification is available at:\n"
+		"         Screen reader mode is enabled by using #config screen on. One purpose\n"
+		"         of the screen reader mode is to report to servers that a screen reader\n"
+		"         is being used by utilizing the MTTS standard. The MTTS specification\n"
+		"         is available at:\n"
 		"\n"
 		"         http://tintin.sourceforge.net/protocols/mtts\n"
 		"\n"
-		"         With the screen reader mode enabled TinTin++ will try to remove visual\n"
-		"         elements where possible.\n"
+		"         With the screen reader mode enabled TinTin++ will try to remove or\n"
+		"         alter visual elements where possible.\n"
 		,
 		"config"
 	},
@@ -4999,3 +5020,7 @@ struct help_type help_table[] =
 	}
 };
 
+size_t help_size()
+{
+	return sizeof(help_table) / sizeof(help_table[0]) - 1;
+}

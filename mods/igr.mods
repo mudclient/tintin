@@ -1,5 +1,22 @@
 Jul 2022        2.02.21
 ------------------------------------------------------------------------------
+help.c          #help and #command when used with no argument display the
+                entries as columns instead of rows.
+
+../docs/        I got started on a tintin generated github website.
+
+                https://scandum.github.io/tintin/help.html
+                https://scandum.github.io/tintin/tutorial.html
+
+mapper.c        Using #map exit <exit> dir 0, will now properly save.
+
+input.c         #screen set cols/rows will now properly initialize the new
+                cols/rows setting. This will be global for all sessions. The
+                values are reset when resizing the terminal.
+
+telopt_client.c Updated the TTYPE MTTS negotiation to report MNES support, as
+                well as mouse support if #config mouse is set to on.
+
 draw.c          #draw SCALED will only scale vertically when combined with the
                 VERTICAL flag.
 
@@ -959,7 +976,7 @@ path.c          #path run no longer uses delays but uses its own timer system,
                 #path run again you'll continue where you stopped.
 
 trigger.c       Named delays are now automatically converted to one shot
-                triggers. #undelay will use #untick if the argument begins
+                tickers. #undelay will use #untick if the argument begins
                 with a letter.
 
 mapper.c        Changed #map destroy to #map destroy {area|world} {arg}

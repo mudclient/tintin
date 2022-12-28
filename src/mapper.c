@@ -459,11 +459,13 @@ struct exit_data *create_exit(struct session *ses, int vnum, char *format, ...)
 	arg = get_arg_in_braces(ses, arg, buf, GET_ONE);        newexit->color  = strdup(buf);
 	arg = get_arg_in_braces(ses, arg, buf, GET_ONE);        newexit->delay  = (float) atof(buf);
 
-	if (newexit->dir == 0)
+	if (!HAS_BIT(ses->map->flags, MAP_FLAG_READ))
 	{
-		newexit->dir = get_exit_dir(ses, newexit->name);
+		if (newexit->dir == 0)
+		{
+			newexit->dir = get_exit_dir(ses, newexit->name);
+		}
 	}
-
 	newexit->grid = dir_to_grid(newexit->dir);
 
 	if (room->exit_grid[newexit->grid] == NULL)

@@ -539,6 +539,8 @@ void readmud(struct session *ses)
 			}
 			else
 			{
+				// clean this up some time.
+
 				strcpy(linebuf, line);
 			}
 		}

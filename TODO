@@ -1,3 +1,7 @@
+- Handle more_output more cleanly in net.c
+
+- return #regex #else to old format
+
 - Look into #split 1 1 1 1 on termux when hiding / showing keyboard.
 
 - Make WinTin++ 64 bit and double check windows console link opens main.tin
@@ -8,17 +12,9 @@
 
 - grid tables don't handle color codes
 
-- split the manual and tutorial
-
-- might be some issues with vertical splits + ssh
-
-- have the top help menu alphabetized going down in column order?
-
 - sandbox mode to disable shell integration.
 
 - color patch issues in #help
-
-- improve gui.h
 
 ----------------
   - add shadow session support with access to all events.
@@ -41,7 +37,7 @@
 
   - add ctrl-r support for scrollback
 
-  - Add #event {SESSION CONNECTED} {5.1} option.
+  - Add #event {SESSION CONNECTED} {#command} {5.1} option.
 
   - TT++ HANDBOOK for meticulous organized details.
 
@@ -72,8 +68,6 @@
   - Finish port proxy support: resizing, input, security
 
   - look into transparent drawing
-
-  - Add #line gag 2 +2 -2 support.
 
   - VT2020
 
