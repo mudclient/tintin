@@ -1,26 +1,39 @@
-Jul 2022        2.02.21
+Jan 2023        2.02.31
+------------------------------------------------------------------------------
+net.c           Fixed a display problem related to #config packet_patch in
+                vertical split mode.
+
+mapper.c        Changed the usage of float to double to fix rounding issues in
+                path calculations.
+
+Jul 2022        2.02.30
 ------------------------------------------------------------------------------
 help.c          #help and #command when used with no argument display the
                 entries as columns instead of rows.
 
 ../docs/        I got started on a tintin generated github website.
 
-                https://scandum.github.io/tintin/help.html
-                https://scandum.github.io/tintin/tutorial.html
+                https://scandum.github.io/tintin
 
 mapper.c        Using #map exit <exit> dir 0, will now properly save.
 
-input.c         #screen set cols/rows will now properly initialize the new
-                cols/rows setting. This will be global for all sessions. The
-                values are reset when resizing the terminal.
+screen.c        #screen set rows/cols will now properly initialize the new
+                rows/cols setting for the screen dimensions. This will be
+                global for all sessions. The values are reset when resizing
+                the terminal.
 
-telopt_client.c Updated the TTYPE MTTS negotiation to report MNES support, as
-                well as mouse support if #config mouse is set to on.
+telopt_client.c Updated the TTYPE MNES negotiation to report a standardized
+                charset value.
 
-draw.c          #draw SCALED will only scale vertically when combined with the
-                VERTICAL flag.
+telopt_client.c Updated the TTYPE MTTS negotiation to report SSL support if
+                GnuTLS is included in the compilation.
 
-                combined with 
+telopt_client.c Updated the TTYPE MTTS negotiation to report MSLP and mouse
+                support if #config mouse is set to on.
+
+draw.c          #draw SCALED will not scale horizontally when combined with
+                the VERTICAL flag.
+
 gui.h           Updated the connection manager (tt++ -g) with new sponsors and
                 some bug fixes.
 
@@ -53,6 +66,8 @@ telopt_client.c IAC SB GMCP <MODULE>   %0 data      %1 plain data
                 IAC SB GMCP <MODULE>   %0 data      %1 data  %2 plain data
 
 trigger.c       Fixed a bug with using #highlight {[}
+
+list.c          Added #list <list> numerate to renumber a list or table.
 
 list.c          Proper lists will be renumbered after using #list filter.
 

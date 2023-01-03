@@ -1,0 +1,23 @@
+#function clink
+{
+    #format result {%+%1h} {%2};
+    #replace result {#} { };
+    #replace result {%2} {\c<a href='%3'\c>%2\c</a\c>}
+}
+
+#config log html
+#config charset utf-8
+#buffer clear
+#draw Yellow scroll top side 1 1 1 80
+#showme {<138>│@clink{78;Tutorial;tutorial.html}│}
+#draw Yellow scroll right bot side 1 1 1 80
+
+#showme {}
+
+#draw Yellow scroll top side 1 1 1 80
+#showme {<138>│@clink{78;Manual;help.html}│}
+#draw Yellow scroll right bot side 1 1 1 80
+
+#showme {}
+
+#buffer write index.html

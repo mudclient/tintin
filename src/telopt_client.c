@@ -1395,7 +1395,7 @@ int client_recv_sb_charset(struct session *ses, int cplen, unsigned char *src)
 				{
 					accept = HAS_BIT(ses->charset, CHARSET_FLAG_UTF8) && !HAS_BIT(ses->charset, CHARSET_FLAG_ALL_TOUTF8);
 				}
-				else if (!strcmp(var, "BIG-5"))
+				else if (!strcmp(var, "BIG5") || !strcmp(var, "BIG-5"))
 				{
 					accept = HAS_BIT(ses->charset, CHARSET_FLAG_BIG5) || HAS_BIT(ses->charset, CHARSET_FLAG_BIG5TOUTF8);
 				}
@@ -1403,7 +1403,7 @@ int client_recv_sb_charset(struct session *ses, int cplen, unsigned char *src)
 				{
 					accept = HAS_BIT(ses->charset, CHARSET_FLAG_FANSITOUTF8);
 				}
-				else if (!strcmp(var, "CP949"))
+				else if (!strcmp(var, "EUC-KR") || !strcmp(var, "CP949"))
 				{
 					accept = HAS_BIT(ses->charset, CHARSET_FLAG_CP949) || HAS_BIT(ses->charset, CHARSET_FLAG_CP949TOUTF8);
 				}
@@ -1419,11 +1419,11 @@ int client_recv_sb_charset(struct session *ses, int cplen, unsigned char *src)
 				{
 					accept = HAS_BIT(ses->charset, CHARSET_FLAG_ISO2TOUTF8);
 				}
-				else if (!strcmp(var, "GBK-1") || !strcmp(var, "GB18030"))
+				else if (!strcmp(var, "GBK") || !strcmp(var, "GB2312") || !strcmp(var, "GB18030"))
 				{
 					accept = HAS_BIT(ses->charset, CHARSET_FLAG_GBK1) || HAS_BIT(ses->charset, CHARSET_FLAG_GBK1TOUTF8);
 				}
-				else if (!strcmp(var, "KOI-8"))
+				else if (!strcmp(var, "KOI8-R"))
 				{
 					accept = HAS_BIT(ses->charset, CHARSET_FLAG_KOI8TOUTF8);
 				}

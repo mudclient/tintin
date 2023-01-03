@@ -212,7 +212,7 @@
 
 
 #define CLIENT_NAME              "TinTin++"
-#define CLIENT_VERSION           "2.02.21b"
+#define CLIENT_VERSION           "2.02.31b"
 
 
 #define XT_E                            0x27
@@ -1460,8 +1460,8 @@ struct room_data
 	struct exit_data        * exit_grid[11];
 	int                       vnum;
 	long long                 exit_dirs;
-	float                     length;
-	float                     weight;
+	double                    length;
+	double                    weight;
 	unsigned short            exit_size;
 	unsigned short            search_stamp;
 	unsigned short            display_stamp;
@@ -1491,8 +1491,8 @@ struct exit_data
 	int                       dir;
 	int                       grid;
 	int                       flags;
-	float                     weight;
-	float                     delay;
+	double                    weight;
+	double                    delay;
 	char                    * name;
 	char                    * cmd;
 	char                    * color;
@@ -1517,7 +1517,7 @@ struct search_data
 	long long               flag;
 	long long               galf;
 	char                  * id;
-	float                   distance;
+	double                  distance;
 };
 
 struct msdp_data
@@ -2544,6 +2544,7 @@ extern void process_mud_output(struct session *ses, char *linebuf, int prompt);
 #define __PARSE_H__
 
 extern  int is_abbrev(char *str1, char *str2);
+extern  int is_abbrev_cmp(char *str1, char *str2);
 extern  int is_member(char *str1, char *str2);
 extern  int is_vowel(char *str);
 extern void filename_string(char *input, char *output);
@@ -2586,7 +2587,7 @@ int exit_to_dir(struct session *ses, char *name);
 unsigned char pdir(struct listnode *node);
 char *dir_to_exit(struct session *ses, int dir);
 
-extern void check_append_path(struct session *ses, char *forward, char *backward, float delay, int force, int follow);
+extern void check_append_path(struct session *ses, char *forward, char *backward, double delay, int force, int follow);
 
 extern DO_PATH(path_create);
 extern DO_PATH(path_describe);
@@ -2945,6 +2946,7 @@ extern char *script_viewer(struct session *ses, char *str);
 #define __TRIGGER_H__
 
 extern DO_COMMAND(do_delay);
+extern DO_COMMAND(do_function);
 
 extern void check_all_actions(struct session *ses, char *original, char *line, char *buf);
 extern  int check_all_aliases(struct session *ses, char *input);
@@ -2983,7 +2985,7 @@ extern char *str_time(struct session *ses, char *format, time_t time);
 extern unsigned long long generate_rand(struct session *ses);
 extern void seed_rand(struct session *ses, unsigned long long seed);
 extern char *capitalize(char *str);
-extern char *ftos(float number);
+extern char *ftos(double number);
 extern char *ntos(long long number);
 extern char *indent_one(int len);
 extern char *indent(int len);

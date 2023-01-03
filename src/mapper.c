@@ -51,7 +51,7 @@ extern  int find_new_room(struct session *ses);
 extern struct exit_data *find_exit(struct session *ses, int room, char *arg);
 extern struct exit_data *find_exit_vnum(struct session *ses, int room, int vnum);
 extern  int get_exit_dir(struct session *ses, char *arg);
-extern float get_exit_length(struct session *ses, struct exit_data *exit);
+extern double get_exit_length(struct session *ses, struct exit_data *exit);
 extern char *get_exit_color(struct session *ses, int room, struct exit_data *exit);
 extern  int dir_to_grid(int dir);
 extern  int revdir_to_grid(int dir);
@@ -323,7 +323,7 @@ struct room_data *create_room(struct session *ses, char *format, ...)
 	arg = get_arg_in_braces(ses, arg, arg1, GET_ONE); newroom->note    = strdup(arg1);
 	arg = get_arg_in_braces(ses, arg, arg1, GET_ONE); newroom->terrain = strdup(arg1);
 	arg = get_arg_in_braces(ses, arg, arg1, GET_ONE); newroom->data    = strdup(arg1);
-	arg = get_arg_in_braces(ses, arg, arg1, GET_ONE); newroom->weight  = (float) atof(arg1);
+	arg = get_arg_in_braces(ses, arg, arg1, GET_ONE); newroom->weight  = (double) atof(arg1);
 	arg = get_arg_in_braces(ses, arg, arg1, GET_ONE); newroom->id      = strdup(arg1);
 
 	if (HAS_BIT(newroom->flags, ROOM_FLAG_AVOID))
@@ -455,9 +455,9 @@ struct exit_data *create_exit(struct session *ses, int vnum, char *format, ...)
 	arg = get_arg_in_braces(ses, arg, buf, GET_ONE);	newexit->dir    = atoi(buf);
 	arg = get_arg_in_braces(ses, arg, buf, GET_ONE);	newexit->flags  = atoi(buf);
 	arg = get_arg_in_braces(ses, arg, buf, GET_ALL);	newexit->data   = strdup(buf);
-	arg = get_arg_in_braces(ses, arg, buf, GET_ONE);	newexit->weight = (float) atof(buf);
+	arg = get_arg_in_braces(ses, arg, buf, GET_ONE);	newexit->weight = (double) atof(buf);
 	arg = get_arg_in_braces(ses, arg, buf, GET_ONE);        newexit->color  = strdup(buf);
-	arg = get_arg_in_braces(ses, arg, buf, GET_ONE);        newexit->delay  = (float) atof(buf);
+	arg = get_arg_in_braces(ses, arg, buf, GET_ONE);        newexit->delay  = (double) atof(buf);
 
 	if (!HAS_BIT(ses->map->flags, MAP_FLAG_READ))
 	{
@@ -526,7 +526,7 @@ int get_exit_dir(struct session *ses, char *arg)
 	}
 }
 
-float get_room_weight(struct session *ses, int vnum)
+double get_room_weight(struct session *ses, int vnum)
 {
 	struct room_data *room = ses->map->room_list[vnum];
 
@@ -537,7 +537,7 @@ float get_room_weight(struct session *ses, int vnum)
 	return room->weight;
 }
 
-float get_exit_weight(struct session *ses, int vnum, struct exit_data *exit)
+double get_exit_weight(struct session *ses, int vnum, struct exit_data *exit)
 {
 	struct room_data *room = ses->map->room_list[vnum];
 
@@ -548,7 +548,7 @@ float get_exit_weight(struct session *ses, int vnum, struct exit_data *exit)
 	return exit->weight;
 }
 
-float get_exit_length(struct session *ses, struct exit_data *exit)
+double get_exit_length(struct session *ses, struct exit_data *exit)
 {
 	return exit->weight + ses->map->room_list[exit->vnum]->length;
 }
@@ -2018,14 +2018,14 @@ struct grid_node
 	int x;
 	int y;
 	int z;
-	float length;
+	double length;
 	struct exit_data *exit;
 };
 
 void displaygrid_build(struct session *ses, int vnum, int x, int y, int z)
 {
 	int head, tail, index, iprev, loop;
-	float length;
+	double length;
 	struct grid_node *node, *temp, list[MAP_BF_SIZE], *node_list[MAP_BF_SIZE];
 	struct exit_data *exit, *exit_next;
 	struct room_data *room, *toroom;
@@ -2239,7 +2239,7 @@ void displaygrid_build(struct session *ses, int vnum, int x, int y, int z)
 int spatialgrid_find(struct session *ses, int from, int x, int y, int z)
 {
 	int head, tail, index, iprev, loop;
-	float length;
+	double length;
 	struct grid_node *node, *temp, list[MAP_BF_SIZE], *node_list[MAP_BF_SIZE];
 	struct exit_data *exit, *exit_next;
 	struct room_data *room, *toroom;
@@ -4167,7 +4167,7 @@ void map_search_compile(struct session *ses, char *arg, char *var)
 
 	if (*buf)
 	{
-		ses->map->search->distance = (float) get_number(ses, buf);
+		ses->map->search->distance = (double) get_number(ses, buf);
 	}
 	else
 	{
@@ -4653,7 +4653,7 @@ int tunnel_void(struct session *ses, int from, int room, int dir)
 int searchgrid_find(struct session *ses, int from, struct search_data *search)
 {
 	int vnum, head, tail, index, iprev, loop;
-	float length;
+	double length;
 	struct grid_node *node, *temp, list[MAP_BF_SIZE], *node_list[MAP_BF_SIZE];
 	struct exit_data *exit;
 	struct room_data *room, *toroom;
@@ -4822,7 +4822,7 @@ int searchgrid_find(struct session *ses, int from, struct search_data *search)
 struct exit_data *searchgrid_walk(struct session *ses, int from, int dest)
 {
 	int vnum, head, tail, index, iprev, loop, last;
-	float length;
+	double length;
 	struct grid_node *node, *temp, list[MAP_BF_SIZE], *node_list[MAP_BF_SIZE];
 	struct exit_data *exit;
 	struct room_data *room, *toroom;
@@ -5800,7 +5800,7 @@ void exit_edit(struct session *ses, struct exit_data *exit, char *opt, char *arg
 		}
 		else
 		{
-			exit->delay = (float) get_number(ses, arg3);
+			exit->delay = (double) get_number(ses, arg3);
 
 			if (rev_exit)
 			{
@@ -5905,7 +5905,7 @@ void exit_edit(struct session *ses, struct exit_data *exit, char *opt, char *arg
 		}
 		else
 		{
-			exit->weight = (float) get_number(ses, arg3);
+			exit->weight = (double) get_number(ses, arg3);
 
 			if (rev_exit)
 			{
@@ -8168,7 +8168,7 @@ DO_MAP(map_set)
 			}
 			else
 			{
-				room->weight = (float) get_number(ses, arg2);
+				room->weight = (double) get_number(ses, arg2);
 
 				show_message(ses, LIST_COMMAND, "#MAP SET: roomweight set to: %.3f", room->weight);
 			}

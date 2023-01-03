@@ -35,10 +35,39 @@ struct help_type
 
 struct help_type help_table[];
 
+size_t help_size();
+
+int find_help(char *keyword)
+{
+	unsigned int bot, mid, top;
+
+	bot = 0;
+	top = help_size();
+
+	while (top > 1)
+	{
+		mid = top / 2;
+
+		if (is_abbrev_cmp(keyword, help_table[bot + mid].name) >= 0)
+		{
+			bot += mid;
+		}
+		top -= mid;
+	}
+	if (!is_abbrev_cmp(keyword, help_table[bot].name))
+	{
+		return bot;
+	}
+	show_error(gtd->ses, LIST_COMMAND, "find_help: Could not find '%s' in help_table.", keyword);
+
+	return help_size();
+}
+
 char *help_related(struct session *ses, int index, int html)
 {
 	char *arg, *tmp, *link;
 	static char buf[INPUT_SIZE];
+	int hlp;
 
 	push_call("help_related(%p,%d,%d)",ses,index,html);
 
@@ -56,32 +85,51 @@ char *help_related(struct session *ses, int index, int html)
 		if (html == 1)
 		{
 			sprintf(link, "\\c<a href='%s.php'\\c>%s\\c</a\\c>", tmp, tmp);
-			sprintf(tmp, "%s", link);
 		}
 		else if (html == 2)
 		{
 			sprintf(link, "\\c<a href='#%s'\\c>%s\\c</a\\c>", capitalize(tmp), tmp);
-			sprintf(tmp, "%s", link);
+		}
+		else if (html == 3)
+		{
+			hlp = find_help(tmp);
+
+			if (hlp == help_size())
+			{
+				printf("error: unknown help entry: %s see also: %s\n", help_table[index].name, tmp);
+			}
+
+			if (help_table[hlp].type != TOKEN_TYPE_STRING)
+			{
+				sprintf(link, "\\c<a href='help.html#%s'\\c>%s\\c</a\\c>", capitalize(tmp), tmp);
+			}
+			else
+			{
+				sprintf(link, "\\c<a href='#%s'\\c>%s\\c</a\\c>", capitalize(tmp), tmp);
+			}
 		}
 		else if (HAS_BIT(gtd->flags, TINTIN_FLAG_MOUSETRACKING))
 		{
 			sprintf(link, "\e]68;6;;%s\a\e[4m%s\e[24m", tmp, tmp);
-			sprintf(tmp, "%s", link);
+		}
+		else
+		{
+			strcpy(link, tmp);
 		}
 
 		if (*buf == 0)
 		{
-			sprintf(buf, "<178>Related<278>: %s", tmp);
+			sprintf(buf, "<178>Related<278>: %s", link);
 		}
 		else
 		{
 			if (*arg)
 			{
-				cat_sprintf(buf, ", %s", tmp);
+				cat_sprintf(buf, ", %s", link);
 			}
 			else
 			{
-				cat_sprintf(buf, " and %s.", tmp);
+				cat_sprintf(buf, " and %s.", link);
 			}
 		}
 	}
@@ -89,11 +137,10 @@ char *help_related(struct session *ses, int index, int html)
 	return buf;
 }
 
-size_t help_size();
 
 DO_COMMAND(do_help)
 {
-	char buf[BUFFER_SIZE], color[COLOR_SIZE];
+	char buf[BUFFER_SIZE], color[COLOR_SIZE], tmp[INPUT_SIZE];
 	int cnt, tut, found, rows, cols, size, col, row;
 
 	arg = get_arg_in_braces(ses, arg, arg1, GET_ALL);
@@ -178,8 +225,18 @@ DO_COMMAND(do_help)
 
 		*buf = 0;
 
+		command(ses, do_function, "clink {#format result {%%+%%1h} {%%2};#replace result {#} { };#replace result {%%2} {\\c<a href='%%3'\\c>%%2\\c</a\\c>}}");
+
+		command(ses, do_line, "log {../docs/help.html} {<138>        ╭──────────────────────────────────────────────────────────────────────╮}");
+
+		command(ses, do_line, "log {../docs/help.html} {<138>        │@clink{70;Home;index.html}│}");
+
+		command(ses, do_line, "log {../docs/help.html} {<138>        ╰──────────────────────────────────────────────────────────────────────╯\n}");
+
+		fseek(logfile, 0, SEEK_END);
+
 		size = help_size();
-		rows = 5;
+		rows = 4;
 		cols = size / rows + (size % rows > 0);
 
 		for (cnt = col = 0 ; col < cols ; col++)
@@ -188,7 +245,9 @@ DO_COMMAND(do_help)
 
 			for (row = 0 ; row < rows ; row++)
 			{
-				cat_sprintf(buf, " \\c<a href='#%s'\\c>%15s\\c</a\\c>", help_table[cnt].name, help_table[cnt].name);
+				filename_string(help_table[cnt].name, tmp);
+
+				cat_sprintf(buf, " \\c<a href='#%s'\\c>%-16s\\c</a\\c> ", tmp, help_table[cnt].name);
 
 				cnt += cols;
 
@@ -196,6 +255,7 @@ DO_COMMAND(do_help)
 				{
 					substitute(ses, buf, buf, SUB_ESC|SUB_COL);
 
+					logit(ses, "        ", logfile, 0);
 					logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
 
 					*buf = 0;
@@ -212,7 +272,9 @@ DO_COMMAND(do_help)
 
 		for (cnt = 0 ; *help_table[cnt].name != 0 ; cnt++)
 		{
-			sprintf(buf, "\\c<a name='%s'\\c>\\c</a\\c>\n", help_table[cnt].name);
+			filename_string(help_table[cnt].name, tmp);
+
+			sprintf(buf, "\\c<a name='%.100s'\\c>\\c</a\\c>\n", tmp);
 
 			substitute(ses, buf, buf, SUB_ESC|SUB_COL);
 
@@ -248,6 +310,14 @@ DO_COMMAND(do_help)
 			write_html_header(ses, logfile);
 		}
 
+		command(ses, do_line, "log {../docs/tutorial.html} {<138>        ╭──────────────────────────────────────────────────────────────────────╮}");
+
+		command(ses, do_line, "log {../docs/tutorial.html} {<138>        │@clink{70;Home;index.html}│}");
+
+		command(ses, do_line, "log {../docs/tutorial.html} {<138>        ╰──────────────────────────────────────────────────────────────────────╯\n}");
+
+		fseek(logfile, 0, SEEK_END);
+
 		tut = 2;
 
 		for (cnt = 0 ; cnt < size ; cnt++)
@@ -271,7 +341,7 @@ DO_COMMAND(do_help)
 			}
 		}
 		size = tut;
-		rows = 5;
+		rows = 4;
 		cols = size / rows + (size % rows > 0);
 
 		*buf = 0;
@@ -284,7 +354,9 @@ DO_COMMAND(do_help)
 			{
 				tut = tutorial[cnt];
 
-				cat_sprintf(buf, " \\c<a href='#%s'\\c>%-15s\\c</a\\c>", help_table[tut].name, help_table[tut].name);
+				filename_string(help_table[tut].name, tmp);
+
+				cat_sprintf(buf, " \\c<a href='#%s'\\c>%-16s\\c</a\\c> ", tmp, help_table[tut].name);
 
 				cnt += cols;
 
@@ -312,7 +384,9 @@ DO_COMMAND(do_help)
 		{
 			tut = tutorial[cnt];
 
-			sprintf(buf, "\\c<a name='%s'\\c>\\c</a\\c>\n", help_table[tut].name);
+			filename_string(help_table[tut].name, tmp);
+
+			sprintf(buf, "\\c<a name='%.100s'\\c>\\c</a\\c>\n", tmp);
 
 			substitute(ses, buf, buf, SUB_ESC|SUB_COL);
 
@@ -330,7 +404,7 @@ DO_COMMAND(do_help)
 
 			if (*help_table[tut].also)
 			{
-				substitute(ses, help_related(ses, tut, 2), buf, SUB_ESC|SUB_COL);
+				substitute(ses, help_related(ses, tut, 3), buf, SUB_ESC|SUB_COL);
 
 				logit(ses, buf, logfile, LOG_FLAG_LINEFEED);
 			}
@@ -782,7 +856,7 @@ struct help_type help_table[] =
 		"         #config, and is itself sent verbatim when the verbatim config mode\n"
 		"         is enabled.\n"
 		,
-		"colors escape function mathematics pcre variable"
+		"colors escape_codes function mathematics pcre variable"
 	},
 	{
 		"CHAT",
@@ -943,7 +1017,7 @@ struct help_type help_table[] =
 		"         If the color code exceeds your configured color mode it will be\n"
 		"         downgraded to the closest match.\n"
 		,
-		"characters coordinates escape mathematics pcre"
+		"characters coordinates escape_codes mathematics pcre"
 	},
 	{
 		"COMMANDS",
@@ -952,52 +1026,8 @@ struct help_type help_table[] =
 		"<278>\n"
 		"         Shows all commands, or all commands starting with the given\n"
 		"         abbreviation.\n"
-		
-		"help info statements"
-	},
-
-	{
-		"COORDINATES",
-		TOKEN_TYPE_STRING,
-		"<278>\n"
-		"         When the 0,0 coordinate is in the upper left corner TinTin++ uses\n"
-		"         a y,x / row,col notation, starting at 1,1. Subsequently -1,-1\n"
-		"         will indicate the bottom right corner. This type of argument is\n"
-		"         used by the #showme command.\n"
-		"\n"
-		"         When the 0,0 coordinate is in the bottom left corner tintin uses\n"
-		"         a standard x,y notation. This type of argument is used by the\n"
-		"         #map jump command.\n"
-		"\n"
-		"         The vast majority of tintin commands use y,x / row,col notation,\n"
-		"         primarily because that is the notation used by the VT100 standard\n"
-		"         used for terminal emulation.\n"
-		"\n"
-		"         <128>Squares\n"
-		"<278>\n"
-		"         A square argument takes 2 coordinates. The first coordinate defines\n"
-		"         the upper left corner, the last coordinate defines the bottom\n"
-		"         right corner. The upper left corner of the terminal is defined as\n"
-		"         1,1 and the bottom right corner as -1,-1. This type of argument is\n"
-		"         used by #draw, #button and #map offset.\n"
-		"\n"
-		"         <128>Panes\n"
-		"<278>\n"
-		"         A pane argument takes 4 size values, which are: top pane, bottom\n"
-		"         pane, left pane, right pane. When a negative value is provided the\n"
-		"         size is the maximum size, minus the value. This type of argument\n"
-		"         is used by the #split command.\n"
-		"\n"
-		"         <128>Ranges\n"
-		"<278>\n"
-		"         A range argument takes 2 values known as the upper bound and lower\n"
-		"         bound. The upper bound (first value) defines the start of the\n"
-		"         range, the lower bound (second value) the end. The first index of\n"
-		"         a range is defined as 1. When a negative value is provides the last\n"
-		"         index is defined as -1. This type of argument is used by #buffer\n"
-		"         and #variable.\n"
 		,
-		"characters colors escape mathematics pcre"
+		"help info statements"
 	},
 	{
 		"CONFIG",
@@ -1040,6 +1070,49 @@ struct help_type help_table[] =
 		"<178>Example<278>: #loop 1 10 cnt {#if {$cnt % 2 == 0} {#continue} {say $cnt}}\n",
 		
 		"break foreach list loop parse repeat return while"
+	},
+	{
+		"COORDINATES",
+		TOKEN_TYPE_STRING,
+		"<278>\n"
+		"         When the 0,0 coordinate is in the upper left corner TinTin++ uses\n"
+		"         a y,x / row,col notation, starting at 1,1. Subsequently -1,-1\n"
+		"         will indicate the bottom right corner. This type of argument is\n"
+		"         used by the #showme command.\n"
+		"\n"
+		"         When the 0,0 coordinate is in the bottom left corner tintin uses\n"
+		"         a standard x,y notation. This type of argument is used by the\n"
+		"         #map jump command.\n"
+		"\n"
+		"         The vast majority of tintin commands use y,x / row,col notation,\n"
+		"         primarily because that is the notation used by the VT100 standard\n"
+		"         used for terminal emulation.\n"
+		"\n"
+		"         <128>Squares\n"
+		"<278>\n"
+		"         A square argument takes 2 coordinates. The first coordinate defines\n"
+		"         the upper left corner, the last coordinate defines the bottom\n"
+		"         right corner. The upper left corner of the terminal is defined as\n"
+		"         1,1 and the bottom right corner as -1,-1. This type of argument is\n"
+		"         used by #draw, #button and #map offset.\n"
+		"\n"
+		"         <128>Panes\n"
+		"<278>\n"
+		"         A pane argument takes 4 size values, which are: top pane, bottom\n"
+		"         pane, left pane, right pane. When a negative value is provided the\n"
+		"         size is the maximum size, minus the value. This type of argument\n"
+		"         is used by the #split command.\n"
+		"\n"
+		"         <128>Ranges\n"
+		"<278>\n"
+		"         A range argument takes 2 values known as the upper bound and lower\n"
+		"         bound. The upper bound (first value) defines the start of the\n"
+		"         range, the lower bound (second value) the end. The first index of\n"
+		"         a range is defined as 1. When a negative value is provides the last\n"
+		"         index is defined as -1. This type of argument is used by #buffer\n"
+		"         and #variable.\n"
+		,
+		"characters colors escape_codes mathematics pcre"
 	},
 	{
 		"CR",
@@ -2054,6 +2127,34 @@ struct help_type help_table[] =
 		"introduction"
 	},
 	{
+		"INFO",
+		TOKEN_TYPE_COMMAND,
+		"<178>Command<278>: #info <178>{<278>listname<178>} {<278>LIST<178>|<278>ON<178>|<278>OFF<178>|<278>SAVE<178>}<278>\n"
+		"\n"
+		"         Without an argument info displays the settings of every tintin list.\n"
+		"\n"
+		"         By providing the name of a list and the LIST option it shows all\n"
+		"         triggers/variables associated with that list. With the SAVE option\n"
+		"         this data is written to the info variable.\n"
+		"\n"
+		"         #info arguments will show matched trigger arguments.\n"
+		"         #info big5toutf will show the big5 to utf8 translation table.\n"
+		"         #info cpu will show information about tintin's cpu usage.\n"
+		"         #info environ will show the environment variables.\n"
+		"         #info input will show information about the input line.\n"
+		"         #info matches will show matched command arguments.\n"
+		"         #info mccp will show information about data compression.\n"
+		"         #info memory will show information about the memory stack.\n"
+		"         #info stack will show the low level debugging stack.\n"
+		"         #info session will show information on the session.\n"
+		"         #info sessions will show information on all sessions.\n"
+		"         #info system will show some system information.\n"
+		"         #info tokenizer will show information about the script stack.\n"
+		"         #info unicode will show information on the provided character.\n"
+		,
+		"class debug ignore kill message"
+	},
+	{
 		"INTRODUCTION",
 		TOKEN_TYPE_STRING,
 		"<278>         On this page you'll find an introduction to using TinTin++. Additional\n"
@@ -2325,34 +2426,6 @@ struct help_type help_table[] =
 		"characters colors coordinates editing escape_codes greeting keypad lists mapping mathematics screen_reader sessionname speedwalk statements suspend time"
 	},
 	{
-		"INFO",
-		TOKEN_TYPE_COMMAND,
-		"<178>Command<278>: #info <178>{<278>listname<178>} {<278>LIST<178>|<278>ON<178>|<278>OFF<178>|<278>SAVE<178>}<278>\n"
-		"\n"
-		"         Without an argument info displays the settings of every tintin list.\n"
-		"\n"
-		"         By providing the name of a list and the LIST option it shows all\n"
-		"         triggers/variables associated with that list. With the SAVE option\n"
-		"         this data is written to the info variable.\n"
-		"\n"
-		"         #info arguments will show matched trigger arguments.\n"
-		"         #info big5toutf will show the big5 to utf8 translation table.\n"
-		"         #info cpu will show information about tintin's cpu usage.\n"
-		"         #info environ will show the environment variables.\n"
-		"         #info input will show information about the input line.\n"
-		"         #info matches will show matched command arguments.\n"
-		"         #info mccp will show information about data compression.\n"
-		"         #info memory will show information about the memory stack.\n"
-		"         #info stack will show the low level debugging stack.\n"
-		"         #info session will show information on the session.\n"
-		"         #info sessions will show information on all sessions.\n"
-		"         #info system will show some system information.\n"
-		"         #info tokenizer will show information about the script stack.\n"
-		"         #info unicode will show information on the provided character.\n"
-		,
-		"class debug ignore kill message"
-	},
-	{
 		"KEYPAD",
 		TOKEN_TYPE_STRING,
 		"<278>         When TinTin++ starts up it sends \\e= to the terminal to enable the\n"
@@ -2394,7 +2467,7 @@ struct help_type help_table[] =
 		"         Mac OS X Terminal requires enabling 'strict vt100 keypad behavior' in\n"
 		"         Terminal -> Window Settings -> Emulation.\n"
 		,
-		"colors coordinates escape mathematics pcre"
+		"colors coordinates escape_codes mathematics pcre"
 	},
 	{
 		"KILL",
@@ -2532,6 +2605,9 @@ struct help_type help_table[] =
 		"\n"
 		"         The add and create options allow using multiple items, as well\n"
 		"         as semicolon separated items.\n"
+		"\n"
+		"         The get option will return the item or the indexation. Use\n"
+		"         $var[<index>] to retrieve the nested data of a list table.\n"
 		"\n"
 		"         The order, sort and simplify options will perform the operation on\n"
 		"         the given list. Optional items can be provided which are added to\n"
@@ -4183,7 +4259,7 @@ struct help_type help_table[] =
 		"\n"
 		"<178>Example<278>: #10 {buy bread}\n",
 		
-		"break continue foreach list loop parse return while"
+		"mathematics statements"
 	},
 	{
 		"REPLACE",
@@ -4562,7 +4638,7 @@ struct help_type help_table[] =
 		"\n"
 		"<178>Example<278>: #path unzip 3n1e2nw\n"
 		"<178>Example<278>: #map move 3ne1d\n",
-		"alias cursor history keypad macro tab"
+		"keypad mapping repeat"
 	},
 	{
 		"SPLIT",
@@ -4659,7 +4735,7 @@ struct help_type help_table[] =
 		"         #switch {expression} {commands}\n"
 		"         #while {expression} {commands}\n"
 		,
-		"commands help info"
+		"mathematics pcre repeat"
 	},
 	{
 		"SUBSTITUTE",
@@ -4767,7 +4843,7 @@ struct help_type help_table[] =
 		"          displayed on the screen, or being processed as part of a regex.\n"
 		"          Escapes try to mimic escapes in PCRE when possible.\n"
 		,
-		"characters colors escapes info pcre",
+		"characters colors escape_codes pcre",
 	},
 	{
 		"SUSPEND",
@@ -4871,7 +4947,7 @@ struct help_type help_table[] =
 		"         The current epoch time value is obtained using #format {time} {%T}.\n"
 		"\n"
 		"         When using %t the argument should contain strftime format specifiers.\n"
-		"         The output may differ depending on your locale. See man strftime.\n"
+		"         Below are some common specifiers, see man strftime for the full list.\n"
 		"\n"
 		"         %a  Abbreviated name of the day of the week (mon ... sun).\n"
 		"         %A  Full name of the day of the week. (Monday ... Sunday)\n"

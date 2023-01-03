@@ -220,7 +220,6 @@ extern DO_COMMAND(do_debug);
 extern DO_COMMAND(do_echo);
 extern DO_COMMAND(do_event);
 extern DO_COMMAND(do_format);
-extern DO_COMMAND(do_function);
 extern DO_COMMAND(do_gag);
 extern DO_COMMAND(do_highlight);
 extern DO_COMMAND(do_ignore);

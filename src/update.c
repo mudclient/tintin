@@ -478,7 +478,7 @@ void update_sessions(void)
 		{
 			gtd->update = ses->next;
 
-			if (HAS_BIT(ses->flags, SES_FLAG_PRINTLINE) && ses->check_output == 0)
+			if (HAS_BIT(ses->flags, SES_FLAG_PRINTLINE))
 			{
 				DEL_BIT(ses->flags, SES_FLAG_PRINTLINE);
 

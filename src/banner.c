@@ -134,7 +134,7 @@ void banner_init(struct session *ses, char *arg1)
 		"This is an amazing game that you could literally play for a decade and still\n"
 		"discover more - you won't be disappointed!", arg1);
 
-	banner_website(ses, "Kallisti MUD", "https://www.kallistimud.com", arg1);
+	banner_website(ses, "Kallisti MUD", "https://www.KallistiMUD.com", arg1);
 	banner_address(ses, "Kallisti MUD", "LoK kallistimud.com 4000", arg1);
 	banner_expires(ses, "Kallisti MUD", "2028", arg1);
 	banner_flag(ses, "Kallisti MUD", BANNER_FLAG_DUPLICATE);

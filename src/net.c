@@ -495,32 +495,26 @@ void readmud(struct session *ses)
 				*next_line++ = 0;
 			}
 
-			if (str_len(ses->more_output) < BUFFER_SIZE / 3)
+			if (str_len(ses->more_output) < BUFFER_SIZE / 4)
 			{
 				if (!HAS_BIT(ses->telopts, TELOPT_FLAG_PROMPT))
 				{
-					if (ses->packet_patch)
-					{
-						str_cat(&ses->more_output, line);
-						ses->check_output = gtd->utime + ses->packet_patch;
-
-						break;
-					}
-					else if (HAS_BIT(ses->config_flags, CONFIG_FLAG_AUTOPATCH))
+					if (ses->packet_patch || HAS_BIT(ses->config_flags, CONFIG_FLAG_AUTOPATCH))
 					{
 						if (ses->list[LIST_PROMPT]->list[0])
 						{
 							if (!detect_prompt(ses, line))
 							{
 								str_cat(&ses->more_output, line);
-								ses->check_output = gtd->utime + 500000ULL;
+								ses->check_output = gtd->utime + (ses->packet_patch ? ses->packet_patch : 500000ULL);
+
 								break;
 							}
 						}
-						else if (HAS_BIT(ses->config_flags, CONFIG_FLAG_AUTOPROMPT))
+						else if (ses->packet_patch || HAS_BIT(ses->config_flags, CONFIG_FLAG_AUTOPROMPT))
 						{
 							str_cat(&ses->more_output, line);
-							ses->check_output = gtd->utime + 500000ULL;
+							ses->check_output = gtd->utime + (ses->packet_patch ? ses->packet_patch : 500000ULL);
 							break;
 						}
 					}

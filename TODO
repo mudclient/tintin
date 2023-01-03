@@ -1,3 +1,5 @@
+- dev/test/map/sjmap.tin look into weight of 10000 messing up #map find
+
 - Handle more_output more cleanly in net.c
 
 - return #regex #else to old format
@@ -15,6 +17,14 @@
 - sandbox mode to disable shell integration.
 
 - color patch issues in #help
+
+- update telopt_server with MSSP, MTTS and TTYPE changes
+
+- look into #draw Yellow scroll bot side 1 1 1 80 drawing weird
+
+- check that vertical split screen update is fast using a trigger
+  with an instant screen update for reference. Some issues reported
+  related to packet patch.
 
 ----------------
   - add shadow session support with access to all events.
