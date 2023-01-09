@@ -629,21 +629,22 @@ enum operators
 #define CONFIG_FLAG_AUTOPATCH         BV01
 #define CONFIG_FLAG_AUTOPROMPT        BV02
 #define CONFIG_FLAG_COLORPATCH        BV03
-#define CONFIG_FLAG_CONVERTMETA       BV04
-#define CONFIG_FLAG_ECHOCOMMAND       BV05
-#define CONFIG_FLAG_MCCP              BV06
-#define CONFIG_FLAG_MOUSEDEBUG        BV07
-#define CONFIG_FLAG_MOUSEINFO         BV08
-#define CONFIG_FLAG_MOUSEPIXELS       BV09
-#define CONFIG_FLAG_MOUSETRACKING     BV10
-#define CONFIG_FLAG_REPEATENTER       BV11
-#define CONFIG_FLAG_SCREENREADER      BV12
-#define CONFIG_FLAG_SCROLLLOCK        BV13
-#define CONFIG_FLAG_SPEEDWALK         BV14
-#define CONFIG_FLAG_TELNET            BV15
-#define CONFIG_FLAG_VERBATIM          BV16
-#define CONFIG_FLAG_VERBOSE           BV17
-#define CONFIG_FLAG_WORDWRAP          BV18
+#define CONFIG_FLAG_COMPACT           BV04
+#define CONFIG_FLAG_CONVERTMETA       BV05
+#define CONFIG_FLAG_ECHOCOMMAND       BV06
+#define CONFIG_FLAG_MCCP              BV07
+#define CONFIG_FLAG_MOUSEDEBUG        BV08
+#define CONFIG_FLAG_MOUSEINFO         BV09
+#define CONFIG_FLAG_MOUSEPIXELS       BV10
+#define CONFIG_FLAG_MOUSETRACKING     BV11
+#define CONFIG_FLAG_REPEATENTER       BV12
+#define CONFIG_FLAG_SCREENREADER      BV13
+#define CONFIG_FLAG_SCROLLLOCK        BV14
+#define CONFIG_FLAG_SPEEDWALK         BV15
+#define CONFIG_FLAG_TELNET            BV16
+#define CONFIG_FLAG_VERBATIM          BV17
+#define CONFIG_FLAG_VERBOSE           BV18
+#define CONFIG_FLAG_WORDWRAP          BV19
 
 #define SES_FLAG_BUFFERUPDATE         BV01
 #define SES_FLAG_CLOSED               BV02
@@ -703,6 +704,7 @@ enum operators
 #define LOG_FLAG_HTML                 BV06
 #define LOG_FLAG_PLAIN                BV07
 #define LOG_FLAG_RAW                  BV08
+#define LOG_FLAG_STAMP                BV09
 
 
 // Saved in map files, so don't swap around
@@ -1628,7 +1630,7 @@ struct window_data
 #define DO_BUFFER(buffer)               void buffer (struct session *ses, char *arg, char *arg1, char *arg2)
 #define DO_CHAT(chat)                     void chat (char *arg1, char *arg2)
 #define DO_COMMAND(command) struct session *command (struct session *ses, char *arg, char *arg1, char *arg2, char *arg3, char *arg4)
-#define DO_CONFIG(config)    struct session *config (struct session *ses, char *arg1, char *arg2, int index)
+//#define DO_CONFIG(config)    struct session *config (struct session *ses, char *arg1, char *arg2, int index)
 #define DO_CURSOR(cursor)               void cursor (struct session *ses, char *arg)
 #define DO_DAEMON(daemon)               void daemon (struct session *ses, char *arg, char *arg1, char *arg2)
 #define DO_EDIT(edit)          struct session *edit (struct session *ses, char *arg, char *arg1, char *arg2)
@@ -1647,7 +1649,7 @@ typedef int             CMPFUNC (const void *a, const void *b);
 
 typedef void            BUFFER  (struct session *ses, char *arg, char *arg1, char *arg2);
 typedef void            CHAT    (char *arg1, char *arg2);
-typedef struct session *CONFIG  (struct session *ses, char *arg1, char *arg2, int index);
+//typedef struct session *CONFIG  (struct session *ses, char *arg1, char *arg2, int index);
 typedef struct session *COMMAND (struct session *ses, char *arg, char *arg1, char *arg2, char *arg3, char *arg4);
 typedef void            CURSOR  (struct session *ses, char *arg);
 typedef void            DAEMON  (struct session *ses, char *arg, char *arg1, char *arg2);
@@ -1701,14 +1703,6 @@ struct command_type
 	COMMAND               * command;
 	int                     args;
 	int                     type;
-};
-
-struct config_type
-{
-	char                  * name;
-	char                  * msg_on;
-	char                  * msg_off;
-	CONFIG                * config;
 };
 
 struct cursor_type
@@ -2149,38 +2143,6 @@ extern unsigned long long tintou(char *str);
 #define __CONFIG_H__
 
 extern DO_COMMAND(do_configure);
-
-extern DO_CONFIG(config_autotab);
-extern DO_CONFIG(config_buffersize);
-extern DO_CONFIG(config_charset);
-extern DO_CONFIG(config_colormode);
-extern DO_CONFIG(config_colorpatch);
-extern DO_CONFIG(config_commandcolor);
-extern DO_CONFIG(config_commandecho);
-extern DO_CONFIG(config_connectretry);
-extern DO_CONFIG(config_childlock);
-extern DO_CONFIG(config_convertmeta);
-extern DO_CONFIG(config_debugtelnet);
-extern DO_CONFIG(config_historysize);
-extern DO_CONFIG(config_inheritance);
-extern DO_CONFIG(config_loglevel);
-extern DO_CONFIG(config_logmode);
-extern DO_CONFIG(config_mccp);
-extern DO_CONFIG(config_mousetracking);
-extern DO_CONFIG(config_packetpatch);
-extern DO_CONFIG(config_randomseed);
-extern DO_CONFIG(config_repeatchar);
-extern DO_CONFIG(config_repeatenter);
-extern DO_CONFIG(config_screenreader);
-extern DO_CONFIG(config_scrolllock);
-extern DO_CONFIG(config_speedwalk);
-extern DO_CONFIG(config_tabwidth);
-extern DO_CONFIG(config_telnet);
-extern DO_CONFIG(config_tintinchar);
-extern DO_CONFIG(config_verbatim);
-extern DO_CONFIG(config_verbatimchar);
-extern DO_CONFIG(config_verbose);
-extern DO_CONFIG(config_wordwrap);
 
 #endif
 
@@ -2844,7 +2806,7 @@ extern struct chat_type chat_table[];
 extern   char character_table[];
 extern struct color_type color_table[];
 extern struct color_type map_color_table[];
-extern struct config_type config_table[];
+//extern struct config_type config_table[];
 extern struct cursor_type cursor_table[];
 extern struct daemon_type daemon_table[];
 extern struct edit_type edit_table[];

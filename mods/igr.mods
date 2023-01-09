@@ -1,8 +1,15 @@
 Jan 2023        2.02.31
 ------------------------------------------------------------------------------
+line.c          Added #line logmode stamp option to force the adding of a
+                timestamp when using #line log.
+
+config.c        Added #config compact which is disabled by default. When
+                enabled it can get rid of blank lines surrounding a gagged
+                prompt line.
+
 substitute.c    Fixed #alias and #function so #info arguments save works.
 
-line.c          #line log no longer prints a stamp if #log stamp is set,
+line.c          #line log no longer prints a stamp if #log timestamp is set,
                 unless you're writing to the active log file.
 
 main.c          The terminal title set with tt++ -t will now reset on exit.

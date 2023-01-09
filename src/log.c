@@ -243,7 +243,7 @@ void logit(struct session *ses, char *txt, FILE *file, int flags)
 
 	push_call("logit(%p,%p,%p,%d)",ses,txt,file,flags);
 
-	if (*ses->log->stamp_strf && file == ses->log->file)
+	if (*ses->log->stamp_strf && (HAS_BIT(ses->log->mode, LOG_FLAG_STAMP) || file == ses->log->file))
 	{
 		if (ses->log->stamp_time != gtd->time)
 		{
@@ -258,7 +258,7 @@ void logit(struct session *ses, char *txt, FILE *file, int flags)
 		fputs(ses->log->stamp_text, file);
 	}
 
-	if (HAS_BIT(ses->log->mode, LOG_FLAG_PLAIN))
+	if (HAS_BIT(ses->log->mode, LOG_FLAG_PLAIN) || HAS_BIT(flags, LOG_FLAG_PLAIN))
 	{
 		strip_vt102_codes(txt, out);
 	}

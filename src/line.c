@@ -377,11 +377,11 @@ DO_LINE(line_logverbatim)
 	{
 		if (ses->log->file && !strcmp(ses->log->name, arg1))
 		{
-			logit(ses, arg2, ses->log->file, LOG_FLAG_NONE);
+			logit(ses, arg2, ses->log->file, LOG_FLAG_LINEFEED);
 		}
 		else if (ses->log->line_time == gtd->time && !strcmp(ses->log->line_name, arg1))
 		{
-			logit(ses, arg2, ses->log->line_file, LOG_FLAG_NONE);
+			logit(ses, arg2, ses->log->line_file, LOG_FLAG_LINEFEED|LOG_FLAG_PLAIN);
 		}
 		else
 		{
@@ -397,9 +397,7 @@ DO_LINE(line_logverbatim)
 				ses->log->line_file = logfile;
 				ses->log->line_time = gtd->time;
 
-				logheader(ses, ses->log->line_file, LOG_FLAG_APPEND | HAS_BIT(ses->log->mode, LOG_FLAG_HTML));
-
-				logit(ses, arg2, ses->log->line_file, LOG_FLAG_NONE);
+				logit(ses, arg2, ses->log->line_file, LOG_FLAG_LINEFEED|LOG_FLAG_PLAIN);
 			}
 			else
 			{
@@ -465,9 +463,13 @@ DO_LINE(line_logmode)
 		DEL_BIT(ses->log->mode, LOG_FLAG_HTML);
 		DEL_BIT(ses->log->mode, LOG_FLAG_PLAIN);
 	}
+	else if (is_abbrev(arg1, "STAMP"))
+	{
+		SET_BIT(ses->log->mode, LOG_FLAG_STAMP);
+	}
 	else
 	{
-		show_error(ses, LIST_COMMAND, "#SYNTAX: #LINE {LOGMODE} {HTML|PLAIN|RAW} {command}.");
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #LINE {LOGMODE} {HTML|PLAIN|RAW|STAMP} {command}.");
 
 		return ses;
 	}

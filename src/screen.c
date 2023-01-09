@@ -1572,10 +1572,11 @@ void erase_square(struct session *ses, int top_row, int top_col, int bot_row, in
 
 	save_pos(ses);
 
+	goto_pos(ses, top_row, top_col);
+
 	for (row = top_row ; row <= bot_row ; row++)
 	{
-		goto_pos(ses, row, top_col);
-		print_stdout(0, 0, "\e[%dX", bot_col - top_col + 1);
+		print_stdout(0, 0, "\e[%dX\v", bot_col - top_col + 1);
 	}
 	restore_pos(ses);
 
