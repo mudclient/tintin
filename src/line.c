@@ -465,13 +465,9 @@ DO_LINE(line_logmode)
 		DEL_BIT(ses->log->mode, LOG_FLAG_HTML);
 		DEL_BIT(ses->log->mode, LOG_FLAG_PLAIN);
 	}
-	else if (is_abbrev(arg1, "STAMPLESS"))
-	{
-		SET_BIT(ses->log->mode, LOG_FLAG_STAMPLESS);
-	}
 	else
 	{
-		show_error(ses, LIST_COMMAND, "#SYNTAX: #LINE {LOGMODE} {HTML|PLAIN|RAW|STAMPLESS} {command}.");
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #LINE {LOGMODE} {HTML|PLAIN|RAW} {command}.");
 
 		return ses;
 	}

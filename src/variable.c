@@ -1415,31 +1415,28 @@ void format_string(struct session *ses, char *format, char *arg, char *out)
 								int strl = stringlength(ses, arglist[i]);
 								int rawl = strlen(arglist[i]);
 
-								if (snip)
+								if (snip >= 0)
 								{
-									if (snip > 0)
+									if (snip < strl)
 									{
-										if (snip < strl)
-										{
-										 	int head = string_str_raw_len(ses, arglist[i], 0, snip);
+									 	int head = string_str_raw_len(ses, arglist[i], 0, snip);
 
-										 	arglist[i][head] = 0;
-										 	strl = snip;
-										 	rawl = head;
-										}
+									 	arglist[i][head] = 0;
+									 	strl = snip;
+									 	rawl = head;
 									}
-									else
+								}
+								else
+								{
+									snip *= -1;
+
+									if (snip < strl)
 									{
-										snip *= -1;
+										int head = string_str_raw_len(ses, arglist[i], 0, strl - snip);
 
-										if (snip < strl)
-										{
-											int head = string_str_raw_len(ses, arglist[i], 0, strl - snip);
-
-											memmove(arglist[i], arglist[i] + head, rawl - head + 1);
-											strl = snip;
-											rawl -= head;
-										}
+										memmove(arglist[i], arglist[i] + head, rawl - head + 1);
+										strl = snip;
+										rawl -= head;
 									}
 								}
 

@@ -46,6 +46,9 @@ int wait_on_connect(struct session *ses, int sock, int connect_error)
 	static fd_set wfd;
 	socklen_t len, val;
 
+	FD_ZERO(&rfd);
+	FD_ZERO(&wfd);
+
 	FD_SET(sock, &rfd);
 	FD_SET(sock, &wfd);
 
@@ -152,7 +155,10 @@ int connect_mud(struct session *ses, char *host, char *port)
 		syserr_printf(ses, "connect_mud: setsockopt:");
 	}
 
-	ses->connect_error = connect(sock, address->ai_addr, address->ai_addrlen);
+	if (gts->connect_retry == 0)
+	{
+		ses->connect_error = connect(sock, address->ai_addr, address->ai_addrlen);
+	}
 
 	if (fcntl(sock, F_SETFL, O_NDELAY|O_NONBLOCK) == -1)
 	{
@@ -165,22 +171,27 @@ int connect_mud(struct session *ses, char *host, char *port)
 		return -1;
 	}
 
-//	ses->connect_error = connect(sock, address->ai_addr, address->ai_addrlen);
-
-	if (ses->connect_error)
+	if (gts->connect_retry)
 	{
-//		ses->connect_error = wait_on_connect(ses, sock, ses->connect_error);
+		ses->connect_error = connect(sock, address->ai_addr, address->ai_addrlen);
 
 		if (ses->connect_error)
 		{
-			syserr_printf(ses, "connect_mud: connect");
-
-			close(sock);
-
-			freeaddrinfo(address);
-
-			return 0;
+			ses->connect_error = wait_on_connect(ses, sock, ses->connect_error);
 		}
+	}
+
+	if (ses->connect_error)
+	{
+		if (gts->connect_retry == 0)
+		{
+			syserr_printf(ses, "connect_mud: connect");
+		}
+		close(sock);
+
+		freeaddrinfo(address);
+
+		return 0;
 	}
 
 	error = getnameinfo(address->ai_addr, address->ai_addrlen, ip, 100, NULL, 0, NI_NUMERICHOST);

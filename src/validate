@@ -66,7 +66,7 @@
 	#line ignore #showme <118>Failed test %0
 }
 
-#nop ----------
+#0 )=-=( ERROR 1 )=-=( 0#
 
 #math tmp 1 + 1
 #if {$tmp != 2}{error 1: math failure}
@@ -77,7 +77,7 @@
 #math tmp (1 + 1) % 10
 #if {$tmp != 2} {error 1.2: math failure}
 
-#nop ----------
+#0 )=-=( ERROR 2 )=-=( 0#
 
 #alias {test} {#math tmp $tmp + 1}
 #line oneshot #alias {test%*} {#nop} {4}
@@ -88,11 +88,11 @@
 	error 2: oneshot or math or alias failure
 }
 
-#nop ----------
+#0 )=-=( ERROR 3 )=-=( 0#
 
 #1 {#return;error 3: #return failure}
 
-#nop ----------
+#0 )=-=( ERROR 4 )=-=( 0#
 
 #buf get tmp -3 -1
 
@@ -103,13 +103,13 @@
 
 #showme $arg
 
-#nop ----------
+#0 )=-=( ERROR 5 )=-=( 0#
 
 #switch {3}     {#case 3 #return;#default error 5.0: switch failure}
 #switch {1+2}   {#case 3 #return;#default error 5.1: switch failure}
 #switch {"bla"} {#case "bla" #return;#default error 5.2: switch string failure}
 
-#nop ----------
+#0 )=-=( ERROR 6 )=-=( 0#
 
 #class tmp open
 #unvar tmp
@@ -121,11 +121,11 @@
 	error 6: class or variable failure
 }
 
-#nop ----------
+#0 )=-=( ERROR 7 )=-=( 0#
 
 #loop 1 2 tmp {#continue;error 7: continue failure}
 
-#nop ----------
+#0 )=-=( ERROR 8 )=-=( 0#
 
 #kill variable tmp
 
@@ -139,14 +139,14 @@
 	error 9: line strip failure
 }
 
-#nop ----------
+#0 )=-=( ERROR 9 )=-=( 0#
 
 #act {test} {error 10: line ignore failure}
 #line gag;
 #line ignore #showme <118>Failed test 10: line gag failure
 #unact {test}
 
-#nop ----------
+#0 )=-=( ERROR 10 )=-=( 0#
 
 #parse {abcd} {tmp} {#var tmp ($tmp)}
 #if {"$tmp" != "(d)"}
@@ -154,7 +154,7 @@
 	error 11: parse failure
 }
 
-#nop ----------
+#0 )=-=( ERROR 11 )=-=( 0#
 
 #path load {#var tmp 1}
 #path walk
@@ -163,7 +163,7 @@
 	error 12: path load or walk failure
 }
 
-#nop ----------
+#0 )=-=( ERROR 12 )=-=( 0#
 
 #script tmp {echo 'test'}
 #if {{$tmp[1]} != {test}}
@@ -171,25 +171,25 @@
 	error 13: script failure
 }
 
-#nop ----------
+#0 )=-=( ERROR 13 )=-=( 0#
 
 #regex {test} {te%?t} {#nop}
 {
 	error 14: regex failure
 }
 
-#nop ----------
+#0 )=-=( ERROR 14 )=-=( 0#
 
 #regex {bla} {bli}
 {
 	error 15: regex failure
 }
 
-#nop ----------
+#0 )=-=( ERROR 15 )=-=( 0#
 
 #0 error 16: repeat failure
 
-#nop ----------
+#0 )=-=( ERROR 16 )=-=( 0#
 
 #unvar tmp
 
@@ -202,14 +202,14 @@
 	}
 }
 
-#nop ----------
+#0 )=-=( ERROR 18 )=-=( 0#
 
 #if {${tmp} == 1}
 {
 	error 18: local failure
 }
 
-#nop ----------
+#0 )=-=( ERROR 19 )=-=( 0#
 
 #1
 {
@@ -467,7 +467,7 @@ sethash blo hello
 #regex {blibla} {%.%+%.%*}      {#if {"&4" !== "bla"}  {error 34.2: regex argument indexing (&4)}}
 #regex {blibla} {%99bli%+3..3*}      {#if {"&99" !== "bla"} {error 34.3: regex argument indexing (&99)}}
 
-#nop ----------
+#0 )=-=( ERROR 35 )=-=( 0#
 
 #var bla {}
 #cat bla bli
@@ -481,23 +481,64 @@ sethash blo hello
 #cat bla[bli] {{a}{b}}
 #if {{$bla[bli][a]} !== {b}} {error 35.5: #cat table}
 
-#nop ----------
 
-#nop command crash test
+#0 ┌──────────────────────────────────────────────────────────────────────────────┐
+#0 │ ██████┐██████┐  █████┐ ███████┐██┐  ██┐   ████████┐███████┐███████┐████████┐ │
+#0 │██┌────┘██┌──██┐██┌──██┐██┌────┘██│  ██│   └──██┌──┘██┌────┘██┌────┘└──██┌──┘ │
+#0 │██│     ██████┌┘███████│███████┐███████│      ██│   █████┐  ███████┐   ██│    │
+#0 │██│     ██┌──██┐██┌──██│└────██│██┌──██│      ██│   ██┌──┘  └────██│   ██│    │
+#0 │└██████┐██│  ██│██│  ██│███████│██│  ██│      ██│   ███████┐███████│   ██│    │
+#0 │ └─────┘└─┘  └─┘└─┘  └─┘└──────┘└─┘  └─┘      └─┘   └──────┘└──────┘   └─┘    │
+#0 └──────────────────────────────────────────────────────────────────────────────┘
+
+#class bla open
+#var blabla x
+#class bla kill
 
 #action {bla} #nop
-#unact bla
 #alias {bla} #nop
+#button {1;1;2;2} {#nop}
+#delay 1000 #nop
+#event {GAG SESSION DISCONNECTED} {#nop}
+#fun bla {#nop}
+#gag hrm
+#high bla green
+#macro \e\e #nop
+#pathdir bla bli
+#prompt bla bli
+#sub bla bli
+#tab bla bli
+#tick bla {#nop} 1
+#var bla bli
+
+#line quiet
+{
+	#act;#alias;#button;#delay;#event;#event %*;#fun;#gag;#high;#macro;#pathdir;#prompt;#sub;#tab;#tick;#var
+}
+
+#nop #line quiet #line debug #1 {#if {0} {#nop};#elseif {0} {#nop};#else #switch {1} {#case 0 #nop;#case 1 #continue}}
+
+#unvar bla
+#untab bla
+#untick bla
+#unsub bla
+#unprompt bla
+#unpathdir bla
+#unmacro \e\e
+#ungag hrm
+#unfun bla
+#unhigh bla
+#unevent {GAG SESSION CONNECTED}
+#undelay %*
+#unbutton {1;1;2;2}
+#unact bla
 #unalias bla
+
 #bell volume 8
 #buffer get bla -1 -1;
-#button {1;1;2;2} {#nop}
-#unbutton {1;1;2;2}
 #cat bla bli
 #line quiet #chat init 0
 #chat uninit
-#class bla open
-#class bla kill
 #cursor get bla
 #line quiet #daemon list
 #line quiet {#debug all on;#debug all off};
@@ -505,21 +546,14 @@ sethash blo hello
 #line quiet #dictionary hello
 #draw green tile 1 -1 1 -1
 #draw blue red scaled box 1 1 4 4 hello world
-#event {GAG SESSION DISCONNECTED} {#nop}
 #format bla {}
-#fun bla {#nop}
-#unfun bla
 #line quiet #help %*
-#high bla green
-#unhigh bla
 #history insert bla
 #history delete
 #info system save
 #list bla create {a;b;c}
 #kill variable bla
 #loop 0 1 bla #nop
-#macro \e\e #nop
-#unmacro \e\e
 #line quiet
 {
 	#map create;
@@ -532,26 +566,16 @@ sethash blo hello
 #parse {abc} {bla} {#nop}
 #path create
 #path destroy
-#pathdir bla bli
-#unpathdir bla
 #line quiet #port init bla 0
 #snoop bla
 #bla #kill all
 #line quiet #port uninit
-#prompt bla bli
-#unprompt bla
 #regex {bla} {bla} {#nop} {#nop}
 #var bla x
 #replace bla x y
 #screen get cols bla
 #line quiet #split
 #unsplit
-#sub bla bli
-#unsub bla
-#tab bla bli
-#untab bla
-#tick bla {#nop} 1
-#untick bla
 
 #format end %U;
 
@@ -570,6 +594,7 @@ sethash blo hello
 {
 	#delay {0}
 	{
+		#if {1} {#info tokenizer};
 		#info memory;
 		#info stack;
 		#draw Yellow Green scroll box 1 1 3 80 End of validation with 0 errors in @time{} seconds.;

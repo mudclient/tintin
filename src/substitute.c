@@ -1197,15 +1197,15 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 
 						RESTRING(gtd->vars[i], temp);
 
+						gtd->varc = i + 1;
+
 						if (*pte == 0)
 						{
 							while (++i < 100)
 							{
-								if (*gtd->vars[i])
-								{
-									RESTRING(gtd->vars[i], "");
-								}
+								*gtd->vars[i] = 0;
 							}
+
 							break;
 						}
 
@@ -1213,9 +1213,7 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 						{
 							pte++;
 						}
-
 					}
-
 					substitute(ses, node->arg2, buf, SUB_ARG);
 
 					if (node->shots && --node->shots == 0)

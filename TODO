@@ -14,7 +14,10 @@
 
 - update telopt_server with MSSP, MTTS and TTYPE changes
 
+- #format %.3s prints two double-width characters.
+
 - groozam.net 4000 
+
 
 ----------------
   - add shadow session support with access to all events.

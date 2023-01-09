@@ -1,6 +1,9 @@
 Jan 2023        2.02.31
 ------------------------------------------------------------------------------
-line.c          Added the #line logmode stampless option.
+substitute.c    Fixed #alias and #function so #info arguments save works.
+
+line.c          #line log no longer prints a stamp if #log stamp is set,
+                unless you're writing to the active log file.
 
 main.c          The terminal title set with tt++ -t will now reset on exit.
 

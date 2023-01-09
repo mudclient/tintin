@@ -816,7 +816,7 @@ struct help_type help_table[] =
 		TOKEN_TYPE_COMMAND,
 		"<178>Command<278>: #cat <178>{<278>variable<178>} {<278>argument<178>}\n"
 		"\n"
-		"         The cat command will concatinate the argument to the given variable.\n"
+		"         The cat command will concatenate the argument to the given variable.\n"
 		,
 		"format function local math replace script variable"
 	},

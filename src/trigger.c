@@ -191,14 +191,13 @@ int check_all_aliases(struct session *ses, char *input)
 
 					RESTRING(gtd->vars[i], buf);
 
+					gtd->varc = i + 1;
+
 					if (*arg == 0)
 					{
 						while (++i < 100)
 						{
-							if (*gtd->vars[i])
-							{
-								RESTRING(gtd->vars[i], "");
-							}
+							*gtd->vars[i] = 0;
 						}
 						break;
 					}

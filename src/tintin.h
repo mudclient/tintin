@@ -703,7 +703,6 @@ enum operators
 #define LOG_FLAG_HTML                 BV06
 #define LOG_FLAG_PLAIN                BV07
 #define LOG_FLAG_RAW                  BV08
-#define LOG_FLAG_STAMPLESS            BV09
 
 
 // Saved in map files, so don't swap around
