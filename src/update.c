@@ -924,7 +924,7 @@ void tick_update(void)
 
 				if (!HAS_BIT(root->flags, LIST_FLAG_IGNORE))
 				{
-					show_debug(ses, LIST_TICKER, "#DEBUG TICKER {%s}", node->arg2);
+					show_debug(ses, LIST_TICKER, COLOR_DEBUG "#DEBUG TICKER " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg2);
 
 					if (node->shots && --node->shots == 0)
 					{
@@ -969,7 +969,7 @@ void delay_update(void)
 
 			if (node->val64 <= gtd->utime)
 			{
-				show_debug(ses, LIST_DELAY, "#DEBUG DELAY {%s}", node->arg2);
+				show_debug(ses, LIST_DELAY, COLOR_DEBUG "#DEBUG DELAY " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg2);
 
 				delete_index_list(root, root->update);
 
@@ -999,7 +999,11 @@ void path_update(void)
 
 		root = ses->list[LIST_PATH];
 
-		while (root->update < root->used)
+		if (HAS_BIT(root->flags, LIST_FLAG_IGNORE))
+		{
+			continue;
+		}
+		if (root->update < root->used)
 		{
 			node = root->list[root->update];
 
@@ -1009,16 +1013,15 @@ void path_update(void)
 
 				node->val64 = 0;
 
-				show_debug(ses, LIST_COMMAND, "#DEBUG PATH {%s}", node->arg1);
+				show_debug(ses, LIST_PATH, COLOR_DEBUG "#DEBUG PATH " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1);
 
-				script_driver(ses, LIST_COMMAND, node->arg1);
+				script_driver(ses, LIST_PATH, node->arg1);
 
 				if (root->update == root->used)
 				{
 					check_all_events(ses, EVENT_FLAG_MAP, 0, 0, "END OF RUN");
 				}
 			}
-			break;
 		}
 	}
 }
@@ -1033,37 +1036,7 @@ void packet_update(void)
 
 		if (ses->check_output && gtd->utime > ses->check_output)
 		{
-			char result[STRING_SIZE];
-
-			if (HAS_BIT(ses->flags, SES_FLAG_SPLIT))
-			{
-				save_pos(ses);
-
-				goto_pos(ses, ses->split->bot_row, 1);
-			}
-
-			SET_BIT(ses->flags, SES_FLAG_READMUD);
-
-			strcpy(result, ses->more_output);
-
-			if (HAS_BIT(ses->charset, CHARSET_FLAG_ALL_TOUTF8))
-			{
-				all_to_utf8(ses, ses->more_output, result);
-			}
-			else
-			{
-				strcpy(result, ses->more_output);
-			}
-			str_cpy(&ses->more_output, "");
-
-			process_mud_output(ses, result, TRUE);
-
-			DEL_BIT(ses->flags, SES_FLAG_READMUD);
-
-			if (HAS_BIT(ses->flags, SES_FLAG_SPLIT))
-			{
-				restore_pos(ses);
-			}
+			process_more_output(ses, "", TRUE);
 		}
 
 		if (HAS_BIT(ses->telopts, TELOPT_FLAG_UPDATENAWS))

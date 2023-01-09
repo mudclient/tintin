@@ -454,6 +454,8 @@ int check_key(char *input, int len)
 				{
 					strcpy(buf, node->arg2);
 
+					show_debug(gtd->ses, LIST_MACRO, COLOR_DEBUG "#DEBUG MACRO " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1);
+
 					if (node->shots && --node->shots == 0)
 					{
 						delete_node_list(gtd->ses, LIST_MACRO, node);
@@ -924,9 +926,7 @@ void echo_command(struct session *ses, char *line)
 
 	if (ses->check_output)
 	{
-		strcpy(buffer, ses->more_output);
-
-		process_mud_output(ses, buffer, FALSE);
+		process_more_output(ses, "", TRUE);
 	}
 	else
 	{

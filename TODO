@@ -1,30 +1,20 @@
-- dev/test/map/sjmap.tin look into weight of 10000 messing up #map find
+- add blight to mssp, msdp, gmcp
 
-- Handle more_output more cleanly in net.c
+- finish ? : support in #math
 
-- return #regex #else to old format
+- multiline triggers
 
 - Look into #split 1 1 1 1 on termux when hiding / showing keyboard.
-
-- Make WinTin++ 64 bit and double check windows console link opens main.tin
 
 - look into invalid { } in MSDP / GMCP handling
 
 - mapper.c FAST handling
 
-- grid tables don't handle color codes
-
 - sandbox mode to disable shell integration.
-
-- color patch issues in #help
 
 - update telopt_server with MSSP, MTTS and TTYPE changes
 
-- look into #draw Yellow scroll bot side 1 1 1 80 drawing weird
-
-- check that vertical split screen update is fast using a trigger
-  with an instant screen update for reference. Some issues reported
-  related to packet patch.
+- groozam.net 4000 
 
 ----------------
   - add shadow session support with access to all events.

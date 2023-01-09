@@ -1312,6 +1312,7 @@ int catch_vt102_codes(struct session *ses, unsigned char *str, int cplen)
 							goto end;
 
 						case 'H':
+						case 'f':
 							if (check_all_events(ses, EVENT_FLAG_CATCH, 0, 2, "CATCH VT100 CURSOR H", ntos(val[0]), ntos(val[1])))
 							{
 								pop_call();

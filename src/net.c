@@ -471,9 +471,7 @@ void readmud(struct session *ses)
 		{
 			if (next_line - line >= BUFFER_SIZE / 3)
 			{
-				// This is not ideal, but being a rare case it'll suffice for now
-
-				next_line = &line[BUFFER_SIZE / 3];
+				next_line = &line[BUFFER_SIZE / 3]; // Not ideal. Shorten too long lines.
 			}
 			*next_line++ = 0;
 		}
@@ -495,7 +493,7 @@ void readmud(struct session *ses)
 				*next_line++ = 0;
 			}
 
-			if (str_len(ses->more_output) < BUFFER_SIZE / 4)
+			if (str_len(ses->more_output) < BUFFER_SIZE / 3)
 			{
 				if (!HAS_BIT(ses->telopts, TELOPT_FLAG_PROMPT))
 				{
@@ -522,39 +520,22 @@ void readmud(struct session *ses)
 			}
 		}
 
-		if (ses->more_output[0])
+		if (ses->check_output)
 		{
-			if (ses->check_output)
-			{
-				str_cat(&ses->more_output, line);
-				strcpy(linebuf, ses->more_output);
+			process_more_output(ses, line, next_line == NULL);
 
-				str_cpy(&ses->more_output, "");
-			}
-			else
-			{
-				// clean this up some time.
+			continue;
+		}
 
-				strcpy(linebuf, line);
-			}
+		if (HAS_BIT(ses->charset, CHARSET_FLAG_ALL_TOUTF8))
+		{
+			all_to_utf8(ses, line, linebuf);
 		}
 		else
 		{
 			strcpy(linebuf, line);
 		}
-
-		if (HAS_BIT(ses->charset, CHARSET_FLAG_ALL_TOUTF8))
-		{
-			char tempbuf[BUFFER_SIZE];
-
-			all_to_utf8(ses, linebuf, tempbuf);
-
-			process_mud_output(ses, tempbuf, next_line == NULL);
-		}
-		else
-		{
-			process_mud_output(ses, linebuf, next_line == NULL);
-		}
+		process_mud_output(ses, linebuf, next_line == NULL);
 	}
 	DEL_BIT(cts->flags, SES_FLAG_READMUD);
 
@@ -567,6 +548,51 @@ void readmud(struct session *ses)
 	return;
 }
 
+void process_more_output(struct session *ses, char *append, int prompt)
+{
+	char line[STRING_SIZE];
+
+	int readmud = HAS_BIT(ses->flags, SES_FLAG_READMUD);
+
+	if (readmud == 0)
+	{
+		if (HAS_BIT(ses->flags, SES_FLAG_SPLIT))
+		{
+			save_pos(ses);
+
+			goto_pos(ses, ses->split->bot_row, 1);
+		}
+		SET_BIT(ses->flags, SES_FLAG_READMUD);
+	}
+
+	if (*append)
+	{
+		str_cat(&ses->more_output, append);
+	}
+
+	if (HAS_BIT(ses->charset, CHARSET_FLAG_ALL_TOUTF8))
+	{
+		all_to_utf8(ses, ses->more_output, line);
+	}
+	else
+	{
+		strcpy(line, ses->more_output);
+	}
+	str_cpy(&ses->more_output, "");
+	ses->check_output = 0;
+
+	process_mud_output(ses, line, prompt);
+
+	if (readmud == 0)
+	{
+		DEL_BIT(ses->flags, SES_FLAG_READMUD);
+
+		if (HAS_BIT(ses->flags, SES_FLAG_SPLIT))
+		{
+			restore_pos(ses);
+		}
+	}
+}
 
 void process_mud_output(struct session *ses, char *linebuf, int prompt)
 {
@@ -574,8 +600,6 @@ void process_mud_output(struct session *ses, char *linebuf, int prompt)
 	int str_len, raw_len;
 
 	push_call("process_mud_output(%p,%p,%d)",ses,linebuf,prompt);
-
-	ses->check_output = 0;
 
 	raw_len = strlen(linebuf);
 	str_len = strip_vt102_codes(linebuf, line);
@@ -624,7 +648,7 @@ void process_mud_output(struct session *ses, char *linebuf, int prompt)
 
 		strip_vt102_codes(linebuf, line);
 
-		show_debug(ses, LIST_GAG, "#DEBUG GAG {%d} {%s}", ses->gagline + 1, line);
+		show_debug(ses, LIST_GAG, COLOR_DEBUG "#DEBUG GAG " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "} " COLOR_COMMAND "[" COLOR_STRING "%d" COLOR_COMMAND "]", line, ses->gagline + 1);
 
 		pop_call();
 		return;

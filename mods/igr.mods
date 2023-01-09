@@ -1,5 +1,22 @@
 Jan 2023        2.02.31
 ------------------------------------------------------------------------------
+line.c          Added the #line logmode stampless option.
+
+main.c          The terminal title set with tt++ -t will now reset on exit.
+
+variable.c      Added support for #format %.-3s which will print the last
+                3 characters of the string.
+
+regex.c         It should now be possible to use %+10* %+1..5* etc
+
+variable.c      Fixed a crash bug in #cat reported by dzp.
+
+tokenize.c      Colorized some of the #debug messages, and added a debug
+                message to mark the end of a trigger.
+
+tokenize.c      Added error message for #foreach, #loop, #parse, #switch,
+                #while, and #regex if invalid syntax is used.
+
 net.c           Fixed a display problem related to #config packet_patch in
                 vertical split mode.
 

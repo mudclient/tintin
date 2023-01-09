@@ -352,7 +352,10 @@ int main(int argc, char **argv)
 
 				case 't':
 					SET_BIT(greeting, STARTUP_FLAG_NOTITLE);
-					print_stdout(0, 0, "\e]0;%s\007", optarg);
+					command(gts, do_screen, "LOAD BOTH");
+					command(gts, do_screen, "SAVE BOTH");
+					command(gts, do_screen, "SET BOTH %s", optarg);
+//					print_stdout(0, 0, "\e]0;%s\007", optarg);
 					break;
 
 				case 'T':

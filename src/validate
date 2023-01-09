@@ -296,12 +296,21 @@ $bla + 1
 #var {bla} {<128>A<138>BC<148>DE<158>FG}
 #format tmp %L {$bla}
 #if {$tmp != 7}        {error 26.6: format L handling}
-#format bla {%.5s} {$bla}
-#format tmp %L {$bla}
-#if {$tmp != 5}        {error 26.7: format .s handling}
-#format bla {%-20s} {$bla}
-#format tmp %L {$bla}
-#if {$tmp != 20}       {error 26.8: format .s handling}
+#format bli {%.5s} {$bla}
+#format tmp %L {$bli}
+#if {$tmp != 5}        {error 26.7: format .+s handling}
+#format bli {%.-5s} {$bla}
+#format tmp %L {$bli}
+#if {$tmp != 5}        {error 26.8: format .-s handling}
+#format bli {%-20s} {$bla}
+#format tmp %L {$bli}
+#if {$tmp != 20}       {error 26.9: format -s handling}
+#format bli {%+20s} {$bla}
+#format tmp %L {$bli}
+#if {$tmp != 20}       {error 26.10: format +s handling}
+#format bli {%+20.-3s} {$bla}
+#format tmp %L {$bli}
+#if {$tmp != 20}       {error 26.11: format +.-s handling}
 
 #nop ----------
 
@@ -452,6 +461,25 @@ sethash bli hey
 sethash bla hi
 sethash blo hello
 #if {"@gethash{bla}" !== "hi"} {error 33.1: variable hashing support}
+
+#nop ----------
+#regex {blibla} {%10bli%+3..3a} {#if {"&11" !== "bla"} {error 34.1: regex argument indexing (&11)}}
+#regex {blibla} {%.%+%.%*}      {#if {"&4" !== "bla"}  {error 34.2: regex argument indexing (&4)}}
+#regex {blibla} {%99bli%+3..3*}      {#if {"&99" !== "bla"} {error 34.3: regex argument indexing (&99)}}
+
+#nop ----------
+
+#var bla {}
+#cat bla bli
+#if {{$bla} !== {bli}} {error 35.1: #cat simple}
+#cat bla bli
+#if {{$bla} !== {blibli}} {error 35.2: #cat simple ($bla) != (blibli)}
+#cat bla {{bli}{blo}}
+#if {{$bla[bli]} !== {blo}} {error 35.3: #cat table}
+#cat bla {{bla}{blu}}
+#if {{$bla[bla]} !== {blu}} {error 35.4: #cat table}
+#cat bla[bli] {{a}{b}}
+#if {{$bla[bli][a]} !== {b}} {error 35.5: #cat table}
 
 #nop ----------
 

@@ -1058,6 +1058,8 @@ void view_nest_node_json(struct listnode *node, char **str_result, int nest, int
 	}
 }
 
+// Adds gtd->level->local support
+
 struct listnode *set_nest_node_ses(struct session *ses, char *arg1, char *format, ...)
 {
 	struct listnode *node;
@@ -1216,7 +1218,7 @@ struct listnode *add_nest_node_ses(struct session *ses, char *arg1, char *format
 	}
 	else if (node)
 	{
-		str_cpy(&node->arg2, arg2);
+		str_cat(&node->arg2, arg2);
 	}
 	else
 	{

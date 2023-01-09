@@ -241,16 +241,22 @@
 */
 
 #define COLOR_BRACE         "\e[38;5;164m" // "<eae>" // magenta
-#define COLOR_COMMAND       "\e[38;5;044m" // "<aee>" // cyan
-#define COLOR_CONFIG        "\e[38;5;208m" // "<fca>" // orange
+#define COLOR_COMMAND       "\e[38;5;044m" // "<aee>" // Cyan
+#define COLOR_CONFIG        "\e[38;5;208m" // "<fca>" // Orange
 #define COLOR_RESET         "\e[0m"        // "<088>" // reset
 #define COLOR_SEPARATOR     "\e[38;5;160m" // "<eaa>" // red
+#define COLOR_SESSION       "\e[38;5;48m"  // "<afc>" // Jade
 #define COLOR_STATEMENT     "\e[38;5;040m" // "<aea>" // green
 #define COLOR_STRING        "\e[38;5;188m" // "<eee>" // white
-//#define COLOR_TEXT          "\e[38;5;122m" // "<cfe>" // pale jade
-#define COLOR_TEXT          "\e[0m" // "<cfe>" // pale jade
+#define COLOR_DEBUG         "\e[38;5;037m" // "<add>" // cyan
+
+#define COLOR_TEXT          "\e[0m"        // "<088>" // reset
 #define COLOR_TINTIN        "\e[38;5;184m" // "<eea>" // yellow
 #define COLOR_REPEAT        "\e[38;5;33m"  // "<acf>" // azure
+#define COLOR_HELP_DIM      "\e[0;37m" 
+#define COLOR_HELP_BOLD     "\e[1;37m"
+#define COLOR_HELP_TITLE    "\e[1;32m"
+#define COLOR_HELP_TABLE    "\e[0;36m"
 
 /*
 	Index for lists used by tintin
@@ -642,7 +648,7 @@ enum operators
 #define SES_FLAG_BUFFERUPDATE         BV01
 #define SES_FLAG_CLOSED               BV02
 #define SES_FLAG_CONNECTED            BV03
-#define SES_FLAG_GAG                  BV04
+#define SES_FLAG_GAG                  BV04 // unused
 #define SES_FLAG_PATHMAPPING          BV05
 #define SES_FLAG_PRINTBUFFER          BV06
 #define SES_FLAG_PRINTLINE            BV07
@@ -694,13 +700,10 @@ enum operators
 #define LOG_FLAG_APPEND               BV03
 #define LOG_FLAG_NEXT                 BV04
 #define LOG_FLAG_LOW                  BV05
-
 #define LOG_FLAG_HTML                 BV06
 #define LOG_FLAG_PLAIN                BV07
 #define LOG_FLAG_RAW                  BV08
-#define LOG_FLAG_OLD_HTML             BV09
-#define LOG_FLAG_OLD_PLAIN            BV10
-#define LOG_FLAG_OLD_RAW              BV11
+#define LOG_FLAG_STAMPLESS            BV09
 
 
 // Saved in map files, so don't swap around
@@ -1054,6 +1057,7 @@ struct listnode
 	char                  * arg4;
 	char                  * group;
 	unsigned int            shots;
+	unsigned int            lines;
 	union
 	{
 		pcre              * regex;      // act, alias, gag, highlight, substitute
@@ -1276,6 +1280,7 @@ struct level_data
 	unsigned int            debug;
 	unsigned int            grep;
 	unsigned int            ignore;
+	unsigned int            indent;
 	unsigned int            info;
 	unsigned int            input;
 	unsigned int            local;
@@ -2536,6 +2541,7 @@ extern int connect_mud(struct session *ses, char *host, char *port);
 extern void write_line_mud(struct session *ses, char *line, int size);
 extern int read_buffer_mud(struct session *ses);
 extern void readmud(struct session *ses);
+extern void process_more_output(struct session *ses, char *append, int prompt);
 extern void process_mud_output(struct session *ses, char *linebuf, int prompt);
 
 #endif
@@ -2730,18 +2736,20 @@ extern void show_message(struct session *ses, int index, char *format, ...);
 extern void show_error(struct session *ses, int index, char *format, ...);
 extern void show_debug(struct session *ses, int index, char *format, ...);
 extern void show_info(struct session *ses, int index, char *format, ...);
-extern void print_lines(struct session *ses, int flags, char *format, ...);
-extern void show_lines(struct session *ses, char *str);
 extern void tintin_header(struct session *ses, int width, char *format, ...);
 extern void socket_printf(struct session *ses, size_t length, char *format, ...);
 extern void telnet_printf(struct session *ses, int length, char *format, ...);
 
-extern void tintin_printf2(struct session *ses, char *format, ...);
-extern void tintin_printf(struct session *ses, char *format, ...);
+extern void print_lines(struct session *ses, int flags, char *color, char *format, ...);
+extern void show_lines(struct session *ses, char *color, char *str);
 
-extern void tintin_puts3(struct session *ses, char *string, int prompt);
-extern void tintin_puts2(struct session *ses, char *string);
+extern void tintin_printf(struct session *ses, char *format, ...);
+extern void tintin_printf2(struct session *ses, char *format, ...);
+extern void tintin_printf3(struct session *ses, char *format, ...);
+
 extern void tintin_puts(struct session *ses, char *string);
+extern void tintin_puts2(struct session *ses, char *string);
+extern void tintin_puts3(struct session *ses, char *string, int prompt);
 
 #endif
 

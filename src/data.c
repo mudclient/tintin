@@ -367,11 +367,6 @@ void delete_index_list(struct listroot *root, int index)
 
 	switch (root->type)
 	{
-		case LIST_TERRAIN:
-			delete_room_data(node->room);
-			free(node->room);
-			break;
-
 		case LIST_CLASS:
 			if (node->data)
 			{
@@ -381,6 +376,20 @@ void delete_index_list(struct listroot *root, int index)
 
 		case LIST_EVENT:
 			event_table[node->val32[0]].level--;
+			break;
+
+		case LIST_TERRAIN:
+			delete_room_data(node->room);
+			free(node->room);
+			break;
+
+		case LIST_VARIABLE:
+			if (node->root)
+			{
+				free_list(node->root);
+
+				node->root = NULL;
+			}
 			break;
 	}
 
@@ -393,11 +402,11 @@ void delete_index_list(struct listroot *root, int index)
 
 void dispose_node(struct listnode *node)
 {
-	if (node->root)
+/*	if (node->root)
 	{
 		free_list(node->root);
 	}
-
+*/
 	str_free(node->arg1);
 	str_free(node->arg2);
 	str_free(node->arg3);

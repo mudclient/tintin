@@ -2650,6 +2650,23 @@ DO_CURSOR(cursor_tab)
 	char arg1[BUFFER_SIZE];
 	int flag = 0;
 
+	if (*arg == 0)
+	{
+		tintin_header(ses, 80, " CURSOR TAB OPTIONS ");
+
+		tintin_printf2(ses, "  [%-18s] %s", "CASELESS", "Make the tab completion caseless");
+		tintin_printf2(ses, "  [%-18s] %s", "COMPLETE", "Make the tab completion work while editing");
+		tintin_printf2(ses, "  [%-18s] %s", "DICTIONARY", "Make the tab completion include the dictionary");
+		tintin_printf2(ses, "  [%-18s] %s", "LIST", "Make the tab completion include the tab completion list");
+		tintin_printf2(ses, "  [%-18s] %s", "SCROLLBACK", "Make the tab completion include the scrollback buffer");
+		tintin_printf2(ses, "  [%-18s] %s", "BACKWARD", "Make the tab completion go backward");
+		tintin_printf2(ses, "  [%-18s] %s", "FORWARD", "Make the tab completion go forward");
+
+		tintin_header(ses, 80, "");
+
+		return;
+	}
+
 	arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
 
 	while (*arg)

@@ -231,7 +231,7 @@ int check_one_regexp(struct session *ses, struct listnode *node, char *line, cha
 		exp = node->arg1;
 	}
 
-	if (*node->arg1 == '~')
+	if (*exp == '~')
 	{
 		exp++;
 		str = original;
@@ -344,6 +344,9 @@ int get_regex_range(char *in, char *out, int *var, int *arg)
 			case 'W':
 				pto += sprintf(pto, "%s", "(\\W");
 				break;
+			case '*':
+				pto += sprintf(pto, "%s", "(.");
+				break;
 
 			default:
 				goto end;
@@ -357,10 +360,10 @@ int get_regex_range(char *in, char *out, int *var, int *arg)
 	}
 	end:
 
-	if (var)
+/*	if (var)
 	{
 		gtd->args[next_arg(*var)] = next_arg(*arg);
-	}
+	}*/
 	strcpy(out, *pti ? "(.+?)" : "(.+)");
 
 	return 0;
@@ -667,6 +670,7 @@ int tintin_regexp(struct session *ses, pcre *nodepcre, char *str, char *exp, int
 						break;
 
 					case '+':
+						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2 + get_regex_range(&pti[2], pto, &var, &arg);
 						pto += strlen(pto);
 						break;

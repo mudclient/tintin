@@ -268,7 +268,7 @@ int check_all_events(struct session *ses, int flags, int args, int vars, char *f
 
 				if (!HAS_BIT(flags, EVENT_FLAG_UPDATE) && HAS_BIT(ses_ptr->list[LIST_EVENT]->flags, LIST_FLAG_DEBUG))
 				{
-					show_debug(ses_ptr, LIST_EVENT, "#DEBUG EVENT {%s} {%s}", node->arg1, node->arg2);
+					show_debug(ses_ptr, LIST_EVENT, COLOR_DEBUG "#DEBUG EVENT " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1);
 				}
 
 				if (node->shots && --node->shots == 0)

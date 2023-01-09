@@ -1185,8 +1185,7 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 					{
 						substitute(ses, temp, buf, flags_neol);
 					}
-
-					show_debug(ses, LIST_FUNCTION, "#DEBUG FUNCTION {%s}", node->arg1);
+					show_debug(ses, LIST_FUNCTION, COLOR_DEBUG "#DEBUG FUNCTION " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1);
 
 					RESTRING(gtd->vars[0], buf);
 
@@ -1242,8 +1241,6 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 						}
 						else
 						{
-							show_debug(ses, LIST_FUNCTION, "#DEBUG FUNCTION: (%s) (%s) [%d]", node->arg1, node->arg2, flags_neol);
-
 							// sub color codes
 
 							pto += substitute(ses, node->arg2, pto, flags_neol);
