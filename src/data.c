@@ -140,11 +140,23 @@ struct listroot *copy_list(struct session *ses, struct listroot *sourcelist, int
 	return ses->list[type];
 }
 
-struct listnode *create_node_list(struct listroot *root, char *arg1, char *arg2, char *arg3, char *arg4)
+struct listnode *create_node(char *arg1, char *arg2, char *arg3, char *arg4)
 {
 	struct listnode *node;
 
 	node = (struct listnode *) calloc(1, sizeof(struct listnode));
+
+	node->arg1 = str_dup(arg1);
+	node->arg2 = str_dup(arg2);
+	node->arg3 = str_dup(arg3);
+	node->arg4 = str_dup(arg4);
+
+	return node;
+}
+
+struct listnode *create_node_list(struct listroot *root, char *arg1, char *arg2, char *arg3, char *arg4)
+{
+	struct listnode *node;
 
 	if (list_table[root->type].priority_arg == 3 && *arg3 == 0)
 	{
@@ -153,15 +165,10 @@ struct listnode *create_node_list(struct listroot *root, char *arg1, char *arg2,
 
 	if (HAS_BIT(root->flags, LIST_FLAG_NEST) && *arg1 == '\\')
 	{
-		node->arg1 = str_dup(arg1+1);
+		arg1++;
 	}
-	else
-	{
-		node->arg1 = str_dup(arg1);
-	}
-	node->arg2 = str_dup(arg2);
-	node->arg3 = str_dup(arg3);
-	node->arg4 = str_dup(arg4);
+
+	node = create_node(arg1, arg2, arg3, arg4);
 
 //	printf("debug: %p [%p] (%d) (%s) (%s)\n", root, root->ses, root->type, node->arg1, node->arg3);
 

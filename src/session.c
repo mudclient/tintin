@@ -675,7 +675,8 @@ void cleanup_session(struct session *ses)
 		{
 			int status, pid;
 
-			pid = waitpid(atoi(ses->session_port), &status, WNOHANG);
+//			pid = waitpid(atoi(ses->session_port), &status, WNOHANG);
+			pid = waitpid(atoi(ses->session_port), &status, 0);
 
 			if (pid == -1)
 			{

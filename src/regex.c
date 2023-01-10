@@ -128,7 +128,6 @@ int regexp_compare(struct session *ses, pcre *nodepcre, char *str, char *exp, in
 			for (i = matches ; i < gtd->cmdc ; i++)
 			{
 				*gtd->cmds[i] = 0;
-//				gtd->cmds[i] = restring(gtd->cmds[i], "");
 			}
 
 			for (i = 0 ; i < matches ; i++)
@@ -142,7 +141,6 @@ int regexp_compare(struct session *ses, pcre *nodepcre, char *str, char *exp, in
 			for (i = matches ; i < gtd->cmdc ; i++)
 			{
 				*gtd->cmds[i] = 0;
-//				gtd->cmds[i] = restring(gtd->cmds[i], "");
 			}
 
 			for (i = 0 ; i < matches ; i++)
@@ -158,7 +156,6 @@ int regexp_compare(struct session *ses, pcre *nodepcre, char *str, char *exp, in
 			for (i = matches ; i < gtd->varc ; i++)
 			{
 				*gtd->vars[i] = 0;
-//				gtd->vars[i] = restring(gtd->vars[i], "");
 			}
 
 			for (i = 0 ; i < matches ; i++)
@@ -172,7 +169,6 @@ int regexp_compare(struct session *ses, pcre *nodepcre, char *str, char *exp, in
 			for (i = matches ; i < gtd->varc ; i++)
 			{
 				*gtd->vars[i] = 0;
-//				gtd->vars[i] = restring(gtd->vars[i], "");
 			}
 
 			for (i = 0 ; i < matches ; i++)
@@ -370,6 +366,8 @@ int get_regex_range(char *in, char *out, int *var, int *arg)
 }
 
 
+// check if a table key is a regex
+
 int tintin_regexp_check(struct session *ses, char *exp)
 {
 	if (*exp == '^')
@@ -379,7 +377,6 @@ int tintin_regexp_check(struct session *ses, char *exp)
 
 	while (*exp)
 	{
-
 		if (HAS_BIT(ses->charset, CHARSET_FLAG_EUC) && is_euc_head(ses, exp))
 		{
 			exp += 2;
@@ -466,6 +463,15 @@ int tintin_regexp_check(struct session *ses, char *exp)
 	}
 	return FALSE;
 }
+
+// 1. convert tinexp to pcre
+// 2. store tintin %00-99 index in gtd->args that links to pcre index in gtd->vars or gtd->args
+// 3. call regexp_compare
+//    3.1 compile the pcre if not already compiled
+//    3.2 run the pcre and return FALSE if there's not a match
+//    3.3 set gtd->vars or gtd->args to the pcre index, unless %00-%99 was found and FIX flag is set
+//    3.4 If FIX is set the gtd->args index is used and valid tinexp is assumed
+//    3.4 return TRUE
 
 int tintin_regexp(struct session *ses, pcre *nodepcre, char *str, char *exp, int option, int flag)
 {

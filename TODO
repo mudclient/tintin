@@ -3,6 +3,7 @@
 - finish ? : support in #math
 
 - multiline triggers
+  - finish create_node()
 
 - Look into #split 1 1 1 1 on termux when hiding / showing keyboard.
 

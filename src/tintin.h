@@ -1058,7 +1058,7 @@ struct listnode
 	char                  * arg4;
 	char                  * group;
 	unsigned int            shots;
-	unsigned int            lines;
+	int                     flags;
 	union
 	{
 		pcre              * regex;      // act, alias, gag, highlight, substitute
@@ -1630,7 +1630,6 @@ struct window_data
 #define DO_BUFFER(buffer)               void buffer (struct session *ses, char *arg, char *arg1, char *arg2)
 #define DO_CHAT(chat)                     void chat (char *arg1, char *arg2)
 #define DO_COMMAND(command) struct session *command (struct session *ses, char *arg, char *arg1, char *arg2, char *arg3, char *arg4)
-//#define DO_CONFIG(config)    struct session *config (struct session *ses, char *arg1, char *arg2, int index)
 #define DO_CURSOR(cursor)               void cursor (struct session *ses, char *arg)
 #define DO_DAEMON(daemon)               void daemon (struct session *ses, char *arg, char *arg1, char *arg2)
 #define DO_EDIT(edit)          struct session *edit (struct session *ses, char *arg, char *arg1, char *arg2)
@@ -1649,7 +1648,6 @@ typedef int             CMPFUNC (const void *a, const void *b);
 
 typedef void            BUFFER  (struct session *ses, char *arg, char *arg1, char *arg2);
 typedef void            CHAT    (char *arg1, char *arg2);
-//typedef struct session *CONFIG  (struct session *ses, char *arg1, char *arg2, int index);
 typedef struct session *COMMAND (struct session *ses, char *arg, char *arg1, char *arg2, char *arg3, char *arg4);
 typedef void            CURSOR  (struct session *ses, char *arg);
 typedef void            DAEMON  (struct session *ses, char *arg, char *arg1, char *arg2);
@@ -2645,6 +2643,7 @@ extern void erase_top_region(struct session *ses);
 extern void erase_left_region(struct session *ses);
 extern void erase_right_region(struct session *ses);
 extern void erase_square(struct session *ses, int top_row, int top_col, int bot_row, int bot_col);
+extern void fill_scroll_region(struct session *ses, char *arg);
 extern void fill_top_region(struct session *ses, char *arg);
 extern void fill_bot_region(struct session *ses, char *arg);
 extern void fill_left_region(struct session *ses, char *arg);
