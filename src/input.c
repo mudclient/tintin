@@ -867,7 +867,6 @@ void convert_meta(char *input, char *output, int eol)
 				{
 					*pto++ = *pti++;
 				}
-
 				break;
 
 			default:
@@ -921,29 +920,26 @@ char *str_convert_meta(char *input, int eol)
 void echo_command(struct session *ses, char *line)
 {
 	char buffer[BUFFER_SIZE];
+	int split = HAS_BIT(ses->flags, SES_FLAG_SPLIT) == SES_FLAG_SPLIT;
 
 	DEL_BIT(ses->telopts, TELOPT_FLAG_PROMPT);
 
 	if (ses->check_output)
 	{
-		process_more_output(ses, "", TRUE);
-	}
-	else
-	{
-		buffer[0] = 0;
+		process_more_output(ses, "", split); // add newline if not in split mode
 	}
 
 	if (ses->scroll->line != -1)
 	{
 		buffer_end(gtd->ses, "", "", "");
 
-		if (!HAS_BIT(ses->flags, SES_FLAG_SPLIT))
+		if (!split)
 		{
 			printf("%s\n", line);
 		}
 	}
 
-	if (!HAS_BIT(ses->flags, SES_FLAG_SPLIT))
+	if (!split)
 	{
 		add_line_buffer(ses, line, -1);
 
@@ -956,22 +952,19 @@ void echo_command(struct session *ses, char *line)
 	}
 	else
 	{
-
-		if (strip_vt102_strlen(ses, buffer) == 0)
+		if (strip_vt102_strlen(ses, ses->scroll->input) == 0)
 		{
 			return;
 		}
 		sprintf(buffer, "\e[0m");
 	}
 
-//	if (ses->wrap == gtd->screen->cols)
-	{
-		gtd->level->scroll++;
+	gtd->level->scroll++;
 
-		tintin_printf2(ses, "%s%s", ses->scroll->input, buffer);
+	tintin_printf2(ses, "%s%s", ses->scroll->input, buffer);
 
-		gtd->level->scroll--;
-	}
+	gtd->level->scroll--;
+
 	add_line_buffer(ses, buffer, -1);
 }
 

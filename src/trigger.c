@@ -76,6 +76,11 @@ void check_all_actions(struct session *ses, char *original, char *line, char *bu
 	{
 		node = root->list[root->update];
 
+		if (HAS_BIT(node->flags, NODE_FLAG_MULTI))
+		{
+			continue;
+		}
+
 		if (check_one_regexp(ses, node, line, original, 0))
 		{
 			show_debug(ses, LIST_ACTION, COLOR_DEBUG "#DEBUG ACTION " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1);
@@ -93,6 +98,36 @@ void check_all_actions(struct session *ses, char *original, char *line, char *bu
 		}
 	}
 }
+
+void check_all_actions_multi(struct session *ses, char *original, char *line, char *buf)
+{
+	struct listroot *root = ses->list[LIST_ACTION];
+	struct listnode *node;
+
+	for (root->multi_update = 0 ; root->multi_update < root->used ; root->multi_update++)
+	{
+		node = root->list[root->multi_update];
+
+		if (!HAS_BIT(node->flags, NODE_FLAG_MULTI))
+		{
+			continue;
+		}
+
+		if (check_one_regexp(ses, node, line, original, 0))
+		{
+			show_debug(ses, LIST_ACTION, COLOR_DEBUG "#DEBUG MULTI ACTION " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1);
+
+			substitute(ses, node->arg2, buf, SUB_ARG|SUB_SEC);
+
+			if (node->shots && --node->shots == 0)
+			{
+				delete_node_list(ses, LIST_ACTION, node);
+			}
+			script_driver(ses, LIST_ACTION, buf);
+		}
+	}
+}
+
 
 /******************************************************************************
 *               (T)he K(I)cki(N) (T)ickin D(I)kumud Clie(N)t                  *

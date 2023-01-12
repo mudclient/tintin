@@ -224,14 +224,14 @@
 	}
 }
 
-#nop ----------
+#0 )=-=( ERROR 20 )=-=( 0#
 
 #if {"$arglebargle" != "\$arglebargle"}
 {
 	error 20: unassigned variable
 }
 
-#nop ----------
+#0 )=-=( ERROR 21 )=-=( 0#
 
 #alias {bla} {error 21: unalias malfunction}
 #alias {bla%*} {#nop}
@@ -239,7 +239,7 @@
 bla
 #unalias {bla%*}
 
-#nop ----------
+#0 )=-=( ERROR 22 )=-=( 0#
 
 #class bla open
 #var bla 2
@@ -257,7 +257,7 @@ bla
 #class bla kill
 
 
-#nop ----------
+#0 )=-=( ERROR 24 )=-=( 0#
 
 #if {(513 & ~1) != 512} {error 24.01: #math error}
 #if {1 << 1 != 2}	   {error 24.02: #math error}
@@ -265,7 +265,7 @@ bla
 #if {2 > 1} {#nop} {error 24.04: #math error}
 #if {2 % 2} {error 24.05: #math error}
 
-#nop ----------
+#0 )=-=( ERROR 25 )=-=( 0#
 
 #var tmp 0;
 #var bla var
@@ -286,7 +286,7 @@ $bla
 $bla + 1
 #if {$tmp != 6} {error 25.6: variable input}
 
-#nop ----------
+#0 )=-=( ERROR 26 )=-=( 0#
 
 #format bla %X ─
 #if {$bla != 2500}     {error 26.1: format unicode handling}
@@ -312,13 +312,13 @@ $bla + 1
 #format tmp %L {$bli}
 #if {$tmp != 20}       {error 26.11: format +.-s handling}
 
-#nop ----------
+#0 )=-=( ERROR 27 )=-=( 0#
 
 #line sub esc #var bla {x\nx}
 #if {"$bla" === "x\nx"} {error 27.1: escape handling}
 #if {"$bla" != "x\nx"}  {error 27.2: escape handling}
 
-#nop ----------
+#0 )=-=( ERROR 28 )=-=( 0#
 
 #var bla[1] {{bli}{2}}
 #var bla[2] {{bli}{3}}
@@ -354,7 +354,7 @@ $bla + 1
 #list bla filter {f}
 #if {"$bla[+1]" != "f"} {error 28.11: list filter handling: "$bla[+1]" != "f"}
 
-#nop ----------
+#0 )=-=( ERROR 29 )=-=( 0#
 
 #alias {bla}
 {
@@ -399,20 +399,20 @@ bla
 
 #if {@bli{} != 5} {error 29.5: regex return handling (@bli{})}
 
-#nop ----------
+#0 )=-=( ERROR 30 )=-=( 0#
 
 #history insert {#var bla 33}
 !
-#if {$bla != 33} {error 30.1: repeat handling}
+#if {$bla != 33} {error 30.1: history handling}
 
-#nop ----------
+#0 )=-=( ERROR 30 )=-=( 0#
 
 #var bla {{d}{4}{b}{2}{a}{1}{c}{3}}
 
 #if {$bla[+3] != 3} {error 30.1: table handling ($bla[+3] != 3)}
 #if {$bla[-2] != 3} {error 30.2: table handling ($bla[-2] != 3)}
 #if {&bla[0] != 0}  {error 30.3: table handling (&bla[0] != 0)}
-#nop ----------
+#0 )=-=( ERROR 31 )=-=( 0#
 
 #tab bliblablo
 #cursor set bli
@@ -427,7 +427,7 @@ bla
 #cursor clear
 #if {"$bla" != "bliaut"} {error 31.2: tab dict handling ("$bla" != "bliaut")}
 
-#nop ----------
+#0 )=-=( ERROR 32 )=-=( 0#
 #map create
 #map goto 1
 #map move {nw;ne;s;s}
@@ -440,7 +440,8 @@ bla
 #path save forward bla
 #if {"$bla" != "nw;ne"} {error 32.2: #map find failing exit weight increase}
 
-#nop ----------
+#0 )=-=( ERROR 33 )=-=( 0#
+
 #alias {sethash}
 {
        #format hash %H %1;
@@ -462,7 +463,8 @@ sethash bla hi
 sethash blo hello
 #if {"@gethash{bla}" !== "hi"} {error 33.1: variable hashing support}
 
-#nop ----------
+#0 )=-=( ERROR 34 )=-=( 0#
+
 #regex {blibla} {%10bli%+3..3a} {#if {"&11" !== "bla"} {error 34.1: regex argument indexing (&11)}}
 #regex {blibla} {%.%+%.%*}      {#if {"&4" !== "bla"}  {error 34.2: regex argument indexing (&4)}}
 #regex {blibla} {%99bli%+3..3*}      {#if {"&99" !== "bla"} {error 34.3: regex argument indexing (&99)}}
@@ -480,7 +482,39 @@ sethash blo hello
 #if {{$bla[bla]} !== {blu}} {error 35.4: #cat table}
 #cat bla[bli] {{a}{b}}
 #if {{$bla[bli][a]} !== {b}} {error 35.5: #cat table}
+#var bla {}
+#foreach {bli;bla;blo} {add} #cat bla $add
+#if {"$bla" != "bliblablo"} {error 35.6: #foreach cat bliblablo}
+#var bla {}
+#while {&bla[] < 10}
+{
+	#cat bla {{&bla[]} {x}}
+}
+#if {&bla[] != 10} {error 35.7: #while bla (&bla[] != 10)}
 
+#0 )=-=( ERROR 36 )=-=( 0#
+
+#var match 0
+#line oneshot #act {^^^bla$$$} {#var match 1;#line gag}
+#showme bla
+#if {$match == 0} {error 36.1: regex ^^^$$$} {#var match 0}
+#line oneshot #act {^%.l%.$} {#var match 1;#line gag}
+#showme bla
+#if {$match == 0} {error 36.2: regex ^%.l%.$} {#var match 0}
+#line oneshot #act {^%+1Dl%+1S$} {#var match 1;#line gag}
+#showme bla
+#if {$match == 0} {error 36.3: regex ^%+1Dl%+1S$} {#var match 0}
+#line oneshot #act {^%iBLA$} {#var match 1;#line gag}
+#showme bla
+#if {$match == 0} {error 36.4: regex ^%iBLA$} {#var match 0}
+#line oneshot #act {^%+2wa$} {#var match 1}
+#line gag
+#showme bla
+#if {$match == 0} {error 36.5: regex ^%+2wa$} {#var match 0}
+#line oneshot #act {^%+2*a$} {#if {"%1" == "bl"} {#var match 1}}
+#line gag
+#showme bla
+#if {$match == 0} {error 36.6: regex ^%+2*a$} {#var match 0}
 
 #0 ┌──────────────────────────────────────────────────────────────────────────────┐
 #0 │ ██████┐██████┐  █████┐ ███████┐██┐  ██┐   ████████┐███████┐███████┐████████┐ │
@@ -501,7 +535,7 @@ sethash blo hello
 #delay 1000 #nop
 #event {GAG SESSION DISCONNECTED} {#nop}
 #fun bla {#nop}
-#gag hrm
+#gag bla
 #high bla green
 #macro \e\e #nop
 #pathdir bla bli
@@ -578,7 +612,7 @@ sethash blo hello
 
 #format end %U;
 
-#nop ----------
+#0 )=-=( ERROR 19 )=-=( 0#
 
 #function time
 {

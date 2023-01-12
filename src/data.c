@@ -55,7 +55,7 @@ void kill_list(struct listroot *root)
 	{
 		delete_index_list(root, root->used - 1);
 	}
-	root->update = 0;
+	root->update = 0; // should be unnecessary
 }
 
 void free_list(struct listroot *root)
@@ -345,6 +345,10 @@ void remove_index_list(struct listroot *root, int index)
 	{
 		root->update--;
 	}
+	if (index <= root->multi_update)
+	{
+		root->multi_update--;
+	}
 
 	memmove(&root->list[index], &root->list[index + 1], (root->used - index) * sizeof(struct listnode *));
 
@@ -360,11 +364,9 @@ void delete_node_list(struct session *ses, int type, struct listnode *node)
 	delete_index_list(ses->list[type], index);
 }
 
-void delete_index_list(struct listroot *root, int index)
+void delete_node(int type, struct listnode *node)
 {
-	struct listnode *node = root->list[index];
-
-	if (HAS_BIT(list_table[root->type].flags, LIST_FLAG_REGEX))
+	if (HAS_BIT(list_table[type].flags, LIST_FLAG_REGEX))
 	{
 		if (node->regex)
 		{
@@ -372,7 +374,7 @@ void delete_index_list(struct listroot *root, int index)
 		}
 	}
 
-	switch (root->type)
+	switch (type)
 	{
 		case LIST_CLASS:
 			if (node->data)
@@ -399,12 +401,18 @@ void delete_index_list(struct listroot *root, int index)
 			}
 			break;
 	}
-
-	remove_index_list(root, index);
-
 	// dispose in memory update for one shot handling
 
 	insert_index_list(gtd->dispose_list, node, gtd->dispose_list->used);
+}
+
+void delete_index_list(struct listroot *root, int index)
+{
+	struct listnode *node = root->list[index];
+
+	remove_index_list(root, index);
+
+	delete_node(root->type, node);
 }
 
 void dispose_node(struct listnode *node)

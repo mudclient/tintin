@@ -605,7 +605,9 @@ void tintin_puts3(struct session *ses, char *string, int prompt)
 
 	output = str_alloc_stack(0);
 
-	if (*ses->scroll->input)
+	// no new line when prompt is overwritten with input in split mode
+
+	if (gtd->level->scroll == 0 && *ses->scroll->input)
 	{
 		str_cpy(&output, "\n");
 	}

@@ -693,7 +693,8 @@ enum operators
 #define LIST_FLAG_CASE                BV14
 #define LIST_FLAG_DEFAULT             LIST_FLAG_MESSAGE
 
-#define NODE_FLAG_ONESHOT             BV01 // unused
+#define NODE_FLAG_COLOR               BV01
+#define NODE_FLAG_MULTI               BV02
 
 #define LOG_FLAG_NONE                    0
 #define LOG_FLAG_LINEFEED             BV01
@@ -1045,6 +1046,7 @@ struct listroot
 	int                     size;
 	int                     used;
 	int                     update;
+	int                     multi_update;
 	short                   type;
 	short                   flags;
 };
@@ -1512,14 +1514,14 @@ struct search_data
 	int                     max;
 	unsigned short          stamp;
 	char                  * arg;
-	pcre                  * name;
+	struct listnode       * area;
+	struct listnode       * desc;
+	struct listnode       * name;
+	struct listnode       * note;
+	struct listnode       * terrain;
 	int                     exit_size;
 	long long               exit_dirs;
 	char                  * exit_list;
-	pcre                  * desc;
-	pcre                  * area;
-	pcre                  * note;
-	pcre                  * terrain;
 	long long               flag;
 	long long               galf;
 	char                  * id;
@@ -2176,6 +2178,7 @@ extern void show_list(struct listroot *root, int level);
 extern void remove_node_list(struct session *ses, int type, struct listnode *node);
 extern void remove_index_list(struct listroot *root, int index);
 extern void dispose_node(struct listnode *node);
+extern void delete_node(int type, struct listnode *node);
 extern void delete_node_list(struct session *ses, int type, struct listnode *node);
 extern  int delete_node_with_wild(struct session *ses, int index, char *string);
 extern void delete_index_list(struct listroot *root, int index);
@@ -2187,6 +2190,7 @@ extern  int bsearch_priority_list(struct listroot *root, char *text, char *prior
 extern  int nsearch_list(struct listroot *root, char *text);
 extern struct listroot *init_list(struct session *ses, int type, int size);
 extern struct listroot *copy_list(struct session *ses, struct listroot *sourcelist, int type);
+extern struct listnode *create_node(char *arg1, char *arg2, char *arg3, char *arg4);
 extern struct listnode *create_node_list(struct listroot *root, char *arg1, char *arg2, char *arg3, char *arg4);
 extern struct listnode *insert_node_list(struct listroot *root, struct listnode *node);
 extern struct listnode *insert_index_list(struct listroot *root, struct listnode *node, int index);
@@ -2917,6 +2921,7 @@ extern DO_COMMAND(do_delay);
 extern DO_COMMAND(do_function);
 
 extern void check_all_actions(struct session *ses, char *original, char *line, char *buf);
+extern void check_all_actions_multi(struct session *ses, char *original, char *line, char *buf);
 extern  int check_all_aliases(struct session *ses, char *input);
 extern void check_all_buttons(struct session *ses, short row, short col, char *arg1, char *arg2, char *word, char *line);
 extern void check_all_gags(struct session *ses, char *original, char *line);

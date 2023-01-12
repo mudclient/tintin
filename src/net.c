@@ -439,22 +439,54 @@ int detect_prompt(struct session *ses, char *original)
 
 void readmud(struct session *ses)
 {
-	char *line, *next_line;
+	char *line, *next_line, *strip, *buf;
 	char linebuf[BUFFER_SIZE];
 	int len;
 	struct session *cts;
 
 	push_call("readmud(%p)", ses);
 
+	line = gtd->mud_output_buf;
+
+	if (ses->check_output && *line == '\n')
+	{
+		line++;
+
+		process_more_output(ses, "", FALSE);
+	}
+	else if (HAS_BIT(ses->config_flags, CONFIG_FLAG_COMPACT))
+	{
+		if (*ses->scroll->input == 0 && *line == '\n')
+		{
+			line++;
+		}
+	}
+
+	buf   = str_alloc_stack(0);
+	strip = str_alloc(gtd->mud_output_len);
+
+	strip_vt102_codes(line, strip);
+
 	gtd->mud_output_len = 0;
 
-	check_all_events(ses, SUB_SEC|EVENT_FLAG_OUTPUT, 0, 1, "RECEIVED OUTPUT", gtd->mud_output_buf);
-
-	if (check_all_events(ses, SUB_SEC|EVENT_FLAG_CATCH, 0, 1, "CATCH RECEIVED OUTPUT", gtd->mud_output_buf))
+	if (gtd->level->ignore == 0 && !HAS_BIT(ses->config_flags, CONFIG_FLAG_CONVERTMETA))
 	{
+		if (!HAS_BIT(ses->list[LIST_ACTION]->flags, LIST_FLAG_IGNORE))
+		{
+			check_all_actions_multi(ses, gtd->mud_output_buf, strip, buf);
+		}
+	}
+
+	check_all_events(ses, SUB_SEC|EVENT_FLAG_OUTPUT, 0, 2, "RECEIVED OUTPUT", gtd->mud_output_buf, strip);
+
+	if (check_all_events(ses, SUB_SEC|EVENT_FLAG_CATCH, 0, 2, "CATCH RECEIVED OUTPUT", gtd->mud_output_buf, strip))
+	{
+		str_free(strip);
+
 		pop_call();
 		return;
 	}
+	str_free(strip);
 
 	// cts = current tintin session, may have to make this global to avoid glitches
 
@@ -467,15 +499,6 @@ void readmud(struct session *ses)
 		goto_pos(gtd->ses, gtd->ses->split->bot_row, 1);
 	}
 
-	line = gtd->mud_output_buf;
-
-	if (HAS_BIT(cts->config_flags, CONFIG_FLAG_COMPACT))
-	{
-		if (*cts->scroll->input == 0 && *line == '\n')
-		{
-			line++;
-		}
-	}
 
 	// separate into lines and print away
 

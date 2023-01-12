@@ -241,6 +241,8 @@ int check_all_events(struct session *ses, int flags, int args, int vars, char *f
 
 			if (node)
 			{
+				// GAG and CATCH events need to use EVENT_FLAG_GAG and EVENT_FLAG_CATCH
+
 				if (node->val32[1] != flags)
 				{
 					tintin_printf2(ses, "\e[1;31merror: check_all_events: %s: flags: %d != %d", name, flags, node->val32[1]);

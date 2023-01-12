@@ -516,6 +516,11 @@ int tintin_regexp(struct session *ses, pcre *nodepcre, char *str, char *exp, int
 		switch (pti[0])
 		{
 			case '\\':
+				if (pti[1] == 0)
+				{
+					*pti++ = '$';
+					break;
+				}
 				*pto++ = *pti++;
 				*pto++ = *pti++;
 				break;
@@ -824,6 +829,8 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 	pti = exp;
 	pto = out;
 
+	node->flags = 0;
+
 	if (*pti == '~')
 	{
 		pti++;
@@ -864,6 +871,19 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 		switch (pti[0])
 		{
 			case '\\':
+				if (pti[1] == 'e')
+				{
+					SET_BIT(node->flags, NODE_FLAG_COLOR);
+				}
+				else if (pti[1] == 'n')
+				{
+					SET_BIT(node->flags, NODE_FLAG_MULTI);
+				}
+				else if (pti[1] == 0)
+				{
+					*pti++ = '$';
+					break;
+				}
 				*pto++ = *pti++;
 				*pto++ = *pti++;
 				break;
@@ -875,7 +895,7 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 				{
 					if (pto[0] == '$' || pto[0] == '@')
 					{
-						if (pto[1])
+						if (pto[1] == DEFAULT_OPEN || is_alnum(pto[1]) || pto[0] == pto[1])
 						{
 							return NULL;
 						}
@@ -886,7 +906,7 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 				break;
 
 			case '&':
-				if (pti[1] == DEFAULT_OPEN || is_alnum(pti[1]) || pti[1] == '&')
+				if (pti[1] == DEFAULT_OPEN)
 				{
 					return NULL;
 				}
@@ -894,7 +914,7 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 				break;
 
 			case '@':
-				if (pti[1] == DEFAULT_OPEN || is_alnum(pti[1]) || pti[1] == '@')
+				if (pti[1] == DEFAULT_OPEN || is_alnum(pti[1]))
 				{
 					return NULL;
 				}
@@ -907,12 +927,9 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 					return NULL;
 				}
 				{
-					int i = 0;
-
-					while (pti[++i] == '$')
-					{
-						continue;
-					}
+					int i = 1;
+	
+					while (pti[i] == '$') i++;
 
 					if (pti[i])
 					{
@@ -953,7 +970,13 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 						pto += sprintf(pto, "%s", *pti == 0 ? "(.*)" : "(.*?)");
 						break;
 
+					case 'a':
+						pti += 2;
+						pto += sprintf(pto, "%s", *pti == 0 ? "([^\\0]*)" : "([^\\0]*?)");
+						break;
+
 					case 'c':
+						SET_BIT(node->flags, NODE_FLAG_COLOR);
 						pti += 2;
 						pto += sprintf(pto, "%s", *pti == 0 ? "((?:\\e\\[[0-9;]*m)*)" : "((?:\\e\\[[0-9;]*m)*?)");
 						break;
@@ -1046,7 +1069,13 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 					case '!':
 						switch (pti[2])
 						{
+							case 'a':
+								pti += 3;
+								pto += sprintf(pto, "%s", *pti == 0 ? "[^\\0]*" : "[^\\0]*?");
+								break;
+
 							case 'c':
+								SET_BIT(node->flags, NODE_FLAG_COLOR);
 								pti += 3;
 								pto += sprintf(pto, "%s", *pti == 0 ? "(?:\\e\\[[0-9;]*m)*" : "(?:\\e\\[[0-9;]*m)*?");
 								break;
@@ -1117,7 +1146,7 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 								{
 									if (pto[0] == '$' || pto[0] == '@')
 									{
-										if (pto[1])
+										if (pto[1] == DEFAULT_OPEN || is_alnum(pto[1]) || pto[0] == pto[1])
 										{
 											return NULL;
 										}
@@ -1145,6 +1174,10 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 	}
 	*pto = 0;
 
+	if (HAS_BIT(node->flags, NODE_FLAG_COLOR) && *exp != '~')
+	{
+		show_error(ses, LIST_COMMAND, "\e[1;31mWARNING: REGEX MATCHES ESCAPE CODES BUT DOES NOT START WITH A '~' (%s)", exp);
+	}
 	return regexp_compile(ses, out, option);
 }
 

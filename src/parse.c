@@ -1175,6 +1175,11 @@ void do_one_line(char *line, struct session *ses)
 		return;
 	}
 
+	if (HAS_BIT(ses->config_flags, CONFIG_FLAG_CONVERTMETA))
+	{
+		return;
+	}
+
 	push_call("do_one_line(%s,%p)",ses->name,line);
 
 	push_script_stack(ses, LIST_VARIABLE);

@@ -1,5 +1,18 @@
 Jan 2023        2.02.31
 ------------------------------------------------------------------------------
+help.c          Added #help triggers which explains multi-line triggers.
+
+regex.c         Added initial support for multi-line triggers.
+
+mapper.c        The roomdesc now requires %a instead of %* to match multiple
+                lines in searches.
+
+net.c           Added the %1 argument to the RECEIVED OUTPUT event, which
+                holds the plain text version of the data received.
+
+regex.c         Added a warning when matching escape codes in a trigger
+                without the trigger starting with a '~'.
+
 line.c          Added #line logmode stamp option to force the adding of a
                 timestamp when using #line log.
 
