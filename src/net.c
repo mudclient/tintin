@@ -439,7 +439,7 @@ int detect_prompt(struct session *ses, char *original)
 
 void readmud(struct session *ses)
 {
-	char *line, *next_line, *strip, *buf;
+	char *line, *next_line, *strip;
 	char linebuf[BUFFER_SIZE];
 	int len;
 	struct session *cts;
@@ -462,20 +462,11 @@ void readmud(struct session *ses)
 		}
 	}
 
-	buf   = str_alloc_stack(0);
 	strip = str_alloc(gtd->mud_output_len);
 
 	strip_vt102_codes(line, strip);
 
 	gtd->mud_output_len = 0;
-
-	if (gtd->level->ignore == 0 && !HAS_BIT(ses->config_flags, CONFIG_FLAG_CONVERTMETA))
-	{
-		if (!HAS_BIT(ses->list[LIST_ACTION]->flags, LIST_FLAG_IGNORE))
-		{
-			check_all_actions_multi(ses, gtd->mud_output_buf, strip, buf);
-		}
-	}
 
 	check_all_events(ses, SUB_SEC|EVENT_FLAG_OUTPUT, 0, 2, "RECEIVED OUTPUT", gtd->mud_output_buf, strip);
 
@@ -486,6 +477,9 @@ void readmud(struct session *ses)
 		pop_call();
 		return;
 	}
+
+	check_one_line_multi(ses, line, strip);
+
 	str_free(strip);
 
 	// cts = current tintin session, may have to make this global to avoid glitches
@@ -673,7 +667,7 @@ void process_mud_output(struct session *ses, char *linebuf, int prompt)
 		linebuf = line;
 	}
 
-	do_one_line(linebuf, ses);   /* changes linebuf */
+	check_one_line(ses, linebuf);   /* changes linebuf */
 
 	/*
 		Take care of gags, vt102 support still goes

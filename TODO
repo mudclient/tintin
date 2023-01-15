@@ -17,8 +17,11 @@
 
 - #format %.3s prints two double-width characters.
 
+- fix ctrl-r so it compiles the pcre once.
+
 - groozam.net 4000 
 
+- #list foo find {{hello}{world}} auto indexate?
 
 ----------------
   - add shadow session support with access to all events.

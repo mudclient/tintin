@@ -1,5 +1,11 @@
 Jan 2023        2.02.31
 ------------------------------------------------------------------------------
+show.c          A #showme containing a \n sequence will exclusively trigger
+                multi-line triggers.
+
+history.c       Added the HISTORY UPDATE event, %0 contains the command being
+                added to the command history.
+
 help.c          Added #help triggers which explains multi-line triggers.
 
 regex.c         Added initial support for multi-line triggers.

@@ -927,8 +927,17 @@
 }
 
 #nop -------------------------------------------------------------------------
-#nop 
+#nop It can be annoying to have short commands clog up the command history.
+#nop This script will remove commands shorter than 3 letters.
 #nop -------------------------------------------------------------------------
+
+#event {HISTORY UPDATE}
+{
+	#if {{%0} != {%+3*%*}}
+	{
+		#history delete
+	}
+}
 
 #nop -------------------------------------------------------------------------
 #nop 

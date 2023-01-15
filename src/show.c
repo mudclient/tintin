@@ -46,7 +46,16 @@ DO_COMMAND(do_showme)
 	arg = sub_arg_in_braces(ses, arg, arg2, GET_ONE, SUB_VAR|SUB_FUN);
 	arg = sub_arg_in_braces(ses, arg, arg3, GET_ONE, SUB_VAR|SUB_FUN);
 
-	do_one_line(arg1, ses);
+	if (strchr(arg1, '\n'))
+	{
+		strip_vt102_codes(arg1, tmp);
+
+		check_one_line_multi(ses, arg1, tmp);
+	}
+	else
+	{
+		check_one_line(ses, arg1);
+	}
 
 	if (ses->gagline > 0)
 	{
@@ -531,7 +540,7 @@ void tintin_puts(struct session *ses, char *string)
 		ses = gtd->ses;
 	}
 
-	do_one_line(string, ses);
+	check_one_line(ses, string);
 
 	if (ses->gagline > 0)
 	{

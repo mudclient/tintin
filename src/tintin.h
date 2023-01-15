@@ -2541,7 +2541,9 @@ extern char *get_arg_at_brackets(struct session *ses, char *string, char *result
 extern char *get_arg_in_brackets(struct session *ses, char *string, char *result);
 extern char *get_char(struct session *ses, char *string, char *result);
 extern void write_mud(struct session *ses, char *command, int flags);
-extern void do_one_line(char *line, struct session *ses);
+
+extern void check_one_line_multi(struct session *ses, char *line, char *strip);
+extern void check_one_line(struct session *ses, char *line);
 
 #endif
 

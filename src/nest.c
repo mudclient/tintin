@@ -678,7 +678,8 @@ int get_nest_size_val(struct listroot *root, char *variable, char **result)
 		{
 			for (index = 0 ; index < root->used ; index++)
 			{
-				str_cat_printf(result, "{%s}", root->list[index]->arg2);
+				show_nest_node(root->list[index], result, FALSE); // behaves like strcat
+//				str_cat_printf(result, "{%s}", root->list[index]->arg2);
 			}
 			return root->used + 1;
 		}
@@ -761,7 +762,8 @@ int get_nest_size_val(struct listroot *root, char *variable, char **result)
 			{
 				for (index = 0 ; index < root->used ; index++)
 				{
-					str_cat_printf(result, "{%s}", root->list[index]->arg2);
+					show_nest_node(root->list[index], result, FALSE); // behaves like strcat
+//					str_cat_printf(result, "{%s}", root->list[index]->arg2);
 				}
 				return root->used + 1;
 			}

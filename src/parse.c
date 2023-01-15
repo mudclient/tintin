@@ -1166,7 +1166,24 @@ void write_mud(struct session *ses, char *command, int flags)
 	Check line for triggers
 */
 
-void do_one_line(char *line, struct session *ses)
+void check_one_line_multi(struct session *ses, char *original, char *stripped)
+{
+	char *buf;
+
+	if (gtd->level->ignore || HAS_BIT(ses->config_flags, CONFIG_FLAG_CONVERTMETA))
+	{
+		return;
+	}
+
+	buf = str_alloc_stack(0);
+
+	if (!HAS_BIT(ses->list[LIST_ACTION]->flags, LIST_FLAG_IGNORE))
+	{
+		check_all_actions_multi(ses, original, stripped, buf);
+	}
+}
+
+void check_one_line(struct session *ses, char *line)
 {
 	char *strip, *buf;
 

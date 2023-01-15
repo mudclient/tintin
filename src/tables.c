@@ -788,6 +788,7 @@ struct event_type event_table[] =
 	{    "END OF PATH",                            0, EVENT_FLAG_MAP,      "MAP",       "walking the last room"      },
 	{    "END OF RUN",                             0, EVENT_FLAG_MAP,      "MAP",       "running the last room"      },
 	{    "GAG ",                                   0, EVENT_FLAG_GAG,      "GAG",       "prefix for gag events"      },
+	{    "HISTORY UPDATE",                         0, EVENT_FLAG_INPUT,    "INPUT",     "command history update"     },
 	{    "HOUR",                                   0, EVENT_FLAG_TIME,     "TIME",      "every hour or given hour"   },
 	{    "IAC ",                                   0, EVENT_FLAG_TELNET,   "TELNET",    "prefix for telnet events"   },
 	{    "LONG-CLICKED ",                          0, EVENT_FLAG_MOUSE,    "MOUSE",     "mouse is long-clicked"      },
