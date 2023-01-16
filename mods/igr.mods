@@ -1,5 +1,11 @@
 Jan 2023        2.02.31
 ------------------------------------------------------------------------------
+trigger.c       A multi-line action can now trigger multiple times per block
+                of text, skipping to the next unmatched line after each match.
+
+nest.c          Fixed a bug reported by dzp where $var[] didn't behave
+                identical to $var[%*].
+
 show.c          A #showme containing a \n sequence will exclusively trigger
                 multi-line triggers.
 

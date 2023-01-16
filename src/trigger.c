@@ -99,10 +99,11 @@ void check_all_actions(struct session *ses, char *original, char *line, char *bu
 	}
 }
 
-void check_all_actions_multi(struct session *ses, char *original, char *line, char *buf)
+void check_all_actions_multi(struct session *ses, char *original, char *stripped, char *buf)
 {
 	struct listroot *root = ses->list[LIST_ACTION];
 	struct listnode *node;
+	char *pto, *pts;
 
 	for (root->multi_update = 0 ; root->multi_update < root->used ; root->multi_update++)
 	{
@@ -113,8 +114,15 @@ void check_all_actions_multi(struct session *ses, char *original, char *line, ch
 			continue;
 		}
 
-		if (check_one_regexp(ses, node, line, original, 0))
+		pto = original;
+		pts = stripped;
+
+		while (pto && pts)
 		{
+			if (!check_one_regexp(ses, node, pts, pto, 0))
+			{
+				break;
+			}
 			show_debug(ses, LIST_ACTION, COLOR_DEBUG "#DEBUG MULTI ACTION " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1);
 
 			substitute(ses, node->arg2, buf, SUB_ARG|SUB_SEC);
@@ -122,6 +130,26 @@ void check_all_actions_multi(struct session *ses, char *original, char *line, ch
 			if (node->shots && --node->shots == 0)
 			{
 				delete_node_list(ses, LIST_ACTION, node);
+
+				pto = pts = NULL;
+			}
+			else
+			{
+				if (*gtd->vars[0])
+				{
+					pto += gtd->match[1];
+					pts += gtd->match[1];
+
+					if (pts[-1] != '\n')
+					{
+						pto = strchr(pto, '\n'); if (pto) pto++;
+						pts = strchr(pts, '\n'); if (pts) pts++;
+					}
+				}
+				else
+				{
+					pto = pts = NULL;
+				}
 			}
 			script_driver(ses, LIST_ACTION, buf);
 		}

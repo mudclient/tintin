@@ -23,6 +23,10 @@
 
 - #list foo find {{hello}{world}} auto indexate?
 
+- #sleep <time>, possibly allow names to cancel or force continuation
+
+- #line escape {variables;functions}
+
 ----------------
   - add shadow session support with access to all events.
 
