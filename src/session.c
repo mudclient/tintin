@@ -679,15 +679,16 @@ void cleanup_session(struct session *ses)
 			int status, pid;
 
 //			pid = waitpid(atoi(ses->session_port), &status, WNOHANG);
+
+			kill(atoi(ses->session_port), SIGTERM);
+
 			pid = waitpid(atoi(ses->session_port), &status, 0);
 
 			if (pid == -1)
 			{
 				syserr_printf(ses, "cleanup_session: waitpid");
 			}
-//			kill(atoi(ses->session_port), SIGTERM);
 		}
-
 	}
 
 	client_end_mccp2(ses);

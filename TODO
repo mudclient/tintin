@@ -21,11 +21,13 @@
 
 - groozam.net 4000 
 
-- #list foo find {{hello}{world}} auto indexate?
-
 - #sleep <time>, possibly allow names to cancel or force continuation
 
 - #line escape {variables;functions}
+
+- look into a #debug flag for #class
+
+- switch to pcre2
 
 ----------------
   - add shadow session support with access to all events.
@@ -90,6 +92,7 @@
 
   - tab completion on directory structure.
 
+  - #map area command to list room counts per area.
   - direction field for exits that allow longer than 1x1x1 x/y/z jumps.
   - global mapper flag that would imply "Hide" on all exits that change area.
   - multiple global exit rooms and noglobal flags.
