@@ -134,19 +134,21 @@
 	error 8: kill variable %* failure
 }
 
+#0 )=-=( ERROR 9 )=-=( 0#
+
 #line strip #if {{<128>} != {}}
 {
 	error 9: line strip failure
 }
 
-#0 )=-=( ERROR 9 )=-=( 0#
+#0 )=-=( ERROR 10 )=-=( 0#
 
 #act {test} {error 10: line ignore failure}
 #line gag;
 #line ignore #showme <118>Failed test 10: line gag failure
 #unact {test}
 
-#0 )=-=( ERROR 10 )=-=( 0#
+#0 )=-=( ERROR 11 )=-=( 0#
 
 #parse {abcd} {tmp} {#var tmp ($tmp)}
 #if {"$tmp" != "(d)"}
@@ -154,7 +156,7 @@
 	error 11: parse failure
 }
 
-#0 )=-=( ERROR 11 )=-=( 0#
+#0 )=-=( ERROR 12 )=-=( 0#
 
 #path load {#var tmp 1}
 #path walk
@@ -163,7 +165,7 @@
 	error 12: path load or walk failure
 }
 
-#0 )=-=( ERROR 12 )=-=( 0#
+#0 )=-=( ERROR 13 )=-=( 0#
 
 #script tmp {echo 'test'}
 #if {{$tmp[1]} != {test}}
@@ -171,25 +173,26 @@
 	error 13: script failure
 }
 
-#0 )=-=( ERROR 13 )=-=( 0#
+#0 )=-=( ERROR 14 )=-=( 0#
 
 #regex {test} {te%?t} {#nop}
 {
 	error 14: regex failure
 }
 
-#0 )=-=( ERROR 14 )=-=( 0#
-
-#regex {bla} {bli}
-{
-	error 15: regex failure
-}
-
 #0 )=-=( ERROR 15 )=-=( 0#
+
+#regex {bla} {bli}         {error 15.1: regex failure}
+#regex {$OK} {$OK}  {#nop} {error 15.2: regex failure}
+#regex {OK$} {OK$}         {error 15.3: regex failure}
+#regex {OK$} {OK$$}        {error 15.4: regex failure}
+#regex {OK$} {OK\$} {#nop} {error 15.5: regex failure}
+
+#0 )=-=( ERROR 16 )=-=( 0#
 
 #0 error 16: repeat failure
 
-#0 )=-=( ERROR 16 )=-=( 0#
+#0 )=-=( ERROR 17 )=-=( 0#
 
 #unvar tmp
 
@@ -311,6 +314,12 @@ $bla + 1
 #format bli {%+20.-3s} {$bla}
 #format tmp %L {$bli}
 #if {$tmp != 20}       {error 26.11: format +.-s handling}
+#format tmp %+10s {\e]68;1;SEND;bow\a\e[4mbow\e[24m}
+#format tmp %L {$tmp}
+#if {$tmp != 10} {error 26.12: format escape code handling}
+#line sub esc #format tmp %+10s {\e]68;1;SEND;bow\a\e[4mbow\e[24m}
+#format tmp %L {$tmp}
+#if {$tmp != 10} {error 26.13: format escape code handling}
 
 #0 )=-=( ERROR 27 )=-=( 0#
 
@@ -415,6 +424,7 @@ bla
 #0 )=-=( ERROR 31 )=-=( 0#
 
 #tab bliblablo
+#cursor clear
 #cursor set bli
 #cursor tab list forward
 #cursor get bla

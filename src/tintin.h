@@ -2788,6 +2788,7 @@ extern char *fuzzy_color_code(struct session *ses, char *pti);
 extern char *dim_color_code(struct session *ses, char *pti, int mod);
 extern char *lit_color_code(struct session *ses, char *pti, int mod);
 extern int color_gradient(char *pti, int low, int max);
+extern int is_tintin_code(char *pti);
 extern int is_color_code(char *str);
 extern int is_color_name(char *str);
 extern int substitute_color(char *input, char *output, int colors);

@@ -647,23 +647,11 @@ void reversestring(char *str)
 
 	while (*pts)
 	{
-		switch (*pts)
+		skip = is_tintin_code(pts);
+
+		if (skip == 0 && *pts == '\\')
 		{
-			case '\\':
-				skip = pts[1] ? 2 : 0;
-				break;
-
-			case '\e':
-				skip = skip_vt102_codes(pts);
-				break;
-
-			case '<':
-				skip = is_color_code(pts);
-				break;
-
-			default:
-				skip = 0;
-				break;
+			skip = pts[1] ? 2 : 0;
 		}
 
 		if (skip)
@@ -1001,7 +989,7 @@ int string_str_raw_len(struct session *ses, char *str, int start, int end)
 			continue;
 		}
 
-		col_len = is_color_code(&str[raw_cnt]);
+		col_len = is_tintin_code(&str[raw_cnt]);
 
 		if (col_len)
 		{
@@ -1083,7 +1071,7 @@ int string_str_str_len(struct session *ses, char *str, int start, int end)
 			continue;
 		}
 
-		col_len = is_color_code(&str[raw_cnt]);
+		col_len = is_tintin_code(&str[raw_cnt]);
 
 		if (col_len)
 		{
@@ -1166,7 +1154,7 @@ int string_raw_str_len(struct session *ses, char *str, int raw_start, int raw_en
 			continue;
 		}
 
-		col_len = is_color_code(&str[raw_cnt]);
+		col_len = is_tintin_code(&str[raw_cnt]);
 
 		if (col_len)
 		{

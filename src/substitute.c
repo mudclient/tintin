@@ -2231,6 +2231,22 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 	return 0;
 }
 
+int is_tintin_code(char *pti)
+{
+	switch (*pti)
+	{
+		case '<':
+			return is_color_code(pti);
+
+		case '\\':
+			return find_escaped_color_code(pti);
+
+		case '\e':
+			return skip_vt102_codes(pti);
+	}
+	return 0;
+}
+
 int is_color_code(char *pti)
 {
 	if (pti[0] == '<')

@@ -476,7 +476,7 @@ int tintin_regexp_check(struct session *ses, char *exp)
 int tintin_regexp(struct session *ses, pcre *nodepcre, char *str, char *exp, int option, int flag)
 {
 	char out[BUFFER_SIZE], *pti, *pto;
-	int arg = 1, var = 1, fix = 0;
+	int i, arg = 1, var = 1, fix = 0;
 
 	pti = exp;
 	pto = out;
@@ -553,20 +553,17 @@ int tintin_regexp(struct session *ses, pcre *nodepcre, char *str, char *exp, int
 				*pto++ = *pti++;
 				break;
 
+			// variables should already have been substituted, check eol marker.
+
 			case '$':
-				if (pti[1] != DEFAULT_OPEN && !is_alnum(pti[1]))
+				for (i = 1 ; pti[i] == '$' ; i++)
 				{
-					int i = 0;
+					continue;
+				}
 
-					while (pti[++i] == '$')
-					{
-						continue;
-					}
-
-					if (pti[i])
-					{
-						*pto++ = '\\';
-					}
+				if (pti[i] != 0 && pti[i] != '\n')
+				{
+					*pto++ = '\\';
 				}
 				*pto++ = *pti++;
 				break;
