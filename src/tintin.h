@@ -573,9 +573,9 @@ enum operators
 #define SUB_LIT                       BV12 // no soft escaping
 
 /*
-#define SUB_ARG                       BV01
-#define SUB_SEC                       BV02
-#define SUB_BRA                       BV03
+#define SUB_ARG                       BV01 reserved
+#define SUB_SEC                       BV02 reserved
+#define SUB_BRA                       BV03 reserved
 */
 #define EVENT_FLAG_CATCH              BV04
 #define EVENT_FLAG_CLASS              BV05

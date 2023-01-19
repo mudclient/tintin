@@ -1108,12 +1108,12 @@ void time_update(void)
 		return;
 	}
 
-	calendar = *localtime(&gtd->time);
-
 	// Initialize on the first call.
 
 	if (old_calendar.tm_year == 0)
 	{
+		calendar = *localtime(&gtd->time);
+
 		old_calendar.tm_sec  = calendar.tm_sec;
 		old_calendar.tm_min  = calendar.tm_min;
 		old_calendar.tm_hour = calendar.tm_hour;
@@ -1150,7 +1150,13 @@ void time_update(void)
 		}
 	}
 
-	strftime(str_sec, 9, "%S", &calendar);
+	calendar.tm_sec = gtd->time % 60;
+	calendar.tm_min = gtd->time % 3600 / 60;
+
+//	strftime(str_sec, 9, "%S", &calendar);
+
+	str_sec[0] = '0' + calendar.tm_sec / 10;
+	str_sec[1] = '0' + calendar.tm_sec % 10;
 	old_calendar.tm_sec = calendar.tm_sec;
 
 	if (calendar.tm_min == old_calendar.tm_min)
@@ -1158,7 +1164,14 @@ void time_update(void)
 		goto time_event_sec;
 	}
 
-	strftime(str_min, 9, "%M", &calendar);
+	// localtime() is slow, so only update it once a minute
+
+	calendar = *localtime(&gtd->time);
+
+//	strftime(str_min, 9, "%M", &calendar);
+
+	str_min[0] = '0' + calendar.tm_min / 10;
+	str_min[1] = '0' + calendar.tm_min % 10;
 	old_calendar.tm_min = calendar.tm_min;
 
 	if (calendar.tm_hour == old_calendar.tm_hour)
