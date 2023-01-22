@@ -625,6 +625,7 @@ enum operators
 #define TINTIN_FLAG_PRESERVEMACRO     BV13
 #define TINTIN_FLAG_WINCHUPDATE       BV14
 #define TINTIN_FLAG_NOHUP             BV15 // fixes tcsetattr crashes with nohup
+#define TINTIN_FLAG_HYBERNATE         BV16
 
 #define CONFIG_FLAG_AUTOPATCH         BV01
 #define CONFIG_FLAG_AUTOPROMPT        BV02
@@ -645,6 +646,7 @@ enum operators
 #define CONFIG_FLAG_VERBATIM          BV17
 #define CONFIG_FLAG_VERBOSE           BV18
 #define CONFIG_FLAG_WORDWRAP          BV19
+
 
 #define SES_FLAG_BUFFERUPDATE         BV01
 #define SES_FLAG_CLOSED               BV02
@@ -2937,6 +2939,7 @@ extern void check_all_substitutions(struct session *ses, char *original, char *l
 // update.c
 
 extern void mainloop(void);
+extern void init_cpu(void);
 extern void show_cpu(struct session *ses);
 
 

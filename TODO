@@ -29,6 +29,10 @@
 
 - switch to pcre2
 
+- Another nice thing would be if there was some flag to make a trigger match newlines as space.
+
+- fix up named delays and undelay
+
 ----------------
   - add shadow session support with access to all events.
 

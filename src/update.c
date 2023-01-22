@@ -62,22 +62,7 @@
 #define PULSE_UPDATE_PACKETS            10
 #define PULSE_UPDATE_TERMINAL           10
 #define PULSE_UPDATE_MEMORY             10
-#define PULSE_UPDATE_TIME               10
-
-#define TIMER_UPDATE_INPUT               0
-#define TIMER_UPDATE_SESSIONS            1
-#define TIMER_UPDATE_DELAYS              2
-#define TIMER_UPDATE_DAEMON              3
-#define TIMER_UPDATE_CHAT                4
-#define TIMER_UPDATE_PORT                5
-#define TIMER_UPDATE_TICKS               6
-#define TIMER_UPDATE_PATHS               7
-#define TIMER_UPDATE_PACKETS             8
-#define TIMER_UPDATE_TERMINAL            9
-#define TIMER_UPDATE_TIME               10
-#define TIMER_UPDATE_MEMORY             11
-#define TIMER_STALL_PROGRAM             12
-#define TIMER_CPU                       13
+#define PULSE_UPDATE_TIME                5
 
 long long cpu_timer[TIMER_CPU][5];
 
@@ -111,16 +96,18 @@ void mainloop(void)
 	pulse.update_sessions =  0 + PULSE_UPDATE_SESSIONS;
 	pulse.update_delays   =  0 + PULSE_UPDATE_DELAYS;
 	pulse.update_daemon   =  0 + PULSE_UPDATE_DAEMON;
-	pulse.update_chat     =  2 + PULSE_UPDATE_CHAT;
+	pulse.update_chat     =  1 + PULSE_UPDATE_CHAT;
 	pulse.update_port     =  2 + PULSE_UPDATE_PORT;
 	pulse.update_ticks    =  3 + PULSE_UPDATE_TICKS;
-	pulse.update_paths    =  3 + PULSE_UPDATE_PATHS;
-	pulse.update_packets  =  4 + PULSE_UPDATE_PACKETS;
-	pulse.update_terminal =  6 + PULSE_UPDATE_TERMINAL;
-	pulse.update_memory   =  7 + PULSE_UPDATE_MEMORY;
-	pulse.update_time     =  8 + PULSE_UPDATE_TIME;
+	pulse.update_paths    =  5 + PULSE_UPDATE_PATHS;
+	pulse.update_packets  =  6 + PULSE_UPDATE_PACKETS;
+	pulse.update_terminal =  7 + PULSE_UPDATE_TERMINAL;
+	pulse.update_memory   =  8 + PULSE_UPDATE_MEMORY;
+	pulse.update_time     =  9 + PULSE_UPDATE_TIME;
 
 	push_call("mainloop()");
+
+	init_cpu();
 
 	while (TRUE)
 	{
@@ -288,7 +275,7 @@ void mainloop(void)
 
 		span_time_val = end_utime - start_utime;
 
-		wait_time_val = 1000000 / PULSE_PER_SECOND - span_time_val;
+		wait_time_val = (HAS_BIT(gtd->flags, TINTIN_FLAG_HYBERNATE) ? 10000000 : 1000000) / PULSE_PER_SECOND - span_time_val;
 
 		if (wait_time_val > 0)
 		{
@@ -313,9 +300,8 @@ void update_input(void)
 
 	if (gtd->time_input < gtd->time)
 	{
-		if (sleep < 10)
+		if (sleep++ < 10)
 		{
-			sleep++;
 			return;
 		}
 		sleep = 0;
@@ -368,12 +354,10 @@ void update_sessions(void)
 	struct session *ses;
 	int rv;
 
-	if (gtd->time_session + 10 < gtd->time)
+	if (gtd->time_session < gtd->time)
 	{
-		if (sleep < 10)
+		if (sleep++ < 10)
 		{
-			sleep++;
-
 			return;
 		}
 		sleep = 0;
@@ -460,10 +444,10 @@ void update_sessions(void)
 					}
 				}
 
-				gtd->time_session = gtd->time;
-
 				if (gtd->mud_output_len)
 				{
+					gtd->time_session = gtd->time + 10;
+
 					readmud(ses);
 				}
 			}
@@ -541,12 +525,10 @@ void update_daemon(void)
 	socklen_t len;
 	int rv;
 
-	if (gtd->time_daemon + 10 < gtd->time)
+	if (gtd->time_daemon < gtd->time)
 	{
-		if (sleep < 10)
+		if (sleep++ < 10)
 		{
-			sleep++;
-
 			return;
 		}
 		sleep = 0;
@@ -566,7 +548,7 @@ void update_daemon(void)
 			{
 				if (FD_ISSET(gtd->detach_port, &read_fd))
 				{
-					gtd->time_daemon = gtd->time;
+					gtd->time_daemon = gtd->time + 10;
 
 					if (gtd->detach_sock)
 					{
@@ -695,7 +677,7 @@ void update_daemon(void)
 //						gtd->detach_sock = close(gtd->detach_sock); // experimental
 						break;
 					}
-					gtd->time_daemon = gtd->time;
+					gtd->time_daemon = gtd->time + 10;
 
 					process_input();
 				}
@@ -727,7 +709,7 @@ void update_daemon(void)
 			{
 				char buffer[BUFFER_SIZE];
 
-				gtd->time_daemon = gtd->time;
+				gtd->time_daemon = gtd->time + 10;
 
 				rv = read(gtd->attach_sock, buffer, BUFFER_SIZE -1);
 
@@ -1272,6 +1254,22 @@ void time_update(void)
 }
 
 
+void init_cpu()
+{
+	struct timeval last_time;
+	long long current_time;
+	int timer;
+
+	gettimeofday(&last_time, NULL);
+
+	current_time = (long long) last_time.tv_usec + 1000000LL * (long long) last_time.tv_sec;
+
+	for (timer = 0 ; timer < TIMER_CPU ; timer++)
+	{
+		cpu_timer[timer][2] = current_time;
+	}
+}
+
 void show_cpu(struct session *ses)
 {
 	long long total_cpu = 0;
@@ -1337,16 +1335,9 @@ void open_timer(int timer)
 
 	current_time = (long long) last_time.tv_usec + 1000000LL * (long long) last_time.tv_sec;
 
-	if (cpu_timer[timer][2] == 0)
-	{
-		cpu_timer[timer][2] = current_time;
-	}
-	else
-	{
-		cpu_timer[timer][3] += current_time - cpu_timer[timer][2];
-		cpu_timer[timer][2]  = current_time;
-		cpu_timer[timer][4] ++;
-	}
+	cpu_timer[timer][3] += current_time - cpu_timer[timer][2];
+	cpu_timer[timer][2]  = current_time;
+	cpu_timer[timer][4] ++;
 }
 
 

@@ -40,6 +40,7 @@ DO_CONFIG(config_childlock);
 DO_CONFIG(config_convertmeta);
 DO_CONFIG(config_debugtelnet);
 DO_CONFIG(config_historysize);
+DO_CONFIG(config_hybernate);
 DO_CONFIG(config_inheritance);
 DO_CONFIG(config_loglevel);
 DO_CONFIG(config_logmode);
@@ -163,6 +164,12 @@ struct config_type config_table[] =
 		config_historysize
 	},
 
+	{
+		"HYBERNATE",
+		"Go into low CPU usage mode",
+		"",
+		config_hybernate
+	},
 	{
 		"INHERITANCE",
 		"The startup session is inherited",
@@ -742,6 +749,30 @@ DO_CONFIG(config_historysize)
 		gtd->history_size = atoi(arg2);
 	}
 	sprintf(arg2, "%d", gtd->history_size);
+
+	return ses;
+}
+
+DO_CONFIG(config_hybernate)
+{
+	if (*arg2)
+	{
+		if (is_abbrev(arg2, "ON"))
+		{
+			SET_BIT(gtd->flags, TINTIN_FLAG_HYBERNATE);
+		}
+		else if (is_abbrev(arg2, "OFF"))
+		{
+			DEL_BIT(gtd->flags, TINTIN_FLAG_HYBERNATE);
+		}
+		else
+		{
+			show_error(ses, LIST_CONFIG, "#SYNTAX: #CONFIG {%s} <ON|OFF>", config_table[index].name);
+
+			return NULL;
+		}
+	}
+	strcpy(arg2, HAS_BIT(gtd->flags, TINTIN_FLAG_HYBERNATE) ? "ON" : "OFF");
 
 	return ses;
 }
