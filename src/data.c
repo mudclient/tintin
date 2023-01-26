@@ -1145,8 +1145,8 @@ DO_COMMAND(do_ignore)
 {
 	int index, found = FALSE;
 
-	arg = get_arg_in_braces(ses, arg, arg1, GET_ONE);
-	arg = get_arg_in_braces(ses, arg, arg2, GET_ONE);
+	arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
+	arg = sub_arg_in_braces(ses, arg, arg2, GET_ONE, SUB_VAR|SUB_FUN);
 
 	if (*arg1 == 0)
 	{
@@ -1164,40 +1164,52 @@ DO_COMMAND(do_ignore)
 	}
 	else
 	{
-		for (index = found = 0 ; index < LIST_MAX ; index++)
+		arg = arg1;
+
+		do
 		{
-			if (HAS_BIT(list_table[index].flags, LIST_FLAG_HIDE))
-			{
-				continue;
-			}
+			arg = get_arg_in_braces(ses, arg, arg3, GET_ONE);
 
-			if (!is_abbrev(arg1, list_table[index].name_multi) && strcasecmp(arg1, "ALL"))
+			for (index = found = 0 ; index < LIST_MAX ; index++)
 			{
-				continue;
-			}
+				if (HAS_BIT(list_table[index].flags, LIST_FLAG_HIDE))
+				{
+					continue;
+				}
 
-			if (*arg2 == 0)
-			{
-				TOG_BIT(ses->list[index]->flags, LIST_FLAG_IGNORE);
-			}
-			else if (is_abbrev(arg2, "ON"))
-			{
-				SET_BIT(ses->list[index]->flags, LIST_FLAG_IGNORE);
-			}
-			else if (is_abbrev(arg2, "OFF"))
-			{
-				DEL_BIT(ses->list[index]->flags, LIST_FLAG_IGNORE);
-			}
-			else
-			{
-				show_error(ses, LIST_COMMAND, "#SYNTAX: #IGNORE {%s} [ON|OFF]", arg1);
+				if (!is_abbrev(arg3, list_table[index].name_multi) && strcasecmp(arg3, "ALL"))
+				{
+					continue;
+				}
+
+				if (*arg3 == 0)
+				{
+					TOG_BIT(ses->list[index]->flags, LIST_FLAG_IGNORE);
+				}
+				else if (is_abbrev(arg2, "ON"))
+				{
+					SET_BIT(ses->list[index]->flags, LIST_FLAG_IGNORE);
+				}
+				else if (is_abbrev(arg2, "OFF"))
+				{
+					DEL_BIT(ses->list[index]->flags, LIST_FLAG_IGNORE);
+				}
+				else
+				{
+					show_error(ses, LIST_COMMAND, "#SYNTAX: #IGNORE {%s} [ON|OFF]", arg1);
 				
-				return ses;
-			}
-			show_message(ses, LIST_COMMAND, "#OK: #IGNORE STATUS FOR %s HAS BEEN SET TO: %s.", list_table[index].name_multi, HAS_BIT(ses->list[index]->flags, LIST_FLAG_IGNORE) ? "ON" : "OFF");
+					return ses;
+				}
+				show_message(ses, LIST_COMMAND, "#OK: #IGNORE STATUS FOR %s HAS BEEN SET TO: %s.", list_table[index].name_multi, HAS_BIT(ses->list[index]->flags, LIST_FLAG_IGNORE) ? "ON" : "OFF");
 
-			found = TRUE;
+				found = TRUE;
+			}
+			if (*arg == COMMAND_SEPARATOR)
+			{
+				arg++;
+			}
 		}
+		while (*arg);
 
 		if (found == FALSE)
 		{
