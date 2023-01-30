@@ -7142,7 +7142,7 @@ DO_MAP(map_list)
 				}
 				else
 				{
-						tintin_printf2(ses, "vnum: %5d  dist: %8.3f  x: %4s  y: %4s  z: %4s  name: %s", room->vnum, -1, "?", "?", "?", room->name);
+						tintin_printf2(ses, "vnum: %5d  dist: %8s  x: %4s  y: %4s  z: %4s  name: %s", room->vnum, "-1", "?", "?", "?", room->name);
 				}
 			}
 		}

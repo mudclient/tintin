@@ -33,6 +33,12 @@
 
 - fix up named delays and undelay
 
+- add a #regex like command for #cursor to update the input line.
+
+- Add vnum to #map list save, possibly other fields
+
+- https://github.com/scandum/tintin/issues/166 #info output
+
 ----------------
   - add shadow session support with access to all events.
 
