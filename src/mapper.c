@@ -7133,16 +7133,16 @@ DO_MAP(map_list)
 				{
 					if (room->w == 0)
 					{
-						tintin_printf2(ses, "vnum: %5d  dist: %8.3f  x: %4d  y: %4d  z: %4d  name: %s", room->vnum, room->length, room->x, room->y, room->z, room->name);
+						tintin_printf2(ses, "vnum: %5d  dist: %9.3f  x: %4d  y: %4d  z: %4d  name: %s", room->vnum, room->length, room->x, room->y, room->z, room->name);
 					}
 					else
 					{
-						tintin_printf2(ses, "vnum: %5d  dist: %8.3f  x: %4s  y: %4s  z: %4s  name: %s", room->vnum, room->length, "?", "?", "?", room->name);
+						tintin_printf2(ses, "vnum: %5d  dist: %9.3f  x: %4s  y: %4s  z: %4s  name: %s", room->vnum, room->length, "?", "?", "?", room->name);
 					}
 				}
 				else
 				{
-						tintin_printf2(ses, "vnum: %5d  dist: %8s  x: %4s  y: %4s  z: %4s  name: %s", room->vnum, "-1", "?", "?", "?", room->name);
+						tintin_printf2(ses, "vnum: %5d  dist: %9s  x: %4s  y: %4s  z: %4s  name: %s", room->vnum, "-1", "?", "?", "?", room->name);
 				}
 			}
 		}

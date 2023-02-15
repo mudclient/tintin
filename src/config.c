@@ -40,7 +40,7 @@ DO_CONFIG(config_childlock);
 DO_CONFIG(config_convertmeta);
 DO_CONFIG(config_debugtelnet);
 DO_CONFIG(config_historysize);
-DO_CONFIG(config_hybernate);
+DO_CONFIG(config_hibernate);
 DO_CONFIG(config_inheritance);
 DO_CONFIG(config_loglevel);
 DO_CONFIG(config_logmode);
@@ -165,10 +165,10 @@ struct config_type config_table[] =
 	},
 
 	{
-		"HYBERNATE",
+		"HIBERNATE",
 		"Go into low CPU usage mode",
 		"",
-		config_hybernate
+		config_hibernate
 	},
 	{
 		"INHERITANCE",
@@ -753,17 +753,17 @@ DO_CONFIG(config_historysize)
 	return ses;
 }
 
-DO_CONFIG(config_hybernate)
+DO_CONFIG(config_hibernate)
 {
 	if (*arg2)
 	{
 		if (is_abbrev(arg2, "ON"))
 		{
-			SET_BIT(gtd->flags, TINTIN_FLAG_HYBERNATE);
+			SET_BIT(gtd->flags, TINTIN_FLAG_HIBERNATE);
 		}
 		else if (is_abbrev(arg2, "OFF"))
 		{
-			DEL_BIT(gtd->flags, TINTIN_FLAG_HYBERNATE);
+			DEL_BIT(gtd->flags, TINTIN_FLAG_HIBERNATE);
 		}
 		else
 		{
@@ -772,7 +772,7 @@ DO_CONFIG(config_hybernate)
 			return NULL;
 		}
 	}
-	strcpy(arg2, HAS_BIT(gtd->flags, TINTIN_FLAG_HYBERNATE) ? "ON" : "OFF");
+	strcpy(arg2, HAS_BIT(gtd->flags, TINTIN_FLAG_HIBERNATE) ? "ON" : "OFF");
 
 	return ses;
 }

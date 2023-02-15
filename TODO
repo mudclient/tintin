@@ -1,3 +1,28 @@
+- #info arguments save not workie for #alias
+
+- #var foo {x;{a;b;c};y;z}
+  #list foo create {$foo}
+  #list foo simplify
+
+  #list explode has an issue with ';'
+
+#action {%1%s\|%s%2%s\|%s%3%s\|%s%4%s\|%s%5%s\|%s%6%s\|%s%7%s\|%s%8%s\|%s%9%s\|} {
+
+.--.----------------------.-------------------------------------.-----.
+| #|        MISSION       |                 TASKS               |  %  |
+.--.----------------------+-------------------------------------+-----.
+| 1| An Unwelcome Visitor |                                     |     |
+|  |                      | Find the whereabouts of Ivar Cutters|  0  |
+|--+----------------------+-------------------------------------+-----|
+| 2|      Slay Dotar      |                                     |     |
+|  |                      |              Slay Dotar             |  0  |
+|--+----------------------+-------------------------------------+-----|
+| 3|     Sewer Cleanup    |                                     |     |
+|  |                      |        Vanquish sewer monster       |  0  |
+|--+----------------------+-------------------------------------+-----|
+
+- causes a PCRE/tinexp hang?
+
 - add blight to mssp, msdp, gmcp
 
 - finish ? : support in #math
@@ -38,6 +63,10 @@
 - Add vnum to #map list save, possibly other fields
 
 - https://github.com/scandum/tintin/issues/166 #info output
+
+- custom mapping for unicode table to set width
+
+- color code for dynamic color ranges
 
 ----------------
   - add shadow session support with access to all events.

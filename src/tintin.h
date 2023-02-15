@@ -625,7 +625,7 @@ enum operators
 #define TINTIN_FLAG_PRESERVEMACRO     BV13
 #define TINTIN_FLAG_WINCHUPDATE       BV14
 #define TINTIN_FLAG_NOHUP             BV15 // fixes tcsetattr crashes with nohup
-#define TINTIN_FLAG_HYBERNATE         BV16
+#define TINTIN_FLAG_HIBERNATE         BV16
 
 #define CONFIG_FLAG_AUTOPATCH         BV01
 #define CONFIG_FLAG_AUTOPROMPT        BV02

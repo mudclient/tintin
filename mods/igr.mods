@@ -1,6 +1,8 @@
 Jan 2023        2.02.31
 ------------------------------------------------------------------------------
-config.c        Added #config hybernate on/off. When enabled it will reduce
+config.c        Hybernate is now hibernate. Let's pretend that never happened.
+
+config.c        Added #config hibernate on/off. When enabled it will reduce
                 the idle cpu overhead by 90%, though tintin will be more
                 sluggish and timers will fire with decreased accuracy.
 

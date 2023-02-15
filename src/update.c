@@ -275,7 +275,7 @@ void mainloop(void)
 
 		span_time_val = end_utime - start_utime;
 
-		wait_time_val = (HAS_BIT(gtd->flags, TINTIN_FLAG_HYBERNATE) ? 10000000 : 1000000) / PULSE_PER_SECOND - span_time_val;
+		wait_time_val = (HAS_BIT(gtd->flags, TINTIN_FLAG_HIBERNATE) ? 10000000 : 1000000) / PULSE_PER_SECOND - span_time_val;
 
 		if (wait_time_val > 0)
 		{

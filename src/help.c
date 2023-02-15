@@ -1053,7 +1053,7 @@ struct help_type help_table[] =
 		"         #CONFIG {CONNECT RETRY} {NUMBER} Seconds to try to connect on failure.\n"
 		"         #CONFIG {CONVERT META}  {ON|OFF} Shows color codes and key bindings.\n"
 		"         #CONFIG {DEBUG TELNET}  {ON|OFF} Shows telnet negotiations y/n.\n"
-		"         #CONFIG {HYBERNATE}     {ON|OFF} Enable or disable low CPU usage mode.\n"
+		"         #CONFIG {HIBERNATE}     {ON|OFF} Enable or disable low CPU usage mode.\n"
 		"         #CONFIG {LOG LEVEL}   {LOW|HIGH} LOW logs server output before triggers.\n"
 		"         #CONFIG {INHERITANCE}   {ON|OFF} Session trigger inheritance y/n.\n"
 		"         #CONFIG {MCCP}          {ON|OFF} Enable or disable MCCP support.\n"
