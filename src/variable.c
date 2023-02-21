@@ -276,7 +276,7 @@ DO_COMMAND(do_replace)
 
 	arg = sub_arg_in_braces(ses, arg, arg1, GET_NST, SUB_VAR|SUB_FUN);
 	arg = sub_arg_in_braces(ses, arg, arg2, GET_ONE, SUB_VAR|SUB_FUN);
-	arg = sub_arg_in_braces(ses, arg, arg3, GET_ALL, SUB_VAR);
+	arg = get_arg_in_braces(ses, arg, arg3, GET_ALL);
 
 	if (*arg1 == 0 || *arg2 == 0)
 	{
@@ -314,7 +314,8 @@ DO_COMMAND(do_replace)
 			ptm = pti + gtd->match[0]; *ptm = 0;
 			ptm = pti + gtd->match[1];
 
-			substitute(ses, arg3, tmp, SUB_CMD|SUB_FUN);
+			substitute(ses, arg3, tmp, SUB_CMD);
+			substitute(ses, tmp, tmp, SUB_VAR|SUB_FUN);
 
 			str_cat_printf(&str, "%s%s", pti, tmp);
 

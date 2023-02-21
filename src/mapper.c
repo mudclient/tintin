@@ -3434,7 +3434,7 @@ char *draw_room(struct session *ses, struct room_data *room, int line, int x, in
 					{
 						if (HAS_BIT(ses->map->flags, MAP_FLAG_ASCIILENGTH))
 						{
-							cat_sprintf(buf, "%s%5.1f", ses->map->color[MAP_COLOR_USER], room->length, ses->map->color[MAP_COLOR_EXIT]);
+							cat_sprintf(buf, "%s%5.1f%s", ses->map->color[MAP_COLOR_USER], room->length, ses->map->color[MAP_COLOR_EXIT]);
 						}
 						else
 						{
@@ -6835,7 +6835,14 @@ void map_legend_index(struct session *ses, char *arg, int head, int tail)
 
 	for (cnt = head ; cnt < tail ; cnt++)
 	{
-		arg = sub_arg_in_braces(ses, arg, raw, GET_ONE, SUB_NONE);
+		if (head + 1 != tail)
+		{
+			arg = sub_arg_in_braces(ses, arg, raw, GET_ONE, SUB_NONE);
+		}
+		else
+		{
+			strcpy(raw, arg);
+		}
 
 		substitute(ses, raw, esc, SUB_ESC);
 

@@ -68,6 +68,10 @@
 
 - color code for dynamic color ranges
 
+- #MACRO {\cz} {#cursor get t;#var t} does not handle { } in input.
+
+- Look into delete_index_list leaving a table with ->used set to 0 causing #list crashes
+
 ----------------
   - add shadow session support with access to all events.
 

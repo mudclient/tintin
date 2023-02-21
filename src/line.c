@@ -515,8 +515,8 @@ DO_LINE(line_json)
 
 	char *str_sub = str_alloc_stack(0);
 
-	struct listroot *root = ses->list[LIST_VARIABLE];
-	struct listnode *node = search_nest_node(root, arg1);
+//	struct listroot *root = ses->list[LIST_VARIABLE];
+	struct listnode *node = search_nest_node_ses(ses, arg1);
 
 	if (node)
 	{
