@@ -366,6 +366,8 @@ DO_COMMAND(do_configure)
 
 						if (node)
 						{
+							check_all_events(ses, EVENT_FLAG_SYSTEM, 0, 2, "CONFIG", config_table[index].name, node->arg2);
+
 							show_message(ses, LIST_CONFIG, "#CONFIG {%s} HAS BEEN SET TO {%s}.", config_table[index].name, node->arg2);
 						}
 					}

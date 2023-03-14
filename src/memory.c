@@ -100,7 +100,8 @@ char *get_str_str(struct str_data *str_ptr)
 
 struct str_data *str_ptr_realloc(struct str_data *str_ptr, int size)
 {
-	if (str_ptr->max <= size)
+//	if (str_ptr->max <= size)
+	if (size != str_ptr->max - 1)
 	{
 		str_ptr = (struct str_data *) realloc(str_ptr, sizeof(struct str_data) + size + 1);
 
@@ -667,7 +668,8 @@ struct str_data *str_alloc_list(int size)
 
 		DEL_BIT(str_ptr->flags, STR_FLAG_FREE);
 
-		if (size >= str_ptr->max)
+//		if (size >= str_ptr->max)
+		if (size != str_ptr->max - 1)
 		{
 			str_ptr = str_ptr_realloc(str_ptr, size);
 		}

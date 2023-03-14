@@ -7132,7 +7132,7 @@ DO_MAP(map_list)
 
 			if (*var)
 			{
-				add_nest_node_ses(ses, var, "{%d} {{distance}{%.3f}{x}{%d}{y}{%d}{z}{%d}}", room->vnum, ses->map->search->stamp == room->search_stamp ? room->length  : -1, room->x, room->y, room->z);
+				add_nest_node_ses(ses, var, "{%d} {{distance}{%.3f}{vnum}{%d}{x}{%d}{y}{%d}{z}{%d}}", room->vnum, ses->map->search->stamp == room->search_stamp ? room->length  : -1, room->vnum, room->x, room->y, room->z);
 			}
 			else
 			{

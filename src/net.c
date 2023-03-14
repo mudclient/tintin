@@ -439,7 +439,7 @@ int detect_prompt(struct session *ses, char *original)
 
 void readmud(struct session *ses)
 {
-	char *line, *next_line, *strip;
+	char *line, *next_line/*, *strip*/;
 	char linebuf[BUFFER_SIZE];
 	int len;
 	struct session *cts;
@@ -462,25 +462,24 @@ void readmud(struct session *ses)
 		}
 	}
 
-	strip = str_alloc(gtd->mud_output_len);
+//	strip = str_alloc(gtd->mud_output_len);
 
-	strip_vt102_codes(line, strip);
+	gtd->mud_output_strip_len = strip_vt102_codes(line, gtd->mud_output_strip_buf);
 
-	gtd->mud_output_len = 0;
+	check_all_events(ses, SUB_SEC|EVENT_FLAG_OUTPUT, 0, 2, "RECEIVED OUTPUT", gtd->mud_output_buf, gtd->mud_output_strip_buf);
 
-	check_all_events(ses, SUB_SEC|EVENT_FLAG_OUTPUT, 0, 2, "RECEIVED OUTPUT", gtd->mud_output_buf, strip);
-
-	if (check_all_events(ses, SUB_SEC|EVENT_FLAG_CATCH, 0, 2, "CATCH RECEIVED OUTPUT", gtd->mud_output_buf, strip))
+	if (check_all_events(ses, SUB_SEC|EVENT_FLAG_CATCH, 0, 2, "CATCH RECEIVED OUTPUT", gtd->mud_output_buf, gtd->mud_output_strip_buf))
 	{
-		str_free(strip);
+		gtd->mud_output_len = 0;
 
+		// str_free(strip);
 		pop_call();
 		return;
 	}
 
-	check_one_line_multi(ses, line, strip);
+	check_one_line_multi(ses, line, gtd->mud_output_strip_buf);
 
-	str_free(strip);
+//	str_free(strip);
 
 	// cts = current tintin session, may have to make this global to avoid glitches
 
@@ -570,7 +569,11 @@ void readmud(struct session *ses)
 		{
 			strcpy(linebuf, line);
 		}
+		gtd->mud_output_line = linebuf;
+
 		process_mud_output(ses, linebuf, next_line == NULL);
+
+		gtd->mud_output_line = gtd->mud_output_buf + gtd->mud_output_len;
 	}
 	DEL_BIT(cts->flags, SES_FLAG_READMUD);
 
@@ -578,6 +581,7 @@ void readmud(struct session *ses)
 	{
 		restore_pos(gtd->ses);
 	}
+	gtd->mud_output_len = 0;
 
 	pop_call();
 	return;

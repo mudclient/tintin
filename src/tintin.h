@@ -1133,6 +1133,9 @@ struct tintin_data
 	char                  * mud_output_buf;
 	int                     mud_output_max;
 	int                     mud_output_len;
+	char                  * mud_output_strip_buf;
+	int                     mud_output_strip_len;
+	char                  * mud_output_line;
 	unsigned char         * mccp_buf;
 	int                     mccp_len;
 	char                    macro_buf[BUFFER_SIZE];
@@ -2840,6 +2843,7 @@ extern struct map_legend_group_type map_legend_group_table[];
 #define __TELOPT_H__
 
 extern void test_gmcp(struct session *ses, char *buf);
+extern int get_mtts_val(struct session *ses);
 extern  int client_translate_telopts(struct session *ses, unsigned char *src, int cplen);
 extern  int client_write_compressed(struct session *ses, char *txt, int length);
 extern  int client_send_sb_naws(struct session *ses, int cplen, unsigned char *cpsrc);

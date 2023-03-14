@@ -1,4 +1,22 @@
-- #info arguments save not workie for #alias
+#info mem
+#INFO MEMORY: STACK SIZE: 1800045
+#INFO MEMORY: STACK  MAX: 64
+#INFO MEMORY: STACK  CAP: 45
+#INFO MEMORY: STACK  LEN: 3
+
+#ERROR: index 386297 len = 1/0 max = 5706 flags = 6 (e)
+#INFO MEMORY: ALLOC SIZE: 17963354
+#INFO MEMORY: ALLOC USED: 13862779
+#INFO MEMORY: ALLOC  MAX: 1048576
+#INFO MEMORY: ALLOC  LEN: 547640
+
+#INFO MEMORY: FREED SIZE: 1626853344
+#INFO MEMORY: FREED  MAX: 1048576
+#INFO MEMORY: FREED  LEN: 546481
+
+#INFO MEMORY: DEBUG SIZE: 1024
+#INFO MEMORY: DEBUG  MAX: 48
+#INFO MEMORY: DEBUG  LEN: 4
 
 - #var foo {x;{a;b;c};y;z}
   #list foo create {$foo}
@@ -6,29 +24,11 @@
 
   #list explode has an issue with ';'
 
-#action {%1%s\|%s%2%s\|%s%3%s\|%s%4%s\|%s%5%s\|%s%6%s\|%s%7%s\|%s%8%s\|%s%9%s\|} {
-
-.--.----------------------.-------------------------------------.-----.
-| #|        MISSION       |                 TASKS               |  %  |
-.--.----------------------+-------------------------------------+-----.
-| 1| An Unwelcome Visitor |                                     |     |
-|  |                      | Find the whereabouts of Ivar Cutters|  0  |
-|--+----------------------+-------------------------------------+-----|
-| 2|      Slay Dotar      |                                     |     |
-|  |                      |              Slay Dotar             |  0  |
-|--+----------------------+-------------------------------------+-----|
-| 3|     Sewer Cleanup    |                                     |     |
-|  |                      |        Vanquish sewer monster       |  0  |
-|--+----------------------+-------------------------------------+-----|
-
-- causes a PCRE/tinexp hang?
-
-- add blight to mssp, msdp, gmcp
-
 - finish ? : support in #math
 
 - multiline triggers
-  - finish create_node()
+
+- finish create_node()
 
 - Look into #split 1 1 1 1 on termux when hiding / showing keyboard.
 
@@ -44,8 +44,6 @@
 
 - fix ctrl-r so it compiles the pcre once.
 
-- groozam.net 4000 
-
 - #sleep <time>, possibly allow names to cancel or force continuation
 
 - #line escape {variables;functions}
@@ -60,10 +58,6 @@
 
 - add a #regex like command for #cursor to update the input line.
 
-- Add vnum to #map list save, possibly other fields
-
-- https://github.com/scandum/tintin/issues/166 #info output
-
 - custom mapping for unicode table to set width
 
 - color code for dynamic color ranges
@@ -71,6 +65,8 @@
 - #MACRO {\cz} {#cursor get t;#var t} does not handle { } in input.
 
 - Look into delete_index_list leaving a table with ->used set to 0 causing #list crashes
+
+- #daemon attach fails under high cpu load
 
 ----------------
   - add shadow session support with access to all events.

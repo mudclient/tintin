@@ -1641,6 +1641,29 @@ DO_COMMAND(do_info)
 				}
 				break;
 
+			case CTRL_O:
+				if (is_abbrev(arg1, "OUTPUT"))
+				{
+					if (is_abbrev(arg2, "SAVE"))
+					{
+						set_nest_node_ses(ses, "info[OUTPUT]", "{RAWBUF}{%s}", gtd->mud_output_buf);
+						add_nest_node_ses(ses, "info[OUTPUT]", "{RAWLEN}{%s}", gtd->mud_output_len);
+						add_nest_node_ses(ses, "info[OUTPUT]", "{STRBUF}{%s}", gtd->mud_output_strip_buf);
+						add_nest_node_ses(ses, "info[OUTPUT]", "{STRLEN}{%d}", gtd->mud_output_strip_len);
+						add_nest_node_ses(ses, "info[OUTPUT]", "{LINE}{%s}",   gtd->mud_output_line);
+					}
+					else
+					{
+						tintin_printf2(ses, "#INFO OUTPUT: RAWBUF: %s", gtd->mud_output_buf);
+						tintin_printf2(ses, "#INFO OUTPUT: RAWLEN: %d", gtd->mud_output_len);
+						tintin_printf2(ses, "#INFO OUTPUT: STRBUF: %s", gtd->mud_output_strip_buf);
+						tintin_printf2(ses, "#INFO OUTPUT: STRLEN: %d", gtd->mud_output_strip_len);
+						tintin_printf2(ses, "#INFO OUTPUT: LINE: %s", gtd->mud_output_line);
+
+					}
+				}
+				break;
+
 			case CTRL_S:
 				if (is_abbrev(arg1, "SESSION"))
 				{
@@ -1652,6 +1675,7 @@ DO_COMMAND(do_info)
 						add_nest_node_ses(ses, "info[SESSION]", "{CREATED}{%d}", ses->created);
 						add_nest_node_ses(ses, "info[SESSION]", "{HOST} {%s}", ses->session_host);
 						add_nest_node_ses(ses, "info[SESSION]", "{IP} {%s}", ses->session_ip);
+						add_nest_node_ses(ses, "info[SESSION]", "{MTTS} {%d}", get_mtts_val(ses));
 						add_nest_node_ses(ses, "info[SESSION]", "{PORT} {%s}", ses->session_port);
 
 						show_message(ses, LIST_COMMAND, "#INFO: DATA WRITTEN TO {info[SESSION]}");
@@ -1664,6 +1688,7 @@ DO_COMMAND(do_info)
 						tintin_printf2(ses, "{CREATED}{%d}", ses->created);
 						tintin_printf2(ses, "{HOST} {%s}", ses->session_host);
 						tintin_printf2(ses, "{IP} {%s}", ses->session_ip);
+						tintin_printf2(ses, "{MTTS} {%d}", get_mtts_val(ses));
 						tintin_printf2(ses, "{PORT} {%s}", ses->session_port);
 					}
 				}
@@ -1685,6 +1710,7 @@ DO_COMMAND(do_info)
 							add_nest_node_ses(ses, name, "{CREATED}{%d}", sesptr->created);
 							add_nest_node_ses(ses, name, "{HOST} {%s}", sesptr->session_host);
 							add_nest_node_ses(ses, name, "{IP} {%s}", sesptr->session_ip);
+							add_nest_node_ses(ses, name, "{MTTS} {%d}", get_mtts_val(ses));
 							add_nest_node_ses(ses, name, "{PORT} {%s}", sesptr->session_port);
 						}
 						show_message(ses, LIST_COMMAND, "#INFO: DATA WRITTEN TO {info[SESSIONS]}");
@@ -1699,6 +1725,7 @@ DO_COMMAND(do_info)
 							tintin_printf2(ses, "{%s}{CREATED}{%d}", sesptr->name, sesptr->created);
 							tintin_printf2(ses, "{%s}{HOST} {%s}", sesptr->name, sesptr->session_host);
 							tintin_printf2(ses, "{%s}{IP} {%s}", sesptr->name, sesptr->session_ip);
+							tintin_printf2(ses, "{%s}{MTTS} {%d}", sesptr->name, get_mtts_val(ses));
 							tintin_printf2(ses, "{%s}{PORT} {%s}", sesptr->name, sesptr->session_port);
 						}
 					}

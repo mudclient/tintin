@@ -195,6 +195,11 @@ void read_line(char *input, int len)
 	char buf[BUFFER_SIZE];
 	int size, width, index;
 
+	if (HAS_BIT(gtd->ses->log->mode, LOG_FLAG_LOW) && gtd->ses->log->file)
+	{
+		fwrite(input, 1, len, gtd->ses->log->file);
+	}
+
 	if (HAS_BIT(gtd->ses->config_flags, CONFIG_FLAG_CONVERTMETA) || gtd->level->convert)
 	{
 		convert_meta(input, &gtd->macro_buf[strlen(gtd->macro_buf)], FALSE);

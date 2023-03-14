@@ -776,6 +776,7 @@ struct event_type event_table[] =
 	{    "CLASS CREATED",                          0, EVENT_FLAG_CLASS,    "CLASS",     "class creation"             },
 	{    "CLASS DEACTIVATED",                      0, EVENT_FLAG_CLASS,    "CLASS",     "class deactivations"        },
 	{    "CLASS DESTROYED",                        0, EVENT_FLAG_CLASS,    "CLASS",     "class destruction"          },
+	{    "CONFIG",                                 0, EVENT_FLAG_SYSTEM,   "SYSTEM",    "config change"              },
 	{    "DAEMON ATTACH TIMEOUT",                  0, EVENT_FLAG_SYSTEM,   "SYSTEM",    "daemon attachment timeout"  },
 	{    "DAEMON ATTACHED",                        0, EVENT_FLAG_SYSTEM,   "SYSTEM",    "daemon attachment"          },
 	{    "DAEMON DETACHED",                        0, EVENT_FLAG_SYSTEM,   "SYSTEM",    "daemon detachment"          },

@@ -1,5 +1,14 @@
 Jan 2023        2.02.31
 ------------------------------------------------------------------------------
+config.c        Added the CONFIG event which triggers when a config option is
+                set. %0 holds the option name, and %1 the value set.
+
+mapper.c        When saving #map list to a table the vnum is now automatically
+                included.
+
+data.c          Added #info output which can be used to access the most recent
+                data received from the mud.
+
 config.c        Hybernate is now hibernate. Let's pretend that never happened.
 
 config.c        Added #config hibernate on/off. When enabled it will reduce

@@ -459,8 +459,10 @@ void init_tintin(int greeting)
 	gtd->mccp_len       = 10000;
 	gtd->mccp_buf       = (unsigned char *) calloc(1, gtd->mccp_len);
 
-	gtd->mud_output_max = 65536;
+	gtd->mud_output_max = 16384;
 	gtd->mud_output_buf = (char *) calloc(1, gtd->mud_output_max);
+	gtd->mud_output_strip_buf = (char *) calloc(1, gtd->mud_output_max);
+	gtd->mud_output_line = gtd->mud_output_buf;
 
 	// WSL: /proc/sys/kernel/osrelease
 
