@@ -158,18 +158,19 @@ struct config_type config_table[] =
 	},
 
 	{
+		"HIBERNATE",
+		"Go into low CPU usage mode",
+		"",
+		config_hibernate
+	},
+
+	{
 		"HISTORY SIZE",
 		"The size of the command history",
 		"",
 		config_historysize
 	},
 
-	{
-		"HIBERNATE",
-		"Go into low CPU usage mode",
-		"",
-		config_hibernate
-	},
 	{
 		"INHERITANCE",
 		"The startup session is inherited",

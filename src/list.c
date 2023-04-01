@@ -49,6 +49,7 @@ extern DO_ARRAY(array_shuffle);
 extern DO_ARRAY(array_simplify);
 extern DO_ARRAY(array_size);
 extern DO_ARRAY(array_sort);
+extern DO_ARRAY(array_swap);
 extern DO_ARRAY(array_tokenize);
 
 typedef struct session *ARRAY(struct session *ses, struct listnode *list, char *arg, char *var, char *arg1, char *arg2);
@@ -86,6 +87,7 @@ struct array_type array_table[] =
 	{     "SIZE",             array_size,        NULL                                      },
 	{     "SORT",             array_sort,        "Sort a list table alphabetically"        },
 	{     "SRT",              array_sort,        NULL                                      },
+	{     "SWAP",             array_swap,        "Swap two list items"                     },
 	{     "TOKENIZE",         array_tokenize,    "Create a list with given characters"     },
 	{     "",                 NULL,              ""                                        }
 };
@@ -978,6 +980,35 @@ DO_ARRAY(array_sort)
 			free(arg2_buffer);
 		}
 	}
+	return ses;
+}
+
+DO_ARRAY(array_swap)
+{
+	char *swap;
+	int index1, index2;
+
+	arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
+	arg = sub_arg_in_braces(ses, arg, arg2, GET_ALL, SUB_VAR|SUB_FUN);
+
+	if (list->root)
+	{
+		index1 = get_list_index(ses, list->root, arg1);
+		index2 = get_list_index(ses, list->root, arg2);
+
+		if (index1 == -1 || index2 == -1)
+		{
+			show_error(ses, LIST_VARIABLE, "#LIST {%s} SWAP: Invalid index: %s, %s", var, arg1, arg2);
+
+			return ses;
+		}
+		swap = list->root->list[index1]->arg2; list->root->list[index1]->arg2 = list->root->list[index2]->arg2; list->root->list[index2]->arg2 = swap;
+
+		return ses;
+	}
+
+	show_error(ses, LIST_VARIABLE, "#LIST SWAP: {%s} is not a list.", var);
+
 	return ses;
 }
 

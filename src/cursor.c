@@ -1296,7 +1296,7 @@ DO_CURSOR(cursor_flag)
 
 DO_CURSOR(cursor_get)
 {
-	char arg1[BUFFER_SIZE];
+	char arg1[BUFFER_SIZE], buf[BUFFER_SIZE];
 
 	arg = sub_arg_in_braces(ses, arg, arg1, GET_ALL, SUB_VAR|SUB_FUN);
 
@@ -1306,7 +1306,9 @@ DO_CURSOR(cursor_get)
 	}
 	else
 	{
-		set_nest_node_ses(ses, arg1, "%s", gtd->ses->input->buf);
+		substitute(ses, gtd->ses->input->buf, buf, SUB_SEC);
+
+		set_nest_node_ses(ses, arg1, "%s", buf);
 	}
 }
 

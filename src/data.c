@@ -1647,7 +1647,7 @@ DO_COMMAND(do_info)
 					if (is_abbrev(arg2, "SAVE"))
 					{
 						set_nest_node_ses(ses, "info[OUTPUT]", "{RAWBUF}{%s}", gtd->mud_output_buf);
-						add_nest_node_ses(ses, "info[OUTPUT]", "{RAWLEN}{%s}", gtd->mud_output_len);
+						add_nest_node_ses(ses, "info[OUTPUT]", "{RAWLEN}{%d}", gtd->mud_output_len);
 						add_nest_node_ses(ses, "info[OUTPUT]", "{STRBUF}{%s}", gtd->mud_output_strip_buf);
 						add_nest_node_ses(ses, "info[OUTPUT]", "{STRLEN}{%d}", gtd->mud_output_strip_len);
 						add_nest_node_ses(ses, "info[OUTPUT]", "{LINE}{%s}",   gtd->mud_output_line);

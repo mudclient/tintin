@@ -569,7 +569,6 @@ char *str_mov(char **str, int dst, int src)
 	return *str;
 }
 
-
 void str_alloc_free(struct str_data *str_ptr)
 {
 	if (HAS_BIT(str_ptr->flags, STR_FLAG_STACK|STR_FLAG_FREE))
@@ -660,9 +659,7 @@ struct str_data *str_alloc_list(int size)
 
 	if (gtd->memory->free_len)
 	{
-		int index;
-
-		index = gtd->memory->free[--gtd->memory->free_len];
+		int index = gtd->memory->free[--gtd->memory->free_len];
 
 		str_ptr = gtd->memory->list[index];
 

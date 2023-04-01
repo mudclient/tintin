@@ -1,5 +1,11 @@
+Mar 2023        2.02.32
+------------------------------------------------------------------------------
+list.c          Added #list swap <index1> <index2> to swap two list items.
+
 Jan 2023        2.02.31
 ------------------------------------------------------------------------------
+cursor.c        #cursor {get} will escape braces and other special characters.
+
 config.c        Added the CONFIG event which triggers when a config option is
                 set. %0 holds the option name, and %1 the value set.
 
