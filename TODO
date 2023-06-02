@@ -1,22 +1,14 @@
-#info mem
-#INFO MEMORY: STACK SIZE: 1800045
-#INFO MEMORY: STACK  MAX: 64
-#INFO MEMORY: STACK  CAP: 45
-#INFO MEMORY: STACK  LEN: 3
+- map_mouse_handler crash, make sure it's not threaded
 
-#ERROR: index 386297 len = 1/0 max = 5706 flags = 6 (e)
-#INFO MEMORY: ALLOC SIZE: 17963354
-#INFO MEMORY: ALLOC USED: 13862779
-#INFO MEMORY: ALLOC  MAX: 1048576
-#INFO MEMORY: ALLOC  LEN: 547640
+- add example to #help if of using regex
 
-#INFO MEMORY: FREED SIZE: 1626853344
-#INFO MEMORY: FREED  MAX: 1048576
-#INFO MEMORY: FREED  LEN: 546481
+- crash: #math t {{42} > 42}
 
-#INFO MEMORY: DEBUG SIZE: 1024
-#INFO MEMORY: DEBUG  MAX: 48
-#INFO MEMORY: DEBUG  LEN: 4
+- look into GMCP larger than buffer size
+
+- Add warning for #read file.map
+
+- #map set roomnote causes issues when adding \n
 
 - #var foo {x;{a;b;c};y;z}
   #list foo create {$foo}

@@ -2069,7 +2069,7 @@ struct help_type help_table[] =
 	{
 		"IF",
 		TOKEN_TYPE_COMMAND,
-		"<178>Command<278>: #if <178>{<278>conditional<178>} {<278>commands if true<178>}\n"
+		"<178>Command<278>: #if <178>{<278>conditional<178>} {<278>commands if true<178>} {<278>commands if false<178>}\n"
 		"\n"
 		"<278>         The #if command works similar to an if statement in other languages,\n"
 		"<278>         and is based on the way C handles its conditional statements.\n"
@@ -2081,7 +2081,8 @@ struct help_type help_table[] =
 		"<278>         executed. See the 'math' helpfile for more information.\n"
 		"\n"
 		"<278>         To handle the case where an if statement is false it can be followed\n"
-		"<278>         by the #else command.\n"
+		"<278>         by the #else command. Alternatively, the else can be provided as the\n"
+		"<278>         third argument.\n"
 		"\n"
 		"<178>Example<278>: #action {%0 gives you %1 gold coins.} {#if {%1 > 5000} {thank %0}}\n"
 		"<278>         If someone gives you more than 5000 coins, thank them.\n"
@@ -2525,7 +2526,7 @@ struct help_type help_table[] =
 		"<278>         <178>#line background <argument>\n"
 		"<278>           Prevent new session activation.\n"
 		"\n"
-		"<278>         <178>#line capture <variable> <argument.\n"
+		"<278>         <178>#line capture <variable> <argument>\n"
 		"<278>           Argument is executed and output stored in <variable>.\n"
 		"\n"
 		"<278>         <178>#line convert <argument>\n"

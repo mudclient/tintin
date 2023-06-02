@@ -2411,6 +2411,8 @@ int spatialgrid_find(struct session *ses, int from, int x, int y, int z)
 
 void get_vtmap_dimensions(struct session *ses, int *top_row, int *top_col, int *bot_row, int *bot_col, int *rows, int *cols)
 {
+	push_call("get_vtmap_dimensions(%p,%p,%p,%p,%p,%p,%p)",ses,top_row,top_col,bot_row,bot_col,rows,cols);
+
 	if (HAS_BIT(ses->map->flags, MAP_FLAG_RESIZE))
 	{
 		DEL_BIT(ses->map->flags, MAP_FLAG_RESIZE);
@@ -2438,6 +2440,8 @@ void get_vtmap_dimensions(struct session *ses, int *top_row, int *top_col, int *
 		*rows    = *bot_row;
 		*cols    = *bot_col;
 	}
+	pop_call();
+	return;
 }
 
 void show_vtmap(struct session *ses, int clear)
