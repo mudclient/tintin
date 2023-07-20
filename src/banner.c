@@ -103,6 +103,23 @@ void banner_expires(struct session *ses, char *name, char *arg, char *arg1)
 
 void banner_init(struct session *ses, char *arg1)
 {
+	banner_create(ses, "Armageddon", arg1);
+
+	banner_desc(ses, "Armageddon",
+		"Armageddon MUD is set in the brutal post-apocalyptic world of Zalanthas.\n"
+		"Emphasizing roleplay over combat, the game offers a rich, immersive experience.\n"
+		"Zalanthas is ruled by sorcerer-kings and their powerful Templarate, dominating\n"
+		"the twin cities of Allanak and Tuluk. Magic not sanctioned by these rulers is\n"
+		"feared and often met with fatal consequences. Survival is a constant struggle\n"
+		"in this harsh environment, and death is permanent. Armageddon MUD delivers a\n"
+		"distinctive roleplaying adventure, with a dedicated community of players and\n"
+		"staff actively shaping the ongoing Zalanthan narrative for over three decades.", arg1);
+
+	banner_website(ses, "Armageddon", "https://armageddon.org", arg1);
+	banner_address(ses, "Armageddon", "arm armageddon.org 4050", arg1);
+	banner_expires(ses, "Armageddon", "2030", arg1);
+
+
 	banner_create(ses, "Lost Souls", arg1);
 
 	banner_desc(ses, "Lost Souls",

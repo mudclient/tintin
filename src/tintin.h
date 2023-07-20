@@ -2998,7 +2998,7 @@ extern int get_utf8_index(char *str, int *index);
 extern int unicode_to_utf8(int index, char *out);
 extern int utf8_strlen(char *str, int *width);
 
-extern int utf8_to_all(struct session *ses, char *in, char *out);
+extern int utf8_to_all(struct session *ses, char *in, char *out, int size);
 extern int all_to_utf8(struct session *ses, char *in, char *out);
 extern int cp1251_to_utf8(char *input, char *output);
 extern int utf8_to_cp1251(char *input, char *output);
@@ -3017,7 +3017,7 @@ extern int big5_to_utf8(char *input, char *output);
 extern int utf8_to_big5(char *input, char *output);
 extern int is_gbk1(char *str);
 extern int gbk1_to_utf8(char *input, char *output);
-extern int utf8_to_gbk1(char *input, char *output);
+extern int utf8_to_gbk1(char *input, char *output, int length);
 extern int is_cp949(char *str);
 extern int cp949_to_utf8(char *input, char *output);
 extern int utf8_to_cp949(char *input, char *output);

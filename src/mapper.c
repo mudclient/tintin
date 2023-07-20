@@ -372,7 +372,7 @@ struct room_data *create_room(struct session *ses, char *format, ...)
 		ses->map->room_list[newroom->vnum] = newroom;
 	}
 
-	if (!HAS_BIT(ses->map->flags, MAP_FLAG_READ))
+	if (!HAS_BIT(ses->map->flags, MAP_FLAG_READ) && newroom->vnum)
 	{
 		show_message(ses, LIST_PATH, "#MAP CREATE ROOM %5d {%s}.", newroom->vnum, newroom->name);
 
@@ -5159,7 +5159,7 @@ void map_mouse_handler(struct session *ses, char *arg1, char *arg2, int row, int
 	int x, y, max_x, max_y;
 	int top_row, top_col, bot_row, bot_col, rows, cols, char_height, vnum = 0;
 
-	push_call("map_mouse_handler(%p,%p,%p,%d,%d)",ses,arg1,arg2,row,col);
+	push_call_printf("map_mouse_handler(%p,%p,%p,%d,%d,%d,%d,%d,%d)",ses,arg1,arg2,row,col,rev_row,rev_col,height,width);
 
 	if (ses->map == NULL || !HAS_BIT(ses->map->flags, MAP_FLAG_VTMAP) || ses->map->room_list[ses->map->in_room] == NULL)
 	{

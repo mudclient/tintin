@@ -322,7 +322,7 @@ void write_line_mud(struct session *ses, char *line, int size)
 	{
 		char buf[BUFFER_SIZE];
 
-		size = utf8_to_all(ses, line, buf);
+		size = utf8_to_all(ses, line, buf, size);
 
 		memcpy(line, buf, size);
 
