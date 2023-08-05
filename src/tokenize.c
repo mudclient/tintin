@@ -109,6 +109,7 @@ void debugtoken(struct session *ses, struct scriptroot *root, struct scriptnode 
 			case TOKEN_TYPE_CASE:
 			case TOKEN_TYPE_ELSEIF:
 			case TOKEN_TYPE_IF:
+			case TOKEN_TYPE_MATCH:
 			case TOKEN_TYPE_WHILE:
 				show_debug(ses, root->list, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}\e[0m", indent(token->lvl + 1), gtd->tintin_char, command_table[token->cmd].name, token->str);
 				break;
@@ -425,6 +426,7 @@ void deltoken(struct scriptroot *root, struct scriptnode *token)
 
 	switch (token->type)
 	{
+		case TOKEN_TYPE_MATCH:
 		case TOKEN_TYPE_REGEX:
 			free(token->regex->str);
 			free(token->regex->bod);
@@ -689,6 +691,31 @@ void tokenize_script(struct scriptroot *root, int lvl, char *str)
 							show_error(root->ses, LIST_COMMAND, "#SYNTAX: #LOOP <START> <END> <COMMANDS>");
 						}
 						addtoken(root, lvl, TOKEN_TYPE_END, -1, "endloop");
+						break;
+
+					case TOKEN_TYPE_MATCH:
+						{
+							struct script_regex *regex;
+
+							regex = (struct script_regex *) calloc(1, sizeof(struct script_regex));
+
+							str = get_arg_in_braces(root->ses, arg, line, GET_ONE);
+							regex->str = strdup(line);
+							str = get_arg_in_braces(root->ses, str, line, GET_ALL);
+							regex->bod = strdup(line);
+							regex->buf = calloc(1, BUFFER_SIZE);
+
+							addtoken(root, lvl, TOKEN_TYPE_MATCH, cmd, strdup(regex->str));
+							root->prev->regex = regex;
+
+							if (*line == 0)
+							{
+								show_error(root->ses, LIST_COMMAND, "#SYNTAX: #MATCH <REGEX> <BLOCK>");
+							}
+
+                            addtoken(root, lvl, TOKEN_TYPE_END, -1, "endmatch");
+						}
+
 						break;
 
 					case TOKEN_TYPE_PARSE:
@@ -1013,6 +1040,26 @@ struct scriptnode *parse_script(struct scriptroot *root, int lvl, struct scriptn
 
 				continue;
 
+			case TOKEN_TYPE_MATCH:
+				if (shift->data && find(root->ses, shift->data->str, token->str, SUB_VAR|SUB_FUN, REGEX_FLAG_CMD))
+				{
+					substitute(root->ses, token->regex->bod, token->regex->buf, SUB_CMD);
+					root->ses = script_driver(root->ses, LIST_COMMAND, token->regex->buf);
+					while (token && token->lvl >= lvl)
+					{
+						token = token->next;
+					}
+				}
+				else
+				{
+					do
+					{
+						token = token->next;
+					}
+					while (token && token->lvl > lvl);
+				}
+				continue;
+
 			case TOKEN_TYPE_PARSE:
 				if (*token->data->arg == 0)
 				{
@@ -1177,6 +1224,7 @@ char *write_script(struct session *ses, struct scriptroot *root)
 			case TOKEN_TYPE_CASE:
 			case TOKEN_TYPE_ELSEIF:
 			case TOKEN_TYPE_IF:
+			case TOKEN_TYPE_MATCH:
 			case TOKEN_TYPE_WHILE:
 				cat_sprintf(buf, "%s%c%s {%s}\n%s{\n", indent(token->lvl), gtd->tintin_char, command_table[token->cmd].name, token->str, indent(token->lvl));
 				break;
@@ -1275,6 +1323,7 @@ char *view_script(struct session *ses, struct scriptroot *root)
 			case TOKEN_TYPE_CASE:
 			case TOKEN_TYPE_ELSEIF:
 			case TOKEN_TYPE_IF:
+			case TOKEN_TYPE_MATCH:
 			case TOKEN_TYPE_WHILE:
 				cat_sprintf(buf, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}" COLOR_STRING "\n%s" COLOR_BRACE "{\n", indent(token->lvl), gtd->tintin_char, command_table[token->cmd].name, token->str, indent(token->lvl));
 				break;
