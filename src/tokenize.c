@@ -109,6 +109,7 @@ void debugtoken(struct session *ses, struct scriptroot *root, struct scriptnode 
 			case TOKEN_TYPE_CASE:
 			case TOKEN_TYPE_ELSEIF:
 			case TOKEN_TYPE_IF:
+			case TOKEN_TYPE_MATCH:
 			case TOKEN_TYPE_WHILE:
 				show_debug(ses, root->list, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}\e[0m", indent(token->lvl + 1), gtd->tintin_char, command_table[token->cmd].name, token->str);
 				break;
@@ -682,6 +683,16 @@ void tokenize_script(struct scriptroot *root, int lvl, char *str)
 						addtoken(root, lvl, TOKEN_TYPE_END, -1, "endloop");
 						break;
 
+					case TOKEN_TYPE_MATCH:
+						str = get_arg_in_braces(root->ses, arg, line, GET_ONE);
+						addtoken(root, lvl++, TOKEN_TYPE_MATCH, cmd, line);
+
+						str = get_arg_in_braces(root->ses, str, line, GET_ALL);
+						tokenize_script(root, lvl--, line);
+
+						addtoken(root, lvl, TOKEN_TYPE_END, -1, "endmatch");
+						break;
+
 					case TOKEN_TYPE_PARSE:
 						str = addparsetoken(root, lvl++, TOKEN_TYPE_PARSE, cmd, arg);
 
@@ -1005,6 +1016,37 @@ struct scriptnode *parse_script(struct scriptroot *root, int lvl, struct scriptn
 
 				continue;
 
+			case TOKEN_TYPE_MATCH:
+                if (shift->data && find(root->ses, shift->data->str, token->str, SUB_VAR|SUB_FUN, REGEX_FLAG_CMD))
+				{
+                    struct scriptnode *body;
+
+                    body = token->next;
+                    while (body && body->lvl > token->lvl)
+                    {
+                        substitute(root->ses, body->str, body->str, SUB_CMD);
+                        body = body->next;
+                    }
+
+					token = token->next;
+
+					token = parse_script(root, lvl + 1, token, shift);
+
+					while (token && token->lvl >= lvl)
+					{
+						token = token->next;
+					}
+				}
+				else
+				{
+					do
+					{
+						token = token->next;
+					}
+					while (token && token->lvl > lvl);
+				}
+				continue;
+
 			case TOKEN_TYPE_PARSE:
 				if (*token->data->arg == 0)
 				{
@@ -1169,6 +1211,7 @@ char *write_script(struct session *ses, struct scriptroot *root)
 			case TOKEN_TYPE_CASE:
 			case TOKEN_TYPE_ELSEIF:
 			case TOKEN_TYPE_IF:
+			case TOKEN_TYPE_MATCH:
 			case TOKEN_TYPE_WHILE:
 				cat_sprintf(buf, "%s%c%s {%s}\n%s{\n", indent(token->lvl), gtd->tintin_char, command_table[token->cmd].name, token->str, indent(token->lvl));
 				break;
@@ -1267,6 +1310,7 @@ char *view_script(struct session *ses, struct scriptroot *root)
 			case TOKEN_TYPE_CASE:
 			case TOKEN_TYPE_ELSEIF:
 			case TOKEN_TYPE_IF:
+			case TOKEN_TYPE_MATCH:
 			case TOKEN_TYPE_WHILE:
 				cat_sprintf(buf, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}" COLOR_STRING "\n%s" COLOR_BRACE "{\n", indent(token->lvl), gtd->tintin_char, command_table[token->cmd].name, token->str, indent(token->lvl));
 				break;
