@@ -811,7 +811,7 @@ struct help_type help_table[] =
 		"<278>         This function returns the reverse direction. @reverse_direction{north}\n"
 		"<278>         would return south.\n"
 		,
-		"default statements switch"
+		"default match statements switch"
 	},
 	{
 		"CAT",
@@ -1229,7 +1229,7 @@ struct help_type help_table[] =
 		"<278>         the conditional argument of non of the case commands matches the switch\n"
 		"<278>         command's conditional statement the default command is executed.\n",
 		
-		"case default else elseif if switch regexp"
+		"case default else elseif if match switch regexp"
 	},
 	{
 		"DELAY",
@@ -3555,6 +3555,33 @@ struct help_type help_table[] =
 	},
 
 	{
+		"MATCH",
+		TOKEN_TYPE_STATEMENT,
+		"<178>Command<278>: #match <178>{<278>regex<178>} {<278>commands<178>}\n"
+		"\n"
+		"<278>         The #match command must be used within the #switch command. It works\n"
+		"<278>         much like #case, the only difference is that #match will prepare the\n"
+		"<278>         capture group in the regex for commands.\n"
+		"\n"
+		"<178>Example<278>:\n"
+		"\n"
+		"<278>         #function {get_room_exits}\n"
+		"<278>         {\n"
+		"<278>             #switch {\"%1\"}\n"
+		"<278>             {\n"
+		"<278>                 #match {\"Here the obvious exits are %*\"} {#return &1};\n"
+		"<278>                 #match {\"Here the only exit is %*\"}  {#return &1};\n"
+		"<278>                 #match {\"The exits here are %* and %*\"} {#return {&1;&2}};\n"
+		"<278>             }\n"
+		"<278>         }\n"
+		"\n"
+		"<278>         This function can extract exit information from several different\n"
+		"<278>         room exit descriptions.\n"
+		,
+		"case default regexp statements switch"
+    },
+
+	{
 		"MATH",
 		TOKEN_TYPE_COMMAND,
 		"<178>Command<278>: #math <178>{<278>variable<178>} {<278>expression<178>}\n"
@@ -4789,6 +4816,7 @@ struct help_type help_table[] =
 		"<278>         #foreach {list} {variable} {commands}\n"
 		"<278>         #if {expression} {true}\n"
 		"<278>         #loop {min} {max} {variable} {commands}\n"
+		"<278>         #match {regex} {commands}\n"
 		"<278>         #parse {string} {variable} {commands}\n"
 		"<278>         #return {value}\n"
 		"<278>         #switch {expression} {commands}\n"
