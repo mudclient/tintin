@@ -552,6 +552,14 @@ int process_port_input(struct session *ses, struct port_data *buddy)
 
 		input[size] = 0;
 
+		check_all_events(ses, SUB_SEC|EVENT_FLAG_PORT, 0, 5, "PORT RECEIVED DATA", buddy->name, buddy->ip, ntos(buddy->port), input, ntos(size));
+
+		if (!check_all_events(ses, SUB_SEC|EVENT_FLAG_CATCH, 0, 5, "CATCH PORT RECEIVED DATA", buddy->name, buddy->ip, ntos(buddy->port), input, ntos(size)))
+		{
+			pop_call();
+			return 0;
+		}
+
 		echo = buddy->intop;
 
 		buddy->intop += server_translate_telopts(ses, buddy, (unsigned char *) input, size, (unsigned char *) buddy->inbuf, buddy->intop);

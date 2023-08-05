@@ -499,10 +499,13 @@ struct exit_data *create_exit(struct session *ses, int vnum, char *format, ...)
 
 	SET_BIT(room->exit_dirs, (1LL << newexit->dir));
 
-	if (!HAS_BIT(ses->map->flags, MAP_FLAG_READ))
+	if (gtd->level->debug || !HAS_BIT(ses->map->flags, MAP_FLAG_READ))
 	{
 		show_message(ses, LIST_PATH, "#MAP CREATE EXIT {%s} {%s} TO ROOM %d.", newexit->name, newexit->cmd, newexit->vnum);
+	}
 
+	if (!HAS_BIT(ses->map->flags, MAP_FLAG_READ))
+	{
 		check_all_events(ses, EVENT_FLAG_MAP, 0, 4, "MAP CREATE EXIT", ntos(room->vnum), newexit->name,newexit->cmd, ntos(newexit->vnum));
 	}
 	pop_call();

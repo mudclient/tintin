@@ -276,6 +276,12 @@ int server_translate_telopts(struct session *ses, struct port_data *buddy, unsig
 		switch (*pti)
 		{
 			case IAC:
+				if (!HAS_BIT(ses->config_flags, CONFIG_FLAG_TELNET))
+				{
+					*pto++ = *pti++;
+					srclen--;
+					break;
+				}
 				skip = 2;
 
 				debug_telopts(ses, buddy, pti, srclen);

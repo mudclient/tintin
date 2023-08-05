@@ -1714,6 +1714,7 @@ struct help_type help_table[] =
 		"<278>         <178>PORT DISCONNECTION     <278>%0 name %1 ip %2 port\n"
 		"<278>         <178>PORT LOG MESSAGE       <278>%0 name %1 ip %2 port %3 data %4 plain data\n"
 		"<278>         <178>PORT RECEIVED MESSAGE  <278>%0 name %1 ip %2 port %3 data %4 plain data\n"
+		"<278>         <178>PORT RECEIVED DATA     <278>%0 name %1 ip %2 port %3 data %4 size\n"
 		"\n"
 		"<278>         <128>SCAN EVENTS\n"
 		"\n"

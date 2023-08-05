@@ -1,3 +1,9 @@
+- Look into utf-8 chinese / utf-8 handling for %64b
+
+- Add routine to escape 0x00 in port.c RECEIVED DATA event.
+
+- allow a full telnet disable in port.c
+
 - utf8_to_gbk1 has no length argument, causing \x00 to fail.
 
 - Make direction available to #path get, and possibly forward / backward.

@@ -511,12 +511,12 @@ void tintin_printf3(struct session *ses, char *format, ...)
 	char *buffer;
 	va_list args;
 
-	push_call("tintin_printf2(%p,%p,...)",ses,format);
+	push_call("tintin_printf3(%p,%p,...)",ses,format);
 
 	va_start(args, format);
 	if (vasprintf(&buffer, format, args) == -1)
 	{
-		syserr_printf(ses, "tintin_printf2: vasprintf:");
+		syserr_printf(ses, "tintin_printf3: vasprintf:");
 
 		pop_call();
 		return;
