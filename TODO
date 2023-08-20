@@ -1,4 +1,19 @@
-- Look into utf-8 chinese / utf-8 handling for %64b
+#path new;
+s;
+#path del;
+crash
+
+- #echo bla\\
+
+- Make ctrl-v <paste> ctrl-enter handle multi-line scripts.
+
+- Look into #split 0 1 0 -70 and resize
+
+- When a undefined class is killed,The event "CLASS CREATED" would trigged
+
+- millisecond precision in #log timestamp
+
+- Look into #end in SESSION DISCONNECTED
 
 - Add routine to escape 0x00 in port.c RECEIVED DATA event.
 

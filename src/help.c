@@ -3798,7 +3798,9 @@ struct help_type help_table[] =
 		"<278>         you need to use \\e]68;2;\\a, and they instead trigger the SECURE LINK\n"
 		"<278>         event.\n"
 		"\n"
-		"<178>Example<278>: #sub {%* tells %*} {\\e]68;2;EXEC;#cursor set tell %1 \\a\\e[4m%0\\e[24m}\n"
+		"<278>         To creae a link that is not undelined, use \\e]4;24m text \\e]24m.\n"
+		"\n"
+		"<178>Example<278>: #sub {%* tells %*} {\\e]68;2;EXEC;#cursor set tell %1 \\a\\e[4;24m%0\\e[24m}\n"
 		"<178>       <278>  #event {PRESSED SECURE LINK EXEC MOUSE BUTTON ONE} {%4}\n"
 		"\n"
 		"<278>         This would make you start a reply when clicking on a tell.\n"
@@ -4293,8 +4295,8 @@ struct help_type help_table[] =
 		TOKEN_TYPE_STRING,
 		"<178>Command<278>: #<178>[<078>number<178>] {<278>commands<178>}\n"
 		"\n"
-		"        Sometimes you want to repeat the same command multiple times. This is\n"
-		"        the easiest way to accomplish that.\n"
+		"<278>        Sometimes you want to repeat the same command multiple times. This is\n"
+		"<278>        the easiest way to accomplish that.\n"
 		"\n"
 		"<178>Example<278>: #10 {buy bread}\n",
 		

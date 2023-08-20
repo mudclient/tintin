@@ -500,16 +500,12 @@ DO_PATH(path_delete)
 
 		delete_index_list(root, root->used - 1);
 
-		if (root->update >= root->used)
-		{
-			root->update--;
-		}
+		root->update = URANGE(0, root->update, root->used);
 	}
 	else
 	{
 		tintin_printf(ses, "#PATH DELETE: NO MOVES LEFT.");
 	}
-
 }
 
 DO_PATH(path_insert)
