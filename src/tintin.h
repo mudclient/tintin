@@ -774,6 +774,7 @@ enum operators
 #define MAP_FLAG_READ                 BV18
 #define MAP_FLAG_PANCAKE              BV19
 #define MAP_FLAG_FAST                 BV20
+#define MAP_FLAG_AUTOLINK             BV21
 
 #define MAP_SEARCH_NAME                0
 #define MAP_SEARCH_EXITS               1

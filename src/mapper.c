@@ -177,7 +177,7 @@ void create_map(struct session *ses, char *arg, int flags)
 	ses->map->search->note    = create_node("", "", "", "");
 	ses->map->search->terrain = create_node("", "", "", "");
 
-	ses->map->flags = MAP_FLAG_ASCIIGRAPHICS|MAP_FLAG_DIRECTION|MAP_FLAG_TERRAIN | flags;
+	ses->map->flags = MAP_FLAG_ASCIIGRAPHICS|MAP_FLAG_DIRECTION|MAP_FLAG_TERRAIN|MAP_FLAG_AUTOLINK | flags;
 
 	ses->map->global_exit         = (struct exit_data *) calloc(1, sizeof(struct exit_data));
 	ses->map->global_exit->vnum   = ses->map->global_vnum;
@@ -3823,13 +3823,6 @@ void search_keywords(struct session *ses, char *arg, char *out, char *var)
 		else if (!strcasecmp(arg1, "roomdesc"))
 		{
 			arg = sub_arg_in_braces(ses, arg, buf[MAP_SEARCH_DESC], GET_ALL, SUB_VAR|SUB_FUN);
-
-			str = buf[MAP_SEARCH_DESC];
-
-			while ((str = strchr(str, '\n')))
-			{
-				*str = ' ';
-			}
 		}
 		else if (!strcasecmp(arg1, "roomarea"))
 		{
@@ -3858,6 +3851,16 @@ void search_keywords(struct session *ses, char *arg, char *out, char *var)
 		else
 		{
 			strcpy(buf[type++], arg1);
+		}
+	}
+
+	if (buf[MAP_SEARCH_DESC])
+	{
+		str = buf[MAP_SEARCH_DESC];
+
+		while ((str = strchr(str, '\n')))
+		{
+			*str = ' ';
 		}
 	}
 
@@ -6112,6 +6115,10 @@ DO_MAP(map_flag)
 			flag   = MAP_FLAG_ASCIIVNUMS;
 			unflag = MAP_FLAG_ASCIILENGTH|MAP_FLAG_MUDFONT|MAP_FLAG_UNICODEGRAPHICS|MAP_FLAG_BLOCKGRAPHICS;
 		}
+		else if (is_abbrev(arg1, "autolink"))
+		{
+			flag   = MAP_FLAG_AUTOLINK;
+		}
 		else if (is_abbrev(arg1, "blockgraphics"))
 		{
 			flag = MAP_FLAG_BLOCKGRAPHICS;
@@ -6183,6 +6190,7 @@ DO_MAP(map_flag)
 	{
 		tintin_printf2(ses, "#MAP: AsciiGraphics flag is set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_ASCIIGRAPHICS) ? "ON" : "OFF");
 		tintin_printf2(ses, "#MAP: AsciiVnums flag is set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_ASCIIVNUMS) ? "ON" : "OFF");
+		tintin_printf2(ses, "#MAP: AutoLink flag is set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_AUTOLINK) ? "ON" : "OFF");
 		tintin_printf2(ses, "#MAP: BlockGraphics flag is set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_BLOCKGRAPHICS) ? "ON" : "OFF");
 		tintin_printf2(ses, "#MAP: Direction flag is set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_DIRECTION) ? "ON" : "OFF");
 		tintin_printf2(ses, "#MAP: Fast flag is set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_FAST) ? "ON" : "OFF");
@@ -6225,6 +6233,10 @@ DO_MAP(map_flag)
 	else if (is_abbrev(arg1, "asciivnums"))
 	{
 		show_message(ses, LIST_COMMAND, "#MAP: AsciiVnums flag set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_ASCIIVNUMS) ? "ON" : "OFF");
+	}
+	else if (is_abbrev(arg1, "autolink"))
+	{
+		show_message(ses, LIST_COMMAND, "#MAP: AutoLink flag is set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_AUTOLINK) ? "ON" : "OFF");
 	}
 	else if (is_abbrev(arg1, "direction"))
 	{
@@ -6274,8 +6286,6 @@ DO_MAP(map_flag)
 	{
 		show_message(ses, LIST_COMMAND, "#MAP: VTmap flag set to %s.", HAS_BIT(ses->map->flags, MAP_FLAG_VTMAP) ? "ON" : "OFF");
 	}
-
-
 }
 
 DO_MAP(map_get)
@@ -6285,7 +6295,7 @@ DO_MAP(map_get)
 	char exits[BUFFER_SIZE];
 
 	arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
-	arg = sub_arg_in_braces(ses, arg, arg2, GET_ALL, SUB_VAR|SUB_FUN);
+	arg = sub_arg_in_braces(ses, arg, arg2, GET_ONE, SUB_VAR|SUB_FUN);
 	arg = sub_arg_in_braces(ses, arg, arg3, GET_ALL, SUB_VAR|SUB_FUN);
 
 	if (*arg3)
@@ -6531,10 +6541,11 @@ DO_MAP(map_info)
 	{
 		set_nest_node_ses(ses, "info[map]", "{DIRECTION}{%d}", ses->map->dir);
 		add_nest_node_ses(ses, "info[map]", "{EXITS}{%d}", exits);
-		add_nest_node_ses(ses, "info[map]", "{FLAGS}{{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}}",
+		add_nest_node_ses(ses, "info[map]", "{FLAGS}{{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}}",
 			"ASCIIGRAPHICS", HAS_BIT(ses->map->flags, MAP_FLAG_ASCIIGRAPHICS) != 0,
 			"ASCIILENGTH", HAS_BIT(ses->map->flags, MAP_FLAG_ASCIILENGTH) != 0,
 			"ASCIIVNUMS", HAS_BIT(ses->map->flags, MAP_FLAG_ASCIIVNUMS) != 0,
+			"AUTOLINK", HAS_BIT(ses->map->flags, MAP_FLAG_AUTOLINK) != 0,
 			"BLOCKGRAPHICS", HAS_BIT(ses->map->flags, MAP_FLAG_BLOCKGRAPHICS) != 0,
 			"DIRECTION", HAS_BIT(ses->map->flags, MAP_FLAG_DIRECTION) != 0,
 			"MUDFONT", HAS_BIT(ses->map->flags, MAP_FLAG_MUDFONT) != 0,
@@ -6562,18 +6573,19 @@ DO_MAP(map_info)
 	tintin_puts2(ses, arg1);
 
 	strcpy(arg1, "");
+	cat_sprintf(arg1, " %+16s %-7s", "AutoLink:",   HAS_BIT(ses->map->flags, MAP_FLAG_AUTOLINK) ? "on" : "off");
 	cat_sprintf(arg1, " %+16s %-7s", "BlockGraphics:", HAS_BIT(ses->map->flags, MAP_FLAG_BLOCKGRAPHICS) ? "on" : "off");
 	cat_sprintf(arg1, " %+16s %-7s", "Direction:", HAS_BIT(ses->map->flags, MAP_FLAG_DIRECTION) ? "on" : "off");
-	cat_sprintf(arg1, " %+16s %-7s", "MudFont:", HAS_BIT(ses->map->flags, MAP_FLAG_MUDFONT) ? "on" : "off");
 	tintin_puts2(ses, arg1);
 
 	strcpy(arg1, "");
+	cat_sprintf(arg1, " %+16s %-7s", "MudFont:", HAS_BIT(ses->map->flags, MAP_FLAG_MUDFONT) ? "on" : "off");
 	cat_sprintf(arg1, " %+16s %-7s", "Nofollow:", HAS_BIT(ses->map->flags, MAP_FLAG_NOFOLLOW) ? "on" : "off");
 	cat_sprintf(arg1, " %+16s %-7s", "Static:", HAS_BIT(ses->map->flags, MAP_FLAG_STATIC) ? "on" : "off");
-	cat_sprintf(arg1, " %+16s %-7s", "SymbolGraphics:", HAS_BIT(ses->map->flags, MAP_FLAG_SYMBOLGRAPHICS) ? "on" : "off");
 	tintin_puts2(ses, arg1);
 
 	strcpy(arg1, "");
+	cat_sprintf(arg1, " %+16s %-7s", "SymbolGraphics:", HAS_BIT(ses->map->flags, MAP_FLAG_SYMBOLGRAPHICS) ? "on" : "off");
 	cat_sprintf(arg1, " %+16s %-7s", "UnicodeGraphics:", HAS_BIT(ses->map->flags, MAP_FLAG_UNICODEGRAPHICS) ? "on" : "off");
 	cat_sprintf(arg1, " %+16s %-7s", "Vtmap:", HAS_BIT(ses->map->flags, MAP_FLAG_VTMAP) ? "on" : "off");
 	tintin_puts2(ses, arg1);

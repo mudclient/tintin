@@ -2036,11 +2036,12 @@ struct help_type help_table[] =
 	{
 		"HISTORY",
 		TOKEN_TYPE_COMMAND,
-		"<178>Command<278>: #history <178>{<278>delete<178>}<278>                 Delete the last command.\n"
-		"<278>         #history <178>{<278>insert<178>}    {<278>command<178>}<278>    Insert a command.\n"
-		"<278>         #history <178>{<278>list<178>}<278>                   Display the entire command history.\n"
-		"<278>         #history <178>{<278>read<178>}      {<278>filename<178>}<278>   Read a command history from file.\n"
-		"<278>         #history <178>{<278>write<178>}     {<278>filename<178>}<278>   Write a command history to file.\n"
+		"<178>Command<278>: #history <178>{<278>delete<178>}<278>                    Delete the last command.\n"
+		"<278>         #history <178>{<278>get<178>}    {<278>variable<178>} {<278>range<178>}<278> Store list in variable.\n"
+		"<278>         #history <178>{<278>insert<178>} {<278>command<178>}<278>          Insert a command.\n"
+		"<278>         #history <178>{<278>list<178>}     <278>                 Display the command history.\n"
+		"<278>         #history <178>{<278>read<178>}   {<278>filename<178>}<278>         Read a command history from file.\n"
+		"<278>         #history <178>{<278>write<178>}  {<278>filename<178>}<278>         Write a command history to file.\n"
 		"\n"
 		"<278>         Without an argument all available options are shown.\n"
 		"\n"

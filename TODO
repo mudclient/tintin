@@ -1,3 +1,9 @@
+- Add AutoLink or NoAutoLink map flag
+
+- look into #map get {roomname} <var> <vnum> requiring extra braces
+
+- #list set doesn't support tables
+
 #path new;
 s;
 #path del;

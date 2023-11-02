@@ -250,21 +250,20 @@ int check_all_aliases(struct session *ses, char *input)
 
 				for (i = 1 ; i < 100 ; i++)
 				{
-					arg = get_arg_in_braces(ses, arg, buf, GET_ONE);
-
-					RESTRING(gtd->vars[i], buf);
-
-					gtd->varc = i + 1;
+					gtd->varc = i;
 
 					if (*arg == 0)
 					{
-						while (++i < 100)
+						while (i < 100)
 						{
-							*gtd->vars[i] = 0;
+							*gtd->vars[i++] = 0;
 						}
 						break;
 					}
 
+					arg = get_arg_in_braces(ses, arg, buf, GET_ONE);
+
+					RESTRING(gtd->vars[i], buf);
 				}
 			}
 
@@ -306,7 +305,7 @@ DO_COMMAND(do_button)
 	struct listnode *node;
 	int index;
 
-	arg = get_arg_in_braces(ses, arg, arg1, GET_ALL);
+	arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
 	arg = get_arg_in_braces(ses, arg, arg2, GET_ALL);
 	arg = get_arg_in_braces(ses, arg, arg3, GET_ALL);
 

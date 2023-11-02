@@ -254,21 +254,19 @@ DO_SCAN(scan_csv)
 
 		for (i = 1 ; i < 100 ; i++)
 		{
-			arg = get_arg_in_quotes(ses, arg, arg2, FALSE);
-
-			RESTRING(gtd->vars[i], arg2);
+			gtd->varc = i;
 
 			if (*arg == 0)
 			{
-				while (++i < 100)
+				while (i < 100)
 				{
-					if (*gtd->vars[i])
-					{
-						RESTRING(gtd->vars[i], "");
-					}
+					*gtd->vars[i++] = 0;
 				}
 				break;
 			}
+			arg = get_arg_in_quotes(ses, arg, arg2, FALSE);
+
+			RESTRING(gtd->vars[i], arg2);
 		}
 
 		if (header == FALSE)
@@ -522,21 +520,19 @@ DO_SCAN(scan_tsv)
 
 		for (i = 1 ; i < 100 ; i++)
 		{
-			arg = get_arg_stop_tabs(ses, arg, arg2, FALSE);
-
-			RESTRING(gtd->vars[i], arg2);
+			gtd->varc = i;
 
 			if (*arg == 0)
 			{
-				while (++i < 100)
+				while (i < 100)
 				{
-					if (*gtd->vars[i])
-					{
-						RESTRING(gtd->vars[i], "");
-					}
+					*gtd->vars[i++] = 0;
 				}
 				break;
 			}
+			arg = get_arg_stop_tabs(ses, arg, arg2, FALSE);
+
+			RESTRING(gtd->vars[i], arg2);
 		}
 
 		if (header == FALSE)

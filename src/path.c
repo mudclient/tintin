@@ -102,7 +102,7 @@ DO_PATH(path_start)
 {
 	if (HAS_BIT(ses->flags, SES_FLAG_PATHMAPPING))
 	{
-		show_message(ses, LIST_COMMAND, "#PATH START: ERROR: YOU ARE ALREADY MAPPING A PATH.");
+		show_message(ses, LIST_COMMAND, "#ERROR: #PATH START: YOU ARE ALREADY MAPPING A PATH.");
 	}
 	else
 	{
@@ -518,7 +518,7 @@ DO_PATH(path_insert)
 
 	if (*arg1 == 0 && *arg2 == 0)
 	{
-		show_message(ses, LIST_COMMAND, "#PATH INSERT: ERROR: YOU MUST GIVE A COMMAND TO INSERT");
+		show_message(ses, LIST_COMMAND, "#ERROR: #PATH INSERT: YOU MUST GIVE A COMMAND TO INSERT");
 	}
 	else
 	{
@@ -634,7 +634,7 @@ DO_PATH(path_swap)
 
 	if (root->used == 0)
 	{
-		show_error(ses, LIST_COMMAND, "#PATH SWAP: ERROR: PATH IS EMPTY.");
+		show_error(ses, LIST_COMMAND, "#ERROR: #PATH SWAP: PATH IS EMPTY.");
 
 		return;
 	}
@@ -865,6 +865,10 @@ DO_PATH(path_goto)
 			show_message(ses, LIST_COMMAND, "#PATH GOTO: POSITION SET TO %d.", root->update + 1);
 		}
 	}
+	else
+	{
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH GOTO <START|END>");
+	}
 }
 
 
@@ -909,6 +913,10 @@ DO_PATH(path_move)
 
 		show_message(ses, LIST_COMMAND, "#PATH MOVE: POSITION MOVED FROM %d TO %d.", last + 1, root->update + 1);
 	}
+	else
+	{
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH MOVE <BACKWARD|FORWARD>");
+	}
 }
 
 DO_PATH(path_undo)
@@ -917,21 +925,21 @@ DO_PATH(path_undo)
 
 	if (root->used == 0)
 	{
-		show_message(ses, LIST_COMMAND, "#PATH UNDO: ERROR: PATH IS EMPTY.");
+		show_message(ses, LIST_COMMAND, "#ERROR: #PATH UNDO: PATH IS EMPTY.");
 
 		return;
 	}
 
 	if (root->update != root->used)
 	{
-		show_message(ses, LIST_COMMAND, "#PATH UNDO: ERROR: YOUR POSITION IS NOT AT END OF PATH.");
+		show_message(ses, LIST_COMMAND, "#ERROR: #PATH UNDO: YOUR POSITION IS NOT AT END OF PATH.");
 	
 		return;
 	}
 
 	if (!HAS_BIT(ses->flags, SES_FLAG_PATHMAPPING))
 	{
-		show_message(ses, LIST_COMMAND, "#PATH UNDO: ERROR: YOU ARE NOT CURRENTLY MAPPING A PATH.");
+		show_message(ses, LIST_COMMAND, "#ERROR: #PATH UNDO: YOU ARE NOT CURRENTLY MAPPING A PATH.");
 
 		return;
 	}
