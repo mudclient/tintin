@@ -3731,6 +3731,9 @@ struct help_type help_table[] =
 		"\n"
 		"<278>         Links can be created using the MSLP protocol which will generate link\n"
 		"<278>         specific events when clicked.\n"
+		"\n"
+		"<278>         In order to copy/paste, most terminals require that you press the shift\n"
+		"<278>         key during selection.\n"
 		"\n",
 		
 		"button draw event MSLP"

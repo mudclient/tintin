@@ -1137,6 +1137,55 @@ DO_CURSOR(cursor_enter)
 	return;
 }
 
+DO_CURSOR(cursor_escape_enter)
+{
+	if (*gtd->ses->input->buf != 0)
+	{
+		int nest = 0;
+		char *pti = gtd->ses->input->buf;
+		char *pto = gtd->ses->input->buf;
+
+		while (*pti)
+		{
+			switch (*pti)
+			{
+				case '{':
+					nest++;
+					*pto++ = *pti++;
+					break;
+				case '}':
+					nest--;
+					*pto++ = *pti++;
+					break;
+				case '\\':
+					if (pti[1] == 'n')
+					{
+						if (pti[2] == '#' && nest == 0)
+						{
+							*pto++ = ';';
+						}
+						pti += 2;
+					}
+					else if (pti[1])
+					{
+						*pto++ = *pti++;
+						*pto++ = *pti++;
+					}
+					else
+					{
+						*pto++ = *pti++;
+					}
+					break;
+				default:
+					*pto++ = *pti++;
+					break;
+			}
+		}
+		*pto = 0;
+	}
+	cursor_enter(ses, "");
+}
+	
 DO_CURSOR(cursor_soft_enter)
 {
 	if (!inputline_editor())

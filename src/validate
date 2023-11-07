@@ -118,7 +118,28 @@
 
 #if {&{tmp} != 0}
 {
-	error 6: class or variable failure
+	error 6.1: class or variable failure
+}
+#class tmp assign #var tmp 2
+#if {$tmp != 2}
+{
+	error 6.2: class or variable failure
+}
+#class tmp save
+#class tmp clear
+#if {&{tmp} != 0}
+{
+	error 6.3: class or variable failure
+}
+#class tmp load
+#if {$tmp != 2}
+{
+	error 6.4: class or variable failure
+}
+#class tmp kill
+#if {&{tmp} != 0}
+{
+	error 6.5: class or variable failure
 }
 
 #0 )=-=( ERROR 7 )=-=( 0#

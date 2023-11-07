@@ -1,25 +1,4 @@
-- Add AutoLink or NoAutoLink map flag
-
-- look into #map get {roomname} <var> <vnum> requiring extra braces
-
-- #list set doesn't support tables
-
-#path new;
-s;
-#path del;
-crash
-
-- #echo bla\\
-
-- Make ctrl-v <paste> ctrl-enter handle multi-line scripts.
-
-- Look into #split 0 1 0 -70 and resize
-
-- When a undefined class is killed,The event "CLASS CREATED" would trigged
-
-- millisecond precision in #log timestamp
-
-- Look into #end in SESSION DISCONNECTED
+- Look into #end in SESSION DISCONNECTED not resetting terminal.
 
 - Add routine to escape 0x00 in port.c RECEIVED DATA event.
 
@@ -32,29 +11,6 @@ crash
 - Add message when a substitution exceeds available memory.
 
 - #var a $items[Rabbit Fields] crash
-
-(gdb) backtrace
-#0  __GI_raise (sig=sig@entry=6) at ../sysdeps/unix/sysv/linux/raise.c:51
-#1  0x00007ffff6a647f1 in __GI_abort () at abort.c:79
-#2  0x00007ffff6aad837 in __libc_message (action=action@entry=do_abort, fmt=fmt@entry=0x7ffff6bdaa7b "%s\n") at ../sysdeps/posix/libc_fatal.c:181
-#3  0x00007ffff6ab48ba in malloc_printerr (str=str@entry=0x7ffff6bd8dc1 "realloc(): invalid next size") at malloc.c:5342
-#4  0x00007ffff6ab99ec in _int_realloc (av=av@entry=0x7ffff6e0fc40 <main_arena>, oldp=oldp@entry=0x555555d43220, oldsize=oldsize@entry=40032, nb=nb@entry=40160) at malloc.c:4559
-#5  0x00007ffff6abcd1d in __GI___libc_realloc (oldmem=0x555555d43230, bytes=40138) at malloc.c:3231
-#6  0x0000555555590021 in str_ptr_realloc (str_ptr=0x555555d43230, size=40121) at memory.c:106
-#7  0x0000555555590147 in str_ptr_resize (str_ptr=0x555555d43230, add=268) at memory.c:149
-#8  0x00005555555908b2 in str_cat_len (str=0x7fffffff37c8, 
-    arg=0x55555c9cdc80 "{ light leather boots  An enormous pair of light leather boots.  Very soft and comfortable but not overly protective. The boots are in perfect condition. This armor has the following resistances: 1 bl"..., len=268) at memory.c:382
-#9  0x0000555555590ac8 in str_cat_printf (str=0x7fffffff37c8, fmt=0x555555686349 "{%s}") at memory.c:431
-#10 0x00005555555fee19 in show_nest_node (node=0x555557059c80, str_result=0x7fffffff37c8, initialize=0) at nest.c:911
-#11 0x00005555555feea9 in show_nest_node (node=0x55555705a160, str_result=0x7fffffff37c8, initialize=0) at nest.c:928
-#12 0x00005555555feea9 in show_nest_node (node=0x55555c7c53a0, str_result=0x7fffffff37c8, initialize=1) at nest.c:928
-#13 0x00005555555d9461 in do_variable (ses=0x555555e3fc50, arg=0x55555c83e257 "", arg1=0x555555d395e0 "a", arg2=0x0, arg3=0x0, arg4=0x0) at variable.c:94
-#14 0x00005555555c0afa in parse_script (root=0x55555c767130, lvl=0, token=0x55555c7cc560, shift=0x55555c7cc560) at tokenize.c:863
-#15 0x00005555555c22e9 in script_driver (ses=0x555555e3fc50, list=4, str=0x55555c8397a0 "#var a $items[Rabbit Fields]") at tokenize.c:1315
-#16 0x000055555557c154 in process_input () at input.c:177
-#17 0x0000555555586bc9 in update_input () at update.c:337
-#18 0x00005555555867ac in mainloop () at update.c:157
-#19 0x000055555557fea3 in main (argc=1, argv=0x7fffffffd708) at main.c:436
 
 #info memory
  #INFO MEMORY: STACK SIZE: 15731509
@@ -85,13 +41,9 @@ crash
 
 - config loglevel medium option
 
-- #list swap isn't swapping tables
-
 - map_mouse_handler crash, make sure it's not threaded
 
 - add example to #help if of using regex
-
-- crash: #math t {{42} > 42}
 
 - look into GMCP larger than buffer size
 

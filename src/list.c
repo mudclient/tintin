@@ -880,7 +880,9 @@ DO_ARRAY(array_set)
 
 			return ses;
 		}
-		str_cpy(&list->root->list[index]->arg2, arg2);
+		set_nest_node(list->root, list->root->list[index]->arg1, "%s", arg2);
+
+//		str_cpy(&list->root->list[index]->arg2, arg2);
 
 		return ses;
 	}
@@ -987,6 +989,7 @@ DO_ARRAY(array_swap)
 {
 	char *swap;
 	int index1, index2;
+	struct listroot *toor;
 
 	arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
 	arg = sub_arg_in_braces(ses, arg, arg2, GET_ALL, SUB_VAR|SUB_FUN);
@@ -1003,6 +1006,7 @@ DO_ARRAY(array_swap)
 			return ses;
 		}
 		swap = list->root->list[index1]->arg2; list->root->list[index1]->arg2 = list->root->list[index2]->arg2; list->root->list[index2]->arg2 = swap;
+		toor = list->root->list[index1]->root; list->root->list[index1]->root = list->root->list[index2]->root; list->root->list[index2]->root = toor;
 
 		return ses;
 	}

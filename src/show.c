@@ -104,6 +104,8 @@ DO_COMMAND(do_echo)
 		arg += strlen(arg);
 	}
 
+	prompt = is_suffix(arg1, "\\") && !is_suffix(arg1, "\\\\");
+
 	substitute(ses, arg1, arg1, SUB_COL|SUB_ESC);
 
 	arg = sub_arg_in_braces(ses, arg, arg2, GET_ONE, SUB_VAR|SUB_FUN);
@@ -115,8 +117,6 @@ DO_COMMAND(do_echo)
 
 		return ses;
 	}
-
-	prompt = is_suffix(arg1, "\\") && !is_suffix(arg1, "\\\\");
 
 	str_cpy_printf(&out, "%s%s%s", COLOR_TEXT, arg1, COLOR_TEXT);
 

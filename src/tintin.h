@@ -651,7 +651,7 @@ enum operators
 #define SES_FLAG_BUFFERUPDATE         BV01
 #define SES_FLAG_CLOSED               BV02
 #define SES_FLAG_CONNECTED            BV03
-#define SES_FLAG_GAG                  BV04 // unused
+#define SES_FLAG_LINKLOST             BV04
 #define SES_FLAG_PATHMAPPING          BV05
 #define SES_FLAG_PRINTBUFFER          BV06
 #define SES_FLAG_PRINTLINE            BV07
@@ -2014,6 +2014,7 @@ extern DO_CURSOR(cursor_echo);
 extern DO_CURSOR(cursor_end);
 extern DO_CURSOR(cursor_enter);
 extern DO_CURSOR(cursor_enter_finish);
+extern DO_CURSOR(cursor_escape_enter);
 extern DO_CURSOR(cursor_flag);
 extern DO_CURSOR(cursor_get);
 extern DO_CURSOR(cursor_history_find);

@@ -403,14 +403,6 @@ void update_sessions(void)
 					if (rv < 0)
 					{
 						break; // bug report after removal.
-
-						syserr_printf(ses, "update_sessions: select:");
-
-						cleanup_session(ses);
-
-						gtd->mud_output_len = 0;
-
-						break;
 					}
 
 					if (rv == 0)
@@ -424,6 +416,8 @@ void update_sessions(void)
 						{
 							readmud(ses);
 
+							SET_BIT(ses->flags, SES_FLAG_LINKLOST);
+
 							cleanup_session(ses);
 
 							gtd->mud_output_len = 0;
@@ -435,6 +429,8 @@ void update_sessions(void)
 					if (FD_ISSET(ses->socket, &error_fd))
 					{
 						FD_CLR(ses->socket, &read_fd);
+
+						SET_BIT(ses->flags, SES_FLAG_LINKLOST);
 
 						cleanup_session(ses);
 

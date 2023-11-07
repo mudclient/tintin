@@ -7859,6 +7859,11 @@ DO_MAP(map_read)
 		}
 	}
 
+	if (ses->map->version < 20231)
+	{
+		SET_BIT(ses->map->flags, MAP_FLAG_AUTOLINK);
+	}
+
 	show_message(ses, LIST_COMMAND, "#MAP READ: Map file {%s} loaded.", file);
 }
 
@@ -8807,7 +8812,7 @@ DO_MAP(map_write)
 
 	fprintf(file, "C %d\n\n", ses->map->size);
 
-	fprintf(file, "V 2020\n\n");
+	fprintf(file, "V 20231\n\n");
 
 	for (index = 0 ; map_color_table[index].name ; index++)
 	{

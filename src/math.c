@@ -1526,7 +1526,7 @@ long double tincmp(struct math_node *left, struct math_node *right)
 {
 	if (left->type != right->type)
 	{
-		show_debug(NULL, LIST_VARIABLE, "#MATH COMPUTE: COMPARING STRING WITH A NUMBER.");
+		show_debug(gtd->ses, LIST_VARIABLE, "#MATH COMPUTE: COMPARING STRING WITH A NUMBER.");
 
 		return 0;
 	}

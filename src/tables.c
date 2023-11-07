@@ -690,6 +690,7 @@ struct cursor_type cursor_table[] =
 	{     "RESET MACRO",        "",                                               "",            CURSOR_FLAG_GET_ALL,     cursor_macro,                 "RESET"     }, // obsolete
 	{     "SET",                "Insert given string at cursor",                  "",            CURSOR_FLAG_GET_ONE,     cursor_set,                   ""          },
 	{     "SOFT ENTER",         "Create a new line in edit mode.",                "\e[13;2u",    CURSOR_FLAG_GET_ALL,     cursor_soft_enter,            ""          },
+	{     "ESCAPE ENTER",       "Process multi-line input.",                      "\e[13;5u",    CURSOR_FLAG_GET_ALL,     cursor_escape_enter,          ""          },
 	{     "SUSPEND",            "Suspend program, return with fg",                "",           CURSOR_FLAG_GET_ALL,     cursor_suspend,               ""          },
 	{     "TAB",                "<LIST|SCROLLBACK> <BACKWARD|FORWARD>",           "",            CURSOR_FLAG_GET_ONE,     cursor_tab,                   ""          },
 	{     "TAB L S BACKWARD",   "",                                               "\e[Z",        CURSOR_FLAG_GET_ALL,     cursor_tab,                   "L S B"     }, // shift tab

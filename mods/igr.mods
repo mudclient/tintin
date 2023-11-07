@@ -1,6 +1,18 @@
 Mar 2023        2.02.32
 ------------------------------------------------------------------------------
+class.c         #class clear/close/kill/list/load/save/size/write no longer
+                create a class if none exists.
+
+split.c         When using #split 0 1 0 -80 it will correctly use the negative
+                argument on subsequent screen resizes.
+
 list.c          Added #list swap <index1> <index2> to swap two list items.
+
+cursor.c        You can paste multi-line triggers by first pressing ctrl-v,
+                next paste the data, followed by pressing ctrl-enter.
+
+mapper.c        Added #map flag autolink <on|off>. Default is on. Set to off
+                to disable automatically linking overlapping rooms.
 
 Jan 2023        2.02.31
 ------------------------------------------------------------------------------

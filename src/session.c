@@ -662,16 +662,18 @@ void cleanup_session(struct session *ses)
 
 	if (ses->socket)
 	{
+		if (HAS_BIT(ses->flags, SES_FLAG_CONNECTED) && !HAS_BIT(ses->flags, SES_FLAG_LINKLOST))
+		{
+			if (shutdown(ses->socket, SHUT_RDWR) == -1)
+			{
+				syserr_printf(ses, "cleanup_session: shutdown");
+			}
+		}
+
 		if (close(ses->socket) == -1)
 		{
 			syserr_printf(ses, "cleanup_session: close");
 		}
-/*		else
-		{
-			int status;
-
-			wait(&status);
-		}*/
 
 		// the PID is stored in the session's port.
 
