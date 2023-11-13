@@ -1580,7 +1580,7 @@ DO_COMMAND(do_info)
 					{
 						str_ptr = gtd->memory->list[index];
 
-						if (str_ptr->max != NAME_SIZE + 1 && strlen(get_str_str(str_ptr)) != str_ptr->len)
+						if (!HAS_BIT(str_ptr->flags, STR_FLAG_FREE) && str_ptr->max != NAME_SIZE + 1 && strlen(get_str_str(str_ptr)) != str_ptr->len)
 						{
 							tintin_printf2(ses, "#ERROR: index %d len = %d/%d max = %d flags = %d (%s)", index, strlen(get_str_str(str_ptr)), str_ptr->len, str_ptr->max, str_ptr->flags, get_str_str(str_ptr));
 						}

@@ -5162,7 +5162,7 @@ void explore_path(struct session *ses, int run, char *arg1, char *arg2)
 void map_mouse_handler(struct session *ses, char *arg1, char *arg2, int row, int col, int rev_row, int rev_col, int height, int width)
 {
 	char exit[10];
-	int x, y, max_x, max_y;
+	int x, y, max_x, max_y, coord;
 	int top_row, top_col, bot_row, bot_col, rows, cols, char_height, vnum = 0;
 
 	push_call_printf("map_mouse_handler(%p,%p,%p,%d,%d,%d,%d,%d,%d)",ses,arg1,arg2,row,col,rev_row,rev_col,height,width);
@@ -5291,7 +5291,22 @@ void map_mouse_handler(struct session *ses, char *arg1, char *arg2, int row, int
 		return;
 	}
 
-	vnum = ses->map->grid_rooms[x + 1 + max_x * (y - 1)] ? ses->map->grid_rooms[x + 1 + max_x * (y - 1)]->vnum : 0;
+	coord = x + 1 + max_x * (y - 1);
+
+	if (coord < 0 || coord >= ses->map->max_grid_x * ses->map->max_grid_y)
+	{
+		pop_call();
+		return;
+	}
+
+	if (ses->map->grid_rooms[coord] != NULL)
+	{
+		vnum = ses->map->grid_rooms[coord]->vnum;
+	}
+	else
+	{
+		vnum = 0;
+	}
 
 	if (arg1 && arg2)
 	{

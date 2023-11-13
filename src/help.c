@@ -462,8 +462,10 @@ DO_COMMAND(do_help)
 		{
 			if (is_abbrev(arg1, help_table[cnt].name))
 			{
-				print_lines(ses, SUB_COL, "", /*COLOR_HELP_DIM,*/ "%s<088>\n", help_table[cnt].text);
-
+				if (!check_all_events(ses, EVENT_FLAG_CATCH, 1, 0, "CATCH HELP %s", help_table[cnt].name))
+				{
+					print_lines(ses, SUB_COL, "", /*COLOR_HELP_DIM,*/ "%s<088>\n", help_table[cnt].text);
+				}
 				if (*help_table[cnt].also)
 				{
 					print_lines(ses, SUB_COL, "", "%s<088>\n\n", help_related(ses, cnt, 0));
@@ -2089,7 +2091,9 @@ struct help_type help_table[] =
 		"<178>Example<278>: #action {%0 gives you %1 gold coins.} {#if {%1 > 5000} {thank %0}}\n"
 		"<278>         If someone gives you more than 5000 coins, thank them.\n"
 		"\n"
-		"<178>Example<278>: #alias {k} {#if {\"%0\" == \"\"} {kill $target};#else {kill %0}}\n",
+		"<178>Example<278>: #alias {k} {#if {\"%0\" == \"\"} {kill $target};#else {kill %0}}\n"
+		"\n"
+		"<178>Example<278>: #if {\"%0\" == \"{bli|bla}\"} {#showme %0 is either bli or bla.}\n",
 		
 		"case default else elseif math switch regexp"
 	},

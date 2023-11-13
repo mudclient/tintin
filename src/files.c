@@ -33,7 +33,8 @@ DO_COMMAND(do_read)
 {
 	FILE *file;
 
-	sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
+	arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
+	arg = sub_arg_in_braces(ses, arg, arg2, GET_ONE, SUB_VAR|SUB_FUN);
 
 	if ((file = fopen(arg1, "r")) == NULL)
 	{

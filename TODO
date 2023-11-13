@@ -1,61 +1,18 @@
-- Look into #end in SESSION DISCONNECTED not resetting terminal.
+- switch to pcre2
+
+- Looking into catch events for most system messages.
 
 - Add routine to escape 0x00 in port.c RECEIVED DATA event.
 
 - allow a full telnet disable in port.c
 
-- utf8_to_gbk1 has no length argument, causing \x00 to fail.
-
-- Make direction available to #path get, and possibly forward / backward.
-
 - Add message when a substitution exceeds available memory.
-
-- #var a $items[Rabbit Fields] crash
-
-#info memory
- #INFO MEMORY: STACK SIZE: 15731509
- #INFO MEMORY: STACK  MAX: 64
- #INFO MEMORY: STACK  CAP: 38
- #INFO MEMORY: STACK  LEN: 3
-
- #ERROR: index 468886 len = 1/0 max = 27 flags = 6 (1)
- #ERROR: index 469216 len = 1/0 max = 45 flags = 6 (2)
-
-- #if crash
-  dev/test/known.tin
-  #read known.tin
-  #if {{$items[Rabbit Fields]} === {}} #nop crash
-
-- valgrind:
-
-==931==    by 0x14CE45: create_room (mapper.c:317)
-==931==    by 0x14C87D: create_map (mapper.c:211)
-==931==    by 0x168E76: map_read (mapper.c:7671)
-==931==    by 0x14C400: do_map (mapper.c:133)
-
-- memory error download/bug.png and 
-- #ERROR: index 32964 len = 6/0 max = 106 flags = 6 (cur_cd)
-
-- mapper.c crash on vnum = ses->map->grid_rooms[x + 1 + max_x * (y - 1)] 
-  row=66, col=93, rev_row=-5, rev_col=-188, height=0, width=0) at mapper.c:5284
 
 - config loglevel medium option
 
-- map_mouse_handler crash, make sure it's not threaded
-
-- add example to #help if of using regex
-
 - look into GMCP larger than buffer size
 
-- Add warning for #read file.map
-
 - #map set roomnote causes issues when adding \n
-
-- #var foo {x;{a;b;c};y;z}
-  #list foo create {$foo}
-  #list foo simplify
-
-  #list explode has an issue with ';'
 
 - finish ? : support in #math
 
@@ -83,7 +40,7 @@
 
 - look into a #debug flag for #class
 
-- switch to pcre2
+
 
 - Another nice thing would be if there was some flag to make a trigger match newlines as space.
 

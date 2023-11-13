@@ -1,5 +1,9 @@
 Mar 2023        2.02.32
 ------------------------------------------------------------------------------
+help.c          Added a CATCH HELP event.
+
+                #event {CATCH HELP NOP} {#line ignore #showme bla}
+
 class.c         #class clear/close/kill/list/load/save/size/write no longer
                 create a class if none exists.
 
