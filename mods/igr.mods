@@ -1,5 +1,8 @@
 Mar 2023        2.02.32
 ------------------------------------------------------------------------------
+show.c          Added a REFORMAT event which can be used to alter system
+                messages. Must use #return to set the new message format.
+
 help.c          Added a CATCH HELP event.
 
                 #event {CATCH HELP NOP} {#line ignore #showme bla}

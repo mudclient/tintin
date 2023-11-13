@@ -133,6 +133,11 @@ void show_message(struct session *ses, int index, char *format, ...)
 
 	push_call("show_message(%p,%p,%p)",ses,index,format);
 
+	if (check_all_events(ses, EVENT_FLAG_SYSTEM, 1, 0, "REFORMAT %s", format))
+	{
+		format = get_variable_def(ses, "result", format);
+	}
+
 	root = ses->list[index];
 
 	if (gtd->level->verbose || gtd->level->debug)
@@ -211,6 +216,11 @@ void show_error(struct session *ses, int index, char *format, ...)
 
 	push_call("show_error(%p,%p,%p)",ses,index,format);
 
+	if (check_all_events(ses, EVENT_FLAG_SYSTEM, 1, 0, "REFORMAT %s", format))
+	{
+		format = get_variable_def(ses, "result", format);
+	}
+
 	va_start(args, format);
 	if (vasprintf(&buffer, format, args) == -1)
 	{
@@ -269,6 +279,11 @@ void show_debug(struct session *ses, int index, char *format, ...)
 	va_list args;
 
 	push_call("show_debug(%p,%p,%p)",ses,index,format);
+
+	if (check_all_events(ses, EVENT_FLAG_SYSTEM, 1, 0, "REFORMAT %s", format))
+	{
+		format = get_variable_def(ses, "result", format);
+	}
 
 	root = ses->list[index];
 
@@ -415,6 +430,11 @@ void tintin_header(struct session *ses, int width, char *format, ...)
 
 	push_call("tintin_header(%p,%p)",ses,format);
 
+	if (check_all_events(ses, EVENT_FLAG_SYSTEM, 1, 0, "REFORMAT %s", format))
+	{
+		format = get_variable_def(ses, "result", format);
+	}
+
 	if (width)
 	{
 		cols = UMIN(width, get_scroll_cols(ses));
@@ -469,6 +489,11 @@ void tintin_printf(struct session *ses, char *format, ...)
 
 	push_call("tintin_printf(%p,%p,...)",ses,format);
 
+	if (check_all_events(ses, EVENT_FLAG_SYSTEM, 1, 0, "REFORMAT %s", format))
+	{
+		format = get_variable_def(ses, "result", format);
+	}
+
 	buffer = str_alloc_stack(0);
 
 	va_start(args, format);
@@ -487,6 +512,11 @@ void tintin_printf2(struct session *ses, char *format, ...)
 	va_list args;
 
 	push_call("tintin_printf2(%p,%p,...)",ses,format);
+
+	if (check_all_events(ses, EVENT_FLAG_SYSTEM, 1, 0, "REFORMAT %s", format))
+	{
+		format = get_variable_def(ses, "result", format);
+	}
 
 	va_start(args, format);
 	if (vasprintf(&buffer, format, args) == -1)

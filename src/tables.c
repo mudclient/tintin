@@ -838,6 +838,7 @@ struct event_type event_table[] =
 	{    "RECEIVED LINE",                          0, EVENT_FLAG_OUTPUT,   "OUTPUT",    "a new line is received"     },
 	{    "RECEIVED OUTPUT",                        0, EVENT_FLAG_OUTPUT,   "OUTPUT",    "bulk output is received"    },
 	{    "RECEIVED PROMPT",                        0, EVENT_FLAG_OUTPUT,   "OUTPUT",    "a prompt is received"       },
+	{    "REFORMAT ",                              0, EVENT_FLAG_SYSTEM,   "SYSTEM",    "system format message"      },
 	{    "RELEASED ",                              0, EVENT_FLAG_MOUSE,    "MOUSE",     "mouse button is released"   },
 	{    "SCAN CSV HEADER",                        0, EVENT_FLAG_SCAN,     "SCAN",      "scanning a csv file"        },
 	{    "SCAN CSV LINE",                          0, EVENT_FLAG_SCAN,     "SCAN",      "scanning a csv file"        },

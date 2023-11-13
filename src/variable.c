@@ -331,6 +331,19 @@ DO_COMMAND(do_replace)
 	return ses;
 }
 
+char *get_variable_def(struct session *ses, char *var, char *def)
+{
+	struct listnode *node;
+
+	node = search_nest_node_ses(ses, var);
+
+	if (node)
+	{
+		return node->arg2;
+	}
+	return def;
+}
+
 int valid_variable(struct session *ses, char *arg)
 {
 	if (*arg == 0)

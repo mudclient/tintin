@@ -7075,7 +7075,7 @@ DO_MAP(map_legend)
 		}
 		else
 		{
-			show_error(ses, LIST_COMMAND, "#SYNTAX: #MAP LEGEND {%s} {{arg %d} {arg %d} ... {arg %d} {arg %d}",
+			show_error(ses, LIST_COMMAND, "#SYNTAX: #MAP LEGEND {%s} {{arg %d} {arg %d} ... {arg %d} {arg %d}}",
 				map_legend_group_table[group].group,
 				map_legend_group_table[group].start,
 				map_legend_group_table[group].start - 1,

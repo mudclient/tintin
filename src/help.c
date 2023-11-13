@@ -1769,6 +1769,8 @@ struct help_type help_table[] =
 		"<278>         <178>UNKNOWN COMMAND        <278>%0 raw text\n"
 		"<278>         <178>SIGUSR                 <278>%0 signal\n"
 		"\n"
+		"<278>         <178>REFORMAT <MESSAGE>     <278>Use #return to change MESSAGE\n"
+		"\n"
 		"<278>         <128>TELNET EVENTS\n"
 		"\n"
 		"<278>         <178>IAC <EVENT>\n"
