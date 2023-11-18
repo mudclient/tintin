@@ -982,7 +982,7 @@ int delete_node_with_wild(struct session *ses, int type, char *text)
 	{
 		node = root->list[index];
 
-		show_message(ses, type, "#OK. {%s} IS NO LONGER %s %s.", node->arg1, (*list_table[type].name == 'A' || *list_table[type].name == 'E') ? "AN" : "A", list_table[type].name);
+		show_message(ses, type, "#OK: {%s} IS NO LONGER %s %s.", node->arg1, (*list_table[type].name == 'A' || *list_table[type].name == 'E') ? "AN" : "A", list_table[type].name);
 
 		delete_index_list(root, index);
 
@@ -993,7 +993,7 @@ int delete_node_with_wild(struct session *ses, int type, char *text)
 	{
 		if (match(ses, root->list[index]->arg1, arg1, SUB_VAR|SUB_FUN))
 		{
-			show_message(ses, type, "#OK. {%s} IS NO LONGER %s %s.", root->list[index]->arg1, is_vowel(list_table[type].name) ? "AN" : "A", list_table[type].name);
+			show_message(ses, type, "#OK: {%s} IS NO LONGER %s %s.", root->list[index]->arg1, is_vowel(list_table[type].name) ? "AN" : "A", list_table[type].name);
 
 			delete_index_list(root, index);
 
@@ -1068,7 +1068,7 @@ DO_COMMAND(do_kill)
 
 	if (index == LIST_MAX)
 	{
-		show_error(ses, LIST_COMMAND, "#ERROR: #KILL {%s} {%s} - NO MATCH FOUND.", arg1, arg2);
+		show_error(ses, LIST_COMMAND, "#ERROR: #KILL {%s} {%s}: NO MATCH FOUND.", arg1, arg2);
 	}
 	return ses;
 }
@@ -1134,7 +1134,7 @@ DO_COMMAND(do_message)
 
 		if (found == FALSE)
 		{
-			show_error(ses, LIST_COMMAND, "#ERROR: #MESSAGE {%s} - NO MATCH FOUND.", arg1);
+			show_error(ses, LIST_COMMAND, "#ERROR: #MESSAGE {%s}: NO MATCH FOUND.", arg1);
 		}
 	}
 	return ses;
@@ -1213,7 +1213,7 @@ DO_COMMAND(do_ignore)
 
 		if (found == FALSE)
 		{
-			show_error(ses, LIST_COMMAND, "#ERROR: #IGNORE {%s} - NO MATCH FOUND.", arg1);
+			show_error(ses, LIST_COMMAND, "#ERROR: #IGNORE {%s}: NO MATCH FOUND.", arg1);
 		}
 	}
 	return ses;
@@ -1285,7 +1285,7 @@ DO_COMMAND(do_debug)
 
 		if (found == FALSE)
 		{
-			show_error(ses, LIST_COMMAND, "#DEBUG {%s} - NO MATCH FOUND.", arg1);
+			show_error(ses, LIST_COMMAND, "#DEBUG {%s}: NO MATCH FOUND.", arg1);
 		}
 	}
 	return ses;

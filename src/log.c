@@ -123,7 +123,7 @@ DO_LOG(log_append)
 	}
 	else
 	{
-		show_error(ses, LIST_COMMAND, "#ERROR: #LOG {%s} {%s} - COULDN'T OPEN FILE.", arg1, arg2);
+		show_error(ses, LIST_COMMAND, "#ERROR: #LOG {%s} {%s}: COULDN'T OPEN FILE.", arg1, arg2);
 	}
 }
 
@@ -149,11 +149,11 @@ DO_LOG(log_move)
 
 	if (result == 0)
 	{
-		show_message(ses, LIST_COMMAND, "#LOG MOVE: FILE '%s' MOVED TO '%s'.", arg2, arg3);
+		show_message(ses, LIST_COMMAND, "#LOG MOVE: FILE {%s} MOVED TO {%s}.", arg2, arg3);
 	}
 	else
 	{
-		show_error(ses, LIST_COMMAND, "#LOG MOVE: COULDN'T MOVE FILE '%s' TO '%s'.", arg2, arg3);
+		show_error(ses, LIST_COMMAND, "#LOG MOVE: COULDN'T MOVE FILE {%s} TO {%s}.", arg2, arg3);
 	}
 }
 
@@ -172,11 +172,11 @@ DO_LOG(log_overwrite)
 
 		logheader(ses, ses->log->file, ses->log->mode);
 
-		show_message(ses, LIST_COMMAND, "#LOG: LOGGING OUTPUT TO '%s'", arg2);
+		show_message(ses, LIST_COMMAND, "#LOG: LOGGING OUTPUT TO {%s}", arg2);
 	}
 	else
 	{
-		show_error(ses, LIST_COMMAND, "#ERROR: #LOG {%s} {%s} - COULDN'T OPEN FILE.", arg1, arg2);
+		show_error(ses, LIST_COMMAND, "#ERROR: #LOG {%s} {%s}: COULDN'T OPEN FILE.", arg1, arg2);
 	}
 }
 
@@ -203,11 +203,11 @@ DO_LOG(log_remove)
 
 	if (result == 0)
 	{
-		show_message(ses, LIST_COMMAND, "#LOG REMOVE: FILE '%s' REMOVED.", arg2);
+		show_message(ses, LIST_COMMAND, "#LOG REMOVE: FILE {%s} REMOVED.", arg2);
 	}
 	else
 	{
-		show_error(ses, LIST_COMMAND, "#LOG REMOVE: COULDN'T REMOVE FILE '%s'.", arg2);
+		show_error(ses, LIST_COMMAND, "#LOG REMOVE: COULDN'T REMOVE FILE {%s}.", arg2);
 	}
 }
 
@@ -216,7 +216,7 @@ DO_LOG(log_timestamp)
 	RESTRING(ses->log->stamp_strf, arg2);
 	ses->log->stamp_time = 0;
 
-	show_message(ses, LIST_COMMAND, "#LOG TIMESTAMP: FORMAT SET TO '%s'.", arg2);
+	show_message(ses, LIST_COMMAND, "#LOG TIMESTAMP: FORMAT SET TO {%s}.", arg2);
 }
 
 void init_log(struct session *ses)

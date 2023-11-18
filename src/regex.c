@@ -65,7 +65,7 @@ DO_COMMAND(do_regexp)
 
 	if (*arg3 == 0)
 	{
-		show_error(ses, LIST_COMMAND, "SYNTAX: #REGEXP {string} {expression} {true} {false}.");
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #REGEXP <TEXT> <EXPRESSION> <TRUE> [FALSE]");
 	}
 	else
 	{
@@ -1182,7 +1182,7 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 
 	if (HAS_BIT(node->flags, NODE_FLAG_COLOR) && *exp != '~')
 	{
-		show_error(ses, LIST_COMMAND, "\e[1;31mWARNING: REGEX MATCHES ESCAPE CODES BUT DOES NOT START WITH A '~' (%s)", exp);
+		show_error(ses, LIST_COMMAND, "#WARNING: REGEX {%s} MATCHES ESCAPE CODES BUT DOES NOT START WITH A '~'.", exp);
 	}
 	return regexp_compile(ses, out, option);
 }

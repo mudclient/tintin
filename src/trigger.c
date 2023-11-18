@@ -41,19 +41,19 @@ DO_COMMAND(do_action)
 	{
 		if (show_node_with_wild(ses, arg1, ses->list[LIST_ACTION]) == FALSE)
 		{
-			show_message(ses, LIST_ACTION, "#ACTION: NO MATCH(ES) FOUND FOR {%s}.", arg1);
+			show_message(ses, LIST_ACTION, "#ACTION: NO MATCHES FOUND FOR {%s}.", arg1);
 		}
 	}
 	else
 	{
 		if (*arg3 && (atof(arg3) < 1 || atof(arg3) >= 10))
 		{
-			show_error(ses, LIST_ACTION, "\e[1;31m#WARNING: #ACTION {%s} {..} {%s} SHOULD HAVE A PRIORITY BETWEEN 1.000 and 9.999.", arg1, arg3);
+			show_error(ses, LIST_ACTION, "#WARNING: #ACTION {%s} {..} {%s} SHOULD HAVE A PRIORITY BETWEEN 1.000 and 9.999.", arg1, arg3);
 		}
 
 		update_node_list(ses->list[LIST_ACTION], arg1, arg2, arg3, "");
 
-		show_message(ses, LIST_ACTION, "#OK. #ACTION {%s} NOW TRIGGERS {%s} @ {%s}.", arg1, arg2, arg3);
+		show_message(ses, LIST_ACTION, "#OK: #ACTION {%s} NOW TRIGGERS {%s} @ {%s}.", arg1, arg2, arg3);
 	}
 	return ses;
 }
@@ -178,7 +178,7 @@ DO_COMMAND(do_alias)
 	{
 		if (show_node_with_wild(ses, arg1, ses->list[LIST_ALIAS]) == FALSE)
 		{
-			show_message(ses, LIST_ALIAS, "#ALIAS: NO MATCH(ES) FOUND FOR {%s}.", arg1);
+			show_message(ses, LIST_ALIAS, "#ALIAS: NO MATCHES FOUND FOR {%s}.", arg1);
 		}
 	}
 	else
@@ -317,7 +317,7 @@ DO_COMMAND(do_button)
 	{
 		if (show_node_with_wild(ses, arg1, ses->list[LIST_BUTTON]) == FALSE)
 		{
-			show_message(ses, LIST_BUTTON, "#BUTTON: NO MATCH(ES) FOUND FOR {%s}.", arg1);
+			show_message(ses, LIST_BUTTON, "#BUTTON: NO MATCHES FOUND FOR {%s}.", arg1);
 		}
 	}
 	else
@@ -327,7 +327,7 @@ DO_COMMAND(do_button)
 
 		node = update_node_list(ses->list[LIST_BUTTON], arg1, arg2, arg3, "");
 
-		show_message(ses, LIST_BUTTON, "#OK. BUTTON {%s} NOW TRIGGERS {%s} @ {%s}.", arg1, arg2, arg3);
+		show_message(ses, LIST_BUTTON, "#OK: BUTTON {%s} NOW TRIGGERS {%s} @ {%s}.", arg1, arg2, arg3);
 
 		arg = arg1;
 
@@ -467,7 +467,7 @@ DO_COMMAND(do_delay)
 	{
 		if (show_node_with_wild(ses, arg1, ses->list[LIST_DELAY]) == FALSE)
 		{
-			show_message(ses, LIST_DELAY, "#DELAY: NO MATCH(ES) FOUND FOR {%s}.", arg1);
+			show_message(ses, LIST_DELAY, "#DELAY: NO MATCHES FOUND FOR {%s}.", arg1);
 		}
 	}
 	else
@@ -482,7 +482,7 @@ DO_COMMAND(do_delay)
 
 			create_node_list(ses->list[LIST_DELAY], time, arg2, arg1, arg3);
 
-			show_message(ses, LIST_DELAY, "#OK, IN {%s} SECONDS {%s} IS EXECUTED.", arg1, arg2);
+			show_message(ses, LIST_DELAY, "#DELAY: IN {%s} SECONDS {%s} IS EXECUTED.", arg1, arg2);
 
 		}
 		else
@@ -497,7 +497,7 @@ DO_COMMAND(do_delay)
 
 			node->shots = 1;
 
-			show_message(ses, LIST_TICKER, "#ONESHOT: #TICK {%s} WILL EXECUTE {%s} IN {%s} SECONDS.", arg1, arg2, time);
+			show_message(ses, LIST_TICKER, "#ONESHOT: #TICKER {%s} WILL EXECUTE {%s} IN {%s} SECONDS.", arg1, arg2, time);
 		}
 	}
 	return ses;
@@ -543,14 +543,14 @@ DO_COMMAND(do_function)
 	{
 		if (show_node_with_wild(ses, arg1, ses->list[LIST_FUNCTION]) == FALSE)
 		{
-			show_message(ses, LIST_FUNCTION, "#FUNCTION: NO MATCH(ES) FOUND FOR {%s}.", arg1);
+			show_message(ses, LIST_FUNCTION, "#FUNCTION: NO MATCHES FOUND FOR {%s}.", arg1);
 		}
 	}
 	else
 	{
 		update_node_list(ses->list[LIST_FUNCTION], arg1, arg2, "", "");
 
-		show_message(ses, LIST_FUNCTION, "#OK. FUNCTION {%s} NOW TRIGGERS {%s}.", arg1, arg2);
+		show_message(ses, LIST_FUNCTION, "#OK: FUNCTION {%s} NOW TRIGGERS {%s}.", arg1, arg2);
 	}
 	return ses;
 }
@@ -584,7 +584,7 @@ DO_COMMAND(do_gag)
 	{
 		update_node_list(ses->list[LIST_GAG], arg1, "", "", "");
 
-		show_message(ses, LIST_GAG, "#OK. {%s} IS NOW GAGGED.", arg1);
+		show_message(ses, LIST_GAG, "#OK: {%s} IS NOW GAGGED.", arg1);
 	}
 	return ses;
 }
@@ -646,7 +646,7 @@ DO_COMMAND(do_highlight)
 	{
 		if (show_node_with_wild(ses, arg1, ses->list[LIST_HIGHLIGHT]) == FALSE)
 		{
-			show_message(ses, LIST_HIGHLIGHT, "#HIGHLIGHT: NO MATCH(ES) FOUND FOR {%s}.", arg1);
+			show_message(ses, LIST_HIGHLIGHT, "#HIGHLIGHT: NO MATCHES FOUND FOR {%s}.", arg1);
 		}
 	}
 	else
@@ -660,7 +660,7 @@ DO_COMMAND(do_highlight)
 		{
 			update_node_list(ses->list[LIST_HIGHLIGHT], arg1, arg2, arg3, "");
 
-			show_message(ses, LIST_HIGHLIGHT, "#OK. {%s} NOW HIGHLIGHTS {%s} @ {%s}.", arg1, arg2, arg3);
+			show_message(ses, LIST_HIGHLIGHT, "#OK: {%s} NOW HIGHLIGHTS {%s} @ {%s}.", arg1, arg2, arg3);
 		}
 	}
 	return ses;
@@ -772,7 +772,7 @@ DO_COMMAND(do_macro)
 	{
 		if (show_node_with_wild(ses, arg1, ses->list[LIST_MACRO]) == FALSE)
 		{
-			show_message(ses, LIST_MACRO, "#MACRO: NO MATCH(ES) FOUND FOR {%s}.", arg1);
+			show_message(ses, LIST_MACRO, "#MACRO: NO MATCHES FOUND FOR {%s}.", arg1);
 		}
 	}
 	else
@@ -781,7 +781,7 @@ DO_COMMAND(do_macro)
 
 		update_node_list(ses->list[LIST_MACRO], arg1, arg2, "", arg3);
 
-		show_message(ses, LIST_MACRO, "#OK. MACRO {%s} NOW TRIGGERS {%s}.", arg1, arg2);
+		show_message(ses, LIST_MACRO, "#OK: MACRO {%s} NOW TRIGGERS {%s}.", arg1, arg2);
 	}
 	return ses;
 }
@@ -817,7 +817,7 @@ DO_COMMAND(do_prompt)
 	{
 		if (show_node_with_wild(ses, arg1, ses->list[LIST_PROMPT]) == FALSE)
 		{
-			show_message(ses, LIST_PROMPT, "#PROMPT: NO MATCH(ES) FOUND FOR {%s}.", arg1);
+			show_message(ses, LIST_PROMPT, "#PROMPT: NO MATCHES FOUND FOR {%s}.", arg1);
 		}
 	}
 	else
@@ -830,7 +830,7 @@ DO_COMMAND(do_prompt)
 
 		update_node_list(ses->list[LIST_PROMPT], arg1, arg2, arg3, arg4);
 
-		show_message(ses, LIST_PROMPT, "#OK. {%s} NOW PROMPTS {%s} @ {%s} {%s}.", arg1, arg2, arg3, arg4);
+		show_message(ses, LIST_PROMPT, "#OK: {%s} NOW PROMPTS {%s} @ {%s} {%s}.", arg1, arg2, arg3, arg4);
 	}
 	return ses;
 }
@@ -914,14 +914,14 @@ DO_COMMAND(do_substitute)
 	{
 		if (show_node_with_wild(ses, arg1, ses->list[LIST_SUBSTITUTE]) == FALSE)
 		{
-			show_message(ses, LIST_SUBSTITUTE, "#SUBSTITUTE: NO MATCH(ES) FOUND FOR {%s}.", arg1);
+			show_message(ses, LIST_SUBSTITUTE, "#SUBSTITUTE: NO MATCHES FOUND FOR {%s}.", arg1);
 		}
 	}
 	else
 	{
 		update_node_list(ses->list[LIST_SUBSTITUTE], arg1, arg2, arg3, "");
 
-		show_message(ses, LIST_SUBSTITUTE, "#OK. {%s} IS NOW SUBSTITUTED AS {%s} @ {%s}.", arg1, arg2, arg3);
+		show_message(ses, LIST_SUBSTITUTE, "#OK: {%s} IS NOW SUBSTITUTED AS {%s} @ {%s}.", arg1, arg2, arg3);
 	}
 	return ses;
 }
@@ -1033,7 +1033,7 @@ DO_COMMAND(do_tab)
 	{
 		update_node_list(ses->list[LIST_TAB], arg1, "", "", "");
 
-		show_message(ses, LIST_TAB, "#OK. {%s} IS NOW A TAB.", arg1);
+		show_message(ses, LIST_TAB, "#OK: {%s} IS NOW A TAB.", arg1);
 	}
 	return ses;
 }
@@ -1086,14 +1086,14 @@ DO_COMMAND(do_tick)
 	{
 		if (show_node_with_wild(ses, arg1, ses->list[LIST_TICKER]) == FALSE) 
 		{
-			show_message(ses, LIST_TICKER, "#TICK, NO MATCH(ES) FOUND FOR {%s}.", arg1);
+			show_message(ses, LIST_TICKER, "#TICKER: NO MATCHES FOUND FOR {%s}.", arg1);
 		}
 	}
 	else
 	{
 		update_node_list(ses->list[LIST_TICKER], arg1, arg2, time, arg3);
 
-		show_message(ses, LIST_TICKER, "#OK. #TICK {%s} NOW EXECUTES {%s} EVERY {%s} SECONDS.", arg1, arg2, time);
+		show_message(ses, LIST_TICKER, "#OK: #TICKER {%s} NOW EXECUTES {%s} EVERY {%s} SECONDS.", arg1, arg2, time);
 	}
 	return ses;
 }

@@ -926,13 +926,11 @@ struct path_type path_table[] =
 
 struct history_type history_table[] =
 {
-//	{    "CHARACTER",         history_character,   "Set the character used for repeating commands." },
 	{    "DELETE",            history_delete,      "Delete last command history entry."             },
 	{    "GET",               history_get,         "Store in given variable a given index or range." },
 	{    "INSERT",            history_insert,      "Insert a new command history entry."            },
 	{    "LIST",              history_list,        "Display command history list."                  },
 	{    "READ",              history_read,        "Read a command history list from file."         },
-//	{    "SIZE",              history_size,        "The size of the command history."               },
 	{    "WRITE",             history_write,       "Write a command history list to file."          },
 	{    "",                  NULL,                ""                                               }
 };

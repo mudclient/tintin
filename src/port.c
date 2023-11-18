@@ -65,7 +65,7 @@ DO_COMMAND(do_port)
 
 		if (port_table[cnt].fun != port_initialize && ses->port == NULL)
 		{
-			tintin_printf(ses, "#PORT: You must initialize a port first.");
+			tintin_printf(ses, "#PORT: YOU MUST INITIALIZE A PORT FIRST.");
 
 			return ses;
 		}

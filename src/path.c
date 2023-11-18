@@ -300,7 +300,7 @@ DO_PATH(path_get)
 	}
 	else if (*arg2 == 0)
 	{
-		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH GET <INFO|LENGTH|MAPPING|POSITION|RUNNING> <VARIABLE NAME>");
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH GET {INFO|LENGTH|MAPPING|POSITION|RUNNING} <VARIABLE>");
 	}
 	else if (is_abbrev(arg1, "INFO"))
 	{
@@ -316,7 +316,7 @@ DO_PATH(path_get)
 			(root->list[root->update]->val64 - gtd->utime) < 10000 ? 0.01 :
 			(root->list[root->update]->val64 - gtd->utime) / 1000000.0);
 
-		show_message(ses, LIST_COMMAND, "#PATH GET: PATH INFO SAVED TO {%s}", arg2);
+		show_message(ses, LIST_COMMAND, "#PATH GET: PATH INFO SAVED TO {%s}.", arg2);
 	}
 	else if (is_abbrev(arg1, "LENGTH"))
 	{
@@ -324,7 +324,7 @@ DO_PATH(path_get)
 
 		set_nest_node_ses(ses, arg2, "%s", result);
 
-		show_message(ses, LIST_COMMAND, "#PATH GET: PATH LENGTH {%s} SAVED TO {%s}", result, arg2);
+		show_message(ses, LIST_COMMAND, "#PATH GET: PATH LENGTH {%s} SAVED TO {%s}.", result, arg2);
 	}
 	else if (is_abbrev(arg1, "MAPPING"))
 	{
@@ -332,7 +332,7 @@ DO_PATH(path_get)
 
 		set_nest_node_ses(ses, arg2, "%s", result);
 
-		show_message(ses, LIST_COMMAND, "#PATH GET: PATH MAPPING {%s} SAVED TO {%s}", result, arg2);
+		show_message(ses, LIST_COMMAND, "#PATH GET: PATH MAPPING {%s} SAVED TO {%s}.", result, arg2);
 	}
 	else if (is_abbrev(arg1, "POSITION"))
 	{
@@ -340,7 +340,7 @@ DO_PATH(path_get)
 
 		set_nest_node_ses(ses, arg2, "%s", result);
 
-		show_message(ses, LIST_COMMAND, "#PATH GET: PATH POSITION {%s} SAVED TO {%s}", result, arg2);
+		show_message(ses, LIST_COMMAND, "#PATH GET: PATH POSITION {%s} SAVED TO {%s}.", result, arg2);
 	}
 	else if (is_abbrev(arg1, "RUNNING"))
 	{
@@ -350,11 +350,11 @@ DO_PATH(path_get)
 			(root->list[root->update]->val64 - gtd->utime) < 10000 ? 0.01 :
 			(root->list[root->update]->val64 - gtd->utime) / 1000000.0);
 
-		show_message(ses, LIST_COMMAND, "#PATH GET: PATH RUNNING {%s} SAVED TO {%s}", result, arg2);
+		show_message(ses, LIST_COMMAND, "#PATH GET: PATH RUNNING {%s} SAVED TO {%s}.", result, arg2);
 	}
 	else
 	{
-		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH GET <INFO|LENGTH|MAPPING|POSITION|RUNNING> <VARIABLE NAME>");
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH GET {INFO|LENGTH|MAPPING|POSITION|RUNNING} <VARIABLE>");
 	}
 }
 
@@ -373,7 +373,7 @@ DO_PATH(path_save)
 	}
 	else if (*arg1 == 0)
 	{
-		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH SAVE <BACKWARD|BOTH|FORWARD> <VARIABLE NAME>");
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH SAVE {BACKWARD|BOTH|FORWARD} <VARIABLE>");
 	}
 	else if (*arg2 == 0)
 	{
@@ -396,7 +396,7 @@ DO_PATH(path_save)
 		}
 		set_nest_node_ses(ses, arg2, "%s", result);
 
-		show_message(ses, LIST_COMMAND, "#PATH SAVE: BACKWARD PATH SAVED TO {%s}", arg2);
+		show_message(ses, LIST_COMMAND, "#PATH SAVE: BACKWARD PATH SAVED TO {%s}.", arg2);
 	}
 	else if (is_abbrev(arg1, "FORWARDS"))
 	{
@@ -427,7 +427,7 @@ DO_PATH(path_save)
 		}
 		set_nest_node_ses(ses, arg2, "%s", result);
 
-		show_message(ses, LIST_COMMAND, "#PATH SAVE: PATH SAVED TO {%s}", arg2);
+		show_message(ses, LIST_COMMAND, "#PATH SAVE: PATH SAVED TO {%s}.", arg2);
 	}
 	else if (is_abbrev(arg1, "LENGTH"))
 	{
@@ -435,7 +435,7 @@ DO_PATH(path_save)
 
 		set_nest_node_ses(ses, arg2, "%s", result);
 
-		show_message(ses, LIST_COMMAND, "#PATH SAVE: PATH LENGTH SAVED TO {%s}", arg2);
+		show_message(ses, LIST_COMMAND, "#PATH SAVE: PATH LENGTH SAVED TO {%s}.", arg2);
 	}
 	else if (is_abbrev(arg1, "POSITION"))
 	{
@@ -443,11 +443,11 @@ DO_PATH(path_save)
 
 		set_nest_node_ses(ses, arg2, "%s", result);
 
-		show_message(ses, LIST_COMMAND, "#PATH SAVE: PATH POSITION SAVED TO {%s}", arg2);
+		show_message(ses, LIST_COMMAND, "#PATH SAVE: PATH POSITION SAVED TO {%s}.", arg2);
 	}
 	else
 	{
-		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH SAVE <BACKWARD|FORWARD> <VARIABLE NAME>");
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH SAVE {BACKWARD|FORWARD} <VARIABLE>");
 	}
 }
 
@@ -518,7 +518,7 @@ DO_PATH(path_insert)
 
 	if (*arg1 == 0 && *arg2 == 0)
 	{
-		show_message(ses, LIST_COMMAND, "#ERROR: #PATH INSERT: YOU MUST GIVE A COMMAND TO INSERT");
+		show_message(ses, LIST_COMMAND, "#ERROR: #PATH INSERT: YOU MUST GIVE A COMMAND TO INSERT.");
 	}
 	else
 	{
@@ -621,7 +621,7 @@ DO_PATH(path_walk)
 	}
 	else
 	{
-		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH WALK {FORWARD|BACKWARD}.");
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH WALK {FORWARD|BACKWARD}");
 	}
 }
 
@@ -867,7 +867,7 @@ DO_PATH(path_goto)
 	}
 	else
 	{
-		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH GOTO <START|END>");
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #PATH GOTO {START|END|<POSITION>}");
 	}
 }
 
@@ -1017,7 +1017,7 @@ DO_COMMAND(do_pathdir)
 	{
 		if (show_node_with_wild(ses, arg1, ses->list[LIST_PATHDIR]) == FALSE)
 		{
-			show_message(ses, LIST_PATHDIR, "#NO MATCH(ES) FOUND FOR {%s}.", arg1);
+			show_message(ses, LIST_PATHDIR, "#PATHDIR: #NO MATCHES FOUND FOR {%s}.", arg1);
 		}
 	}
 	else
@@ -1046,7 +1046,7 @@ DO_COMMAND(do_pathdir)
 
 		node->val32[0] = atoi(arg3);
 
-		show_message(ses, LIST_PATHDIR, "#OK: DIRECTION {%s} WILL BE REVERSED AS {%s} @ {%d}.", arg1, arg2, atoi(arg3));
+		show_message(ses, LIST_PATHDIR, "#PATHDIR: DIRECTION {%s} WILL BE REVERSED AS {%s} @ {%d}.", arg1, arg2, atoi(arg3));
 	}
 	return ses;
 }

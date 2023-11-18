@@ -105,7 +105,7 @@ DO_COMMAND(do_scan)
 		{
 			if (*arg1 == 0)
 			{
-				show_error(ses, LIST_COMMAND, "#SYNTAX: #SCAN {%s} {<FILENAME>}", scan_table[cnt].name);
+				show_error(ses, LIST_COMMAND, "#SYNTAX: #SCAN {%s} <FILENAME>", scan_table[cnt].name);
 
 				return ses;
 			}
@@ -137,7 +137,7 @@ DO_COMMAND(do_scan)
 		return ses;
 	}
 
-	show_error(ses, LIST_COMMAND, "\e[1;31mTHE SCAN COMMAND HAS CHANGED, EXECUTING #SCAN {TXT} {%s} INSTEAD.", cmd);
+	show_error(ses, LIST_COMMAND, "#WARNING: THE SCAN COMMAND HAS CHANGED, EXECUTING #SCAN {TXT} {%s} INSTEAD.", cmd);
 
 	ses = command(ses, do_scan, "{TXT} {%s}", cmd);
 
@@ -311,7 +311,7 @@ DO_SCAN(scan_dir)
 
 	if (*arg2 == 0)
 	{
-		show_error(ses, LIST_COMMAND, "SYNTAX: #SCAN DIR {%s} <VARIABLE NAME>", arg1);
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #SCAN DIR {%s} <VARIABLE>", arg1);
 
 		return ses;
 	}

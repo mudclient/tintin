@@ -2307,12 +2307,10 @@ extern struct session *repeat_history(struct session *ses, char *line);
 extern int write_history(struct session *ses, char *filename);
 extern int read_history(struct session *ses, char *filename);
 
-DO_HISTORY(history_character);
 DO_HISTORY(history_delete);
 DO_HISTORY(history_get);
 DO_HISTORY(history_insert);
 DO_HISTORY(history_list);
-DO_HISTORY(history_size);
 DO_HISTORY(history_read);
 DO_HISTORY(history_write);
 

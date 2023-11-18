@@ -56,7 +56,7 @@ DO_COMMAND(do_split)
 
 		if ((*arg1 && !is_math(ses, arg1)) || (*arg2 && !is_math(ses, arg2)))
 		{
-			show_error(ses, LIST_COMMAND, "#SYNTAX: #SPLIT {TOP BAR} {BOT BAR} {LEFT BAR} {RIGHT BAR}");
+			show_error(ses, LIST_COMMAND, "#SYNTAX: #SPLIT [TOP BAR] [BOTTOM BAR] [LEFT BAR] [RIGHT BAR] [INPUT BAR]");
 
 			return ses;
 		}

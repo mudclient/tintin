@@ -117,7 +117,7 @@ DO_COMMAND(do_list)
 	}
 	else if (*arg2 == 0)
 	{
-		show_error(ses, LIST_VARIABLE, "#SYNTAX: #LIST {variable} {option} {argument}");
+		show_error(ses, LIST_VARIABLE, "#SYNTAX: #LIST <VARIABLE> <OPTION> <ARGUMENT>");
 	}
 	else
 	{
@@ -331,7 +331,7 @@ DO_ARRAY(array_delete)
 
 		if (index == -1)
 		{
-			show_error(ses, LIST_VARIABLE, "#LIST {%s} DELETE: INVALID INDEX: {%s}.", var, arg1);
+			show_error(ses, LIST_VARIABLE, "#LIST {%s} DELETE: INVALID INDEX {%s}.", var, arg1);
 
 			return ses;
 		}
@@ -353,7 +353,7 @@ DO_ARRAY(array_delete)
 	}
 	else
 	{
-		show_error(ses, LIST_VARIABLE, "#LIST DELETE: {%s} is not a list.", var);
+		show_error(ses, LIST_VARIABLE, "#LIST DELETE: VARIABLE {%s} IS NOT A LIST.", var);
 	}
 	return ses;
 }
@@ -368,7 +368,7 @@ DO_ARRAY(array_explode)
 
 	if (*arg1 == 0)
 	{
-		show_error(ses, LIST_VARIABLE, "#SYNTAX: #LIST {%s} EXPLODE {<SEPARATOR>}.", var);
+		show_error(ses, LIST_VARIABLE, "#SYNTAX: #LIST {%s} EXPLODE <SEPARATOR>", var);
 
 		return ses;
 	}
@@ -377,7 +377,7 @@ DO_ARRAY(array_explode)
 	{
 		if (*arg2 == 0)
 		{
-			show_error(ses, LIST_VARIABLE, "#LIST {%s} EXPLODE: VARIABLE %s IS ALREADY A LIST.", var, var);
+			show_error(ses, LIST_VARIABLE, "#LIST {%s} EXPLODE: VARIABLE {%s} IS ALREADY A LIST.", var, var);
 
 			return ses;
 		}
@@ -424,7 +424,7 @@ DO_ARRAY(array_filter)
 
 	if (*arg1 == 0 && *arg2 == 0)
 	{
-		show_error(ses, LIST_VARIABLE, "#SYNTAX: #LIST {variable} FILTER {keep} {remove}");
+		show_error(ses, LIST_VARIABLE, "#SYNTAX: #LIST <VARIABLE> FILTER <KEEP> [REMOVE]");
 
 		return ses;
 	}
@@ -480,7 +480,7 @@ DO_ARRAY(array_find)
 
 	if (*arg2 == 0)
 	{
-		show_error(ses, LIST_VARIABLE, "#SYNTAX: #LIST {variable} FIND {string} {variable}");
+		show_error(ses, LIST_VARIABLE, "#SYNTAX: #LIST <VARIABLE> FIND <TEXT> <VARIABLE>");
 
 		return ses;
 	}
@@ -512,7 +512,7 @@ DO_ARRAY(array_get)
 
 	if (*arg2 == 0)
 	{
-		show_error(ses, LIST_VARIABLE, "#SYNTAX: #LIST {variable} GET {index} {variable}");
+		show_error(ses, LIST_VARIABLE, "#SYNTAX: #LIST <VARIABLE> GET <INDEX> <VARIABLE>");
 		
 		return ses;
 	}
@@ -606,7 +606,7 @@ DO_ARRAY(array_insert)
 
 	if (toi == 0)
 	{
-		show_error(ses, LIST_VARIABLE, "#LIST INSERT: INVALID INDEX: {%s}.", arg1);
+		show_error(ses, LIST_VARIABLE, "#LIST INSERT: INVALID INDEX {%s}.", arg1);
 
 		return ses;
 	}
@@ -727,7 +727,7 @@ DO_ARRAY(array_refine)
 
 	if (*arg1 == 0 && *arg2 == 0)
 	{
-		show_error(ses, LIST_VARIABLE, "#SYNTAX: #LIST {variable} REFINE {keep} {remove}");
+		show_error(ses, LIST_VARIABLE, "#SYNTAX: #LIST <VARIABLE> REFINE <KEEP> [REMOVE]");
 
 		return ses;
 	}
@@ -835,7 +835,7 @@ DO_ARRAY(array_simplify)
 	}
 	else
 	{
-		show_error(ses, LIST_VARIABLE, "#LIST SIMPLIFY: {%s} is not a list.", list->arg1);
+		show_error(ses, LIST_VARIABLE, "#LIST SIMPLIFY: VARIABLE {%s} IS NOT A LIST.", list->arg1);
 	}
 
 	return ses;
@@ -847,7 +847,7 @@ DO_ARRAY(array_size)
 
 	if (*arg1 == 0)
 	{
-		show_error(ses, LIST_VARIABLE, "#SYNTAX: #LIST {variable} SIZE {variable}");
+		show_error(ses, LIST_VARIABLE, "#SYNTAX: #LIST <VARIABLE> SIZE <VARIABLE>");
 		
 		return ses;
 	}
@@ -876,7 +876,7 @@ DO_ARRAY(array_set)
 
 		if (index == -1)
 		{
-			show_error(ses, LIST_VARIABLE, "#LIST {%s} SET: Invalid index: %s", var, arg1);
+			show_error(ses, LIST_VARIABLE, "#LIST {%s} SET: INVALID INDEX {%s}.", var, arg1);
 
 			return ses;
 		}
@@ -887,7 +887,7 @@ DO_ARRAY(array_set)
 		return ses;
 	}
 
-	show_error(ses, LIST_VARIABLE, "#LIST SET: {%s} is not a list.", var);
+	show_error(ses, LIST_VARIABLE, "#LIST SET: VARIABLE {%s} IS NOT A LIST.", var);
 
 	return ses;
 }
@@ -926,7 +926,7 @@ DO_ARRAY(array_sort)
 	{
 		if (*list->root->list[0]->arg2 == 0)
 		{
-			show_error(ses, LIST_COMMAND, "#ERROR: #LIST {%s} ORDER: LIST IS NOT INDEXED.", var);
+			show_error(ses, LIST_COMMAND, "#ERROR: #LIST {%s} SORT: LIST IS NOT INDEXED.", var);
 
 			return ses;
 		}
@@ -1001,7 +1001,7 @@ DO_ARRAY(array_swap)
 
 		if (index1 == -1 || index2 == -1)
 		{
-			show_error(ses, LIST_VARIABLE, "#LIST {%s} SWAP: Invalid index: %s, %s", var, arg1, arg2);
+			show_error(ses, LIST_VARIABLE, "#LIST {%s} SWAP: INVALID INDEX {%s} {%s}.", var, arg1, arg2);
 
 			return ses;
 		}
@@ -1011,7 +1011,7 @@ DO_ARRAY(array_swap)
 		return ses;
 	}
 
-	show_error(ses, LIST_VARIABLE, "#LIST SWAP: {%s} is not a list.", var);
+	show_error(ses, LIST_VARIABLE, "#LIST SWAP: VARIABLE {%s} IS NOT A LIST.", var);
 
 	return ses;
 }

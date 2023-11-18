@@ -333,7 +333,7 @@ DO_CLASS(class_load)
 
 	if (node == NULL)
 	{
-		show_message(ses, LIST_CLASS, "#CLASS {%s} DOES NOT EXIST.", arg1);
+		show_error(ses, LIST_CLASS, "#CLASS {%s} DOES NOT EXIST.", arg1);
 
 		return ses;
 	}
@@ -414,7 +414,7 @@ DO_CLASS(class_save)
 
 	if (node == NULL)
 	{
-		show_message(ses, LIST_CLASS, "#CLASS {%s} DOES NOT EXIST.", arg1);
+		show_error(ses, LIST_CLASS, "#ERROR: #CLASS {%s} DOES NOT EXIST.", arg1);
 
 		return ses;
 	}
@@ -454,14 +454,14 @@ DO_CLASS(class_size)
 {
 	if (node == NULL)
 	{
-		show_message(ses, LIST_CLASS, "#CLASS {%s} DOES NOT EXIST.", arg1);
+		show_error(ses, LIST_CLASS, "#ERROR: #CLASS {%s} DOES NOT EXIST.", arg1);
 
 		return ses;
 	}
 
 	if (*arg1 == 0 || *arg2 == 0)
 	{
-		show_error(ses, LIST_CLASS, "#SYNTAX: #CLASS {<class name>} SIZE {<variable>}.");
+		show_error(ses, LIST_CLASS, "#SYNTAX: #CLASS <NAME> SIZE <VARIABLE>");
 		
 		return ses;
 	}
@@ -479,14 +479,14 @@ DO_CLASS(class_write)
 
 	if (node == NULL)
 	{
-		show_message(ses, LIST_CLASS, "#CLASS {%s} DOES NOT EXIST.", arg1);
+		show_error(ses, LIST_CLASS, "#ERROR: #CLASS {%s} DOES NOT EXIST.", arg1);
 
 		return ses;
 	}
 
 	if (*arg2 == 0 || (file = fopen(arg2, "w")) == NULL)
 	{
-		show_error(ses, LIST_CLASS, "#ERROR: #CLASS WRITE {%s} - COULDN'T OPEN FILE TO WRITE.", arg2);
+		show_error(ses, LIST_CLASS, "#ERROR: #CLASS WRITE {%s}: COULDN'T OPEN FILE.", arg2);
 		
 		return ses;
 	}

@@ -45,7 +45,7 @@ DO_COMMAND(do_ssl)
 
 	if (*arg1 == 0 || *arg == 0)
 	{
-		show_error(ses, LIST_COMMAND, "#SYNTAX: #SSL {name} {host} {port}");
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #SSL <NAME> <HOST> <PORT>");
 	}
 	else
 	{

@@ -893,7 +893,7 @@ void tick_update(void)
 			{
 				node->val64 += (long long) (get_number(ses, node->arg3) * 1000000LL);
 
-				show_info(ses, LIST_TICKER, "#INFO TICK {%s} INITIALIZED WITH TIMESTAMP {%lld}", node->arg1, node->val64);
+				show_info(ses, LIST_TICKER, "#INFO TICKER {%s} INITIALIZED WITH TIMESTAMP {%lld}", node->arg1, node->val64);
 
 				if (node->val64 < gtd->utime_next_tick)
 				{

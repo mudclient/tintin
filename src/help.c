@@ -491,7 +491,7 @@ DO_COMMAND(do_help)
 
 		if (found == FALSE)
 		{
-			tintin_printf2(ses, "No help found for '%s'", arg1);
+			show_message(ses, LIST_COMMAND, "#HELP: NO MATCHES FOUND FOR {%s}.", arg1);
 		}
 	}
 	return ses;
