@@ -32,6 +32,7 @@
 extern DO_ARRAY(array_add);
 extern DO_ARRAY(array_clear);
 extern DO_ARRAY(array_collapse);
+extern DO_ARRAY(array_copy);
 extern DO_ARRAY(array_create);
 extern DO_ARRAY(array_delete);
 extern DO_ARRAY(array_explode);
@@ -67,6 +68,7 @@ struct array_type array_table[] =
 	{     "CLEAR",            array_clear,       "Clear a list"                            },
 	{     "CLR",              array_clear,       NULL                                      },
 	{     "COLLAPSE",         array_collapse,    "Collapse the list into a variable"       },
+	{     "COPY",             array_copy,        "Copy a list to a list"                   },
 	{     "CREATE",           array_create,      "Create a list with given items"          },
 	{     "DELETE",           array_delete,      "Delete a list item with given index"     },
 	{     "EXPLODE",          array_explode,     "Explode the variable into a list"        },
@@ -253,6 +255,45 @@ DO_ARRAY(array_collapse)
 
 		list->root = NULL;
 	}
+	return ses;
+}
+
+DO_ARRAY(array_copy)
+{
+	struct listnode *from;
+
+	arg = sub_arg_in_braces(ses, arg, arg1, GET_ALL, SUB_VAR|SUB_FUN);
+
+	if (*arg1 == 0)
+	{
+		show_error(ses, LIST_VARIABLE, "#SYNTAX: #LIST {%s} COPY <VARIABLE>.", var);
+
+		return ses;
+	}
+
+	if ((from = search_nest_node_ses(ses, arg1)) == NULL)
+	{
+		show_error(ses, LIST_VARIABLE, "#LIST COPY: VARIABLE {%s} NOT FOUND.", arg1);
+		
+		return ses;
+	}
+
+	if (!strcmp(var, arg1))
+	{
+		return ses;
+	}
+
+	str_cpy(&list->arg2, from->arg2);
+	str_cpy(&list->arg3, from->arg3);
+	str_cpy(&list->arg4, from->arg4);
+
+	if (list->root)
+	{
+		free_list(list->root);
+	}
+
+	copy_nest_node(ses->list[LIST_VARIABLE], list, from);
+
 	return ses;
 }
 

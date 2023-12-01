@@ -103,7 +103,7 @@ void check_all_actions_multi(struct session *ses, char *original, char *stripped
 {
 	struct listroot *root = ses->list[LIST_ACTION];
 	struct listnode *node;
-	char *pto, *pts;
+	char *pto, *pts, *ptm;
 
 	for (root->multi_update = 0 ; root->multi_update < root->used ; root->multi_update++)
 	{
@@ -152,6 +152,13 @@ void check_all_actions_multi(struct session *ses, char *original, char *stripped
 				}
 			}
 			script_driver(ses, LIST_ACTION, buf);
+
+			ptm = node->arg1 + (*node->arg1 == '~');
+
+			if (ptm[0] == '\\' && ptm[1] == 'A')
+			{
+				break;
+			}
 		}
 	}
 }
@@ -995,6 +1002,104 @@ void check_all_substitutions(struct session *ses, char *original, char *line)
 				pto = ptm + len;
 
 				show_debug(ses, LIST_SUBSTITUTE, COLOR_DEBUG "#DEBUG SUBSTITUTE " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "} {" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1, match);
+
+				ptm = node->arg1 + (*node->arg1 == '~');
+
+				if (ptm[0] == '\\' && ptm[1] == 'A')
+				{
+					break;
+				}
+			}
+			while (*pto && check_one_regexp(ses, node, ptl, pto, 0));
+
+			if (node->shots && --node->shots == 0)
+			{
+				delete_node_list(ses, LIST_SUBSTITUTE, node);
+			}
+			strcpy(ptr, pto);
+
+			strcpy(original, result);
+
+			strip_vt102_codes(original, line);
+		}
+	}
+	pop_call();
+	return;
+}
+
+void check_all_substitutions_multi(struct session *ses, char *original, char *line)
+{
+	char *match, *subst, *result, *temp, *ptl, *ptm, *pto, *ptr;
+	struct listroot *root = ses->list[LIST_SUBSTITUTE];
+	struct listnode *node;
+	int len;
+
+	push_call("check_all_substitutions(%p,%p,%p)",ses,original,line);
+
+	match  = str_alloc_stack(0);
+	subst  = str_alloc_stack(0);
+	result = str_alloc_stack(0);
+	temp   = str_alloc_stack(0);
+
+	for (root->multi_update = 0 ; root->multi_update < root->used ; root->multi_update++)
+	{
+		node = root->list[root->multi_update];
+
+		if (!HAS_BIT(node->flags, NODE_FLAG_MULTI))
+		{
+			continue;
+		}
+
+		if (check_one_regexp(ses, node, line, original, 0))
+		{
+			pto = original;
+			ptl = line;
+			ptr = result;
+
+			*result = *gtd->color_reset = 0;
+
+			do
+			{
+				if (*gtd->vars[0] == 0)
+				{
+					break;
+				}
+
+				strcpy(match, gtd->vars[0]);
+
+				substitute(ses, node->arg2, temp, SUB_ARG);
+
+				if (*node->arg1 == '~')
+				{
+					ptm = strstr(pto, match);
+
+					len = strlen(match);
+				}
+				else
+				{
+					ptm = strip_vt102_strstr(pto, match, &len);
+
+					ptl = strstr(ptl, match) + strlen(match);
+				}
+
+				*ptm = 0;
+
+				get_color_codes(gtd->color_reset, pto, gtd->color_reset, GET_ALL);
+
+				substitute(ses, temp, subst, SUB_VAR|SUB_FUN|SUB_COL|SUB_ESC);
+
+				ptr += sprintf(ptr, "%s%s", pto, subst);
+
+				pto = ptm + len;
+
+				show_debug(ses, LIST_SUBSTITUTE, COLOR_DEBUG "#DEBUG SUBSTITUTE " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "} {" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1, match);
+
+				ptm = node->arg1 + (*node->arg1 == '~');
+				
+				if (ptm[0] == '\\' && ptm[1] == 'A')
+				{
+					break;
+				}
 			}
 			while (*pto && check_one_regexp(ses, node, ptl, pto, 0));
 

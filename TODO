@@ -1,6 +1,6 @@
-- switch to pcre2
+- catch event to handle #map global exceptions
 
-- Looking into catch events for most system messages.
+- switch to pcre2
 
 - Add routine to escape 0x00 in port.c RECEIVED DATA event.
 
@@ -12,11 +12,7 @@
 
 - look into GMCP larger than buffer size
 
-- #map set roomnote causes issues when adding \n
-
 - finish ? : support in #math
-
-- multiline triggers
 
 - finish create_node()
 
@@ -40,8 +36,6 @@
 
 - look into a #debug flag for #class
 
-
-
 - Another nice thing would be if there was some flag to make a trigger match newlines as space.
 
 - fix up named delays and undelay
@@ -62,16 +56,13 @@
   - add shadow session support with access to all events.
 
   - set_line_screen debug: col = -5 (64) from draw_text(%p,%d,%p,%p,%p)
+  - set_line_screen stack call triggered on android
 
   - regex101 like regex tester
 
   - check: #var bla { x};#draw scroll box 1 1 3 40 $bla
 
-  - set_line_screen stack call triggered on android
-
   - input spell checking, #cursor display ?
-
-  - look into named actions as a 4th argument
 
   - Get discworld / aardwolf mxp to work for @sentix
 
@@ -127,14 +118,12 @@
   - multiple global exit rooms and noglobal flags.
   - auto align routine that inserts void rooms where needed
   - look into writing script to drag rooms + void with mouse
-  - pancake mode to display rooms at all levels and annotations
   - Store the map filename to differentiate between maps.
   - #map list {<exits>} breaks on rooms that have e mapped to eu.
   - finish landmarks
   - map sandbox mode support (flags to disable saving?)
   - add ghosting to fix #map flag nofollow exit cmd issues?
   - Request: 'stop' #map center command, so i could see how the 'user' moves, rather map moves around him? 
-  - #map uninsert <vnum>
   - make map spacing easier
   - event for failed #map move.
   - look into #send triggering follow map.
@@ -200,8 +189,6 @@
   - Add a file handler.
 
   - multi-line buffer searches / captures / deletes
-
-  - multi-line triggers (use nested actions?)
 
   - add color based auto unwrap routine.
 

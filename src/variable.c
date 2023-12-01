@@ -320,6 +320,11 @@ DO_COMMAND(do_replace)
 			str_cat_printf(&str, "%s%s", pti, tmp);
 
 			pti = ptm;
+
+			if (arg2[0] == '\\' && arg2[1] == 'A')
+			{
+				break;
+			}
 		}
 		while (tintin_regexp(ses, NULL, pti, arg2, 0, REGEX_FLAG_CMD));
 

@@ -1440,14 +1440,7 @@ void screen_csit(struct session *ses, char *arg1, char *arg2, char *arg3)
 	}
 
 	print_stdout(0, 0, "\e[%s%s%s%s%st", arg1, *num1 ? XT_S : XT_V, *num1 && *num1 != ' ' ? num1 : "", *num2 ? XT_S : XT_V, *num2 && *num2 != ' ' ? num2 : "");
-
-//	convert_meta(buf, debug, FALSE);
-
-//	tintin_printf2(gtd->ses, "\e[1;32m[%s] num1 (%s) num2 (%s) %s %s", num1, num2, debug, buf);
 }
-
-
-
 
 
 /*
@@ -1569,7 +1562,6 @@ void erase_right_region(struct session *ses)
 		restore_pos(ses);
 	}
 }
-
 
 void erase_square(struct session *ses, int top_row, int top_col, int bot_row, int bot_col)
 {

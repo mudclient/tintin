@@ -29,6 +29,7 @@
 
 DO_LOG(log_append);
 DO_LOG(log_info);
+DO_LOG(log_make);
 DO_LOG(log_move);
 DO_LOG(log_overwrite);
 DO_LOG(log_off);
@@ -48,10 +49,11 @@ struct log_type log_table[] =
 {
 	{    "APPEND",            log_append,          "Start logging, appending to given file."        },
 	{    "INFO",              log_info,            "Some logging related info."                     },
+	{    "MAKE",              log_make,            "Make the given directory."                      },
 	{    "MOVE",              log_move,            "Move the given file."                           },
 	{    "OFF",               log_off,             "Stop logging."                                  },
 	{    "OVERWRITE",         log_overwrite,       "Start logging, overwriting the given file."     },
-	{    "REMOVE",            log_remove,          "Remove the given file."                         },
+	{    "REMOVE",            log_remove,          "Remove the given file or directory."            },
 	{    "TIMESTAMP",         log_timestamp,       "Timestamp prepended to each log line."          },
 	{    "",                  NULL,                ""                                               }
 };
@@ -134,6 +136,25 @@ DO_LOG(log_info)
 	tintin_printf2(ses, "#LOG INFO: MODE  = %s", HAS_BIT(ses->log->mode, LOG_FLAG_HTML) ? "HTML" : HAS_BIT(ses->log->mode, LOG_FLAG_PLAIN) ? "PLAIN" : HAS_BIT(ses->log->mode, LOG_FLAG_RAW) ? "RAW" : "UNSET");
 	tintin_printf2(ses, "#LOG INFO: LINE  = %s", ses->log->line_file ? ses->log->line_name : "");
 	tintin_printf2(ses, "#LOG INFO: NEXT  = %s", ses->log->next_file ? ses->log->next_name : "");
+}
+
+DO_LOG(log_make)
+{
+	if (mkdir(arg2, 0755))
+	{
+		if (errno != EEXIST)
+		{
+			show_error(ses, LIST_COMMAND, "#ERROR: #LOG MAKE: FAILED TO CREATE DIRECTORY {%s} (%s).", arg2, strerror(errno));
+		}
+		else
+		{
+			show_message(ses, LIST_COMMAND, "#LOG MAKE: DIRECTORY {%s} ALREADY EXISTS.", arg2);
+		}
+	}
+	else
+	{
+		show_message(ses, LIST_COMMAND, "#LOG MAKE: CREATED DIRECTORY {%s}.", arg2);
+	}
 }
 
 DO_LOG(log_move)

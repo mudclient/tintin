@@ -477,8 +477,10 @@ void update_sessions(void)
 				}
 				else
 				{
+/*
 					if (HAS_BIT(ses->flags, SES_FLAG_SNOOPSCROLL))
 					{
+
 						if (HAS_BIT(ses->scroll->flags, SCROLL_FLAG_RESIZE))
 						{
 							buffer_refresh(ses, "", "", "");
@@ -488,9 +490,9 @@ void update_sessions(void)
 							print_scroll_region(ses);
 						}
 					}
+*/
 					buffer_end(ses, "", "", "");
 				}
-
 				DEL_BIT(ses->flags, SES_FLAG_PRINTBUFFER);
 			}
 

@@ -2937,6 +2937,7 @@ extern void check_all_gags(struct session *ses, char *original, char *line);
 extern void check_all_highlights(struct session *ses, char *original, char *line);
 extern  int check_all_prompts(struct session *ses, char *original, char *line);
 extern void check_all_substitutions(struct session *ses, char *original, char *line);
+extern void check_all_substitutions_multi(struct session *ses, char *original, char *line);
 
 #endif
 

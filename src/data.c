@@ -1373,7 +1373,7 @@ DO_COMMAND(do_info)
 				}
 				else
 				{
-					show_error(ses, LIST_COMMAND, "#SYNTAX: #INFO {%s} [ON|OFF|LIST|SAVE|SYSTEM]", arg1);
+					show_error(ses, LIST_COMMAND, "#SYNTAX: #INFO {%s} [ON|OFF|LIST|SAVE]", arg1);
 				}
 				return ses;
 			}

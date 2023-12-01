@@ -1510,10 +1510,14 @@ DO_DRAW(draw_buffer)
 		line = ses->scroll->line;
 	}
 
-	for (cnt = rows ; cnt >= 0 && line - cnt >= 0 ; cnt--)
+	for (cnt = rows ; cnt >= 0 ; cnt--)
 	{
-		str_cat_printf(&buf, "{%s}", ses->scroll->buffer[line - cnt]->str);
+		if (line - cnt >= 0)
+		{
+			str_cat_printf(&buf, "{%s}", ses->scroll->buffer[line - cnt]->str);
+		}
 	}
+	tintin_printf2(gtd->ses, "[%d] (%d) (%s)", line, rows, buf);
 
 	draw_box(ses, top_row, top_col, bot_row, bot_col, rows, cols, flags, box_color, txt_color, buf, arg1, arg2, arg3);
 

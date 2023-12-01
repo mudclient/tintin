@@ -1,5 +1,13 @@
 Mar 2023        2.02.32
 ------------------------------------------------------------------------------
+list.c          Added #list <list> copy <variable> to copy a variable to the
+                given list. Will copy tables as well.
+
+log.c           Added #log make <directory> to create directories. #log remove
+                <directory> can be used to remove one.
+
+trigger.c       Added support for multi-line substitutions.
+
 show.c          Added a REFORMAT event which can be used to alter system
                 messages. Must use #return to set the new message format.
 

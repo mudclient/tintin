@@ -8052,7 +8052,7 @@ DO_MAP(map_roomflag)
 	{
 		if (*arg3 == 0)
 		{
-			show_error(ses, LIST_COMMAND, "#SYNTAX: #MAP ROOMFLAG {%s} {GET} <VARIABLE>.", arg4);
+			show_error(ses, LIST_COMMAND, "#SYNTAX: #MAP ROOMFLAG {%s} {GET} <VARIABLE>", arg4);
 		}
 		else
 		{
