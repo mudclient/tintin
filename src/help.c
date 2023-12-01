@@ -1285,7 +1285,7 @@ struct help_type help_table[] =
 		"<278>         BOTTOM      draw on the bottom side if possible.\n"
 		"<278>         BOXED       draw a box along the square.\n"
 		"<278>         BUMPED      precede the draw with an enter.\n"
-		"<278>         CALIGN      center text.\n"
+		"<278>         CALIGN      both LALIGN and RALIGN to center text.\n"
 		"<278>         CIRCLED     circle the corners.\n"
 		"<278>         CONVERT     draw text with meta conversion.\n"
 		"<278>         CROSSED     cross the corners.\n"
@@ -1344,7 +1344,7 @@ struct help_type help_table[] =
 		"<278>         All draw types take an optional text argument as long as a valid\n"
 		"<278>         square with enough space has been defined. Text is automatically\n"
 		"<278>         word wrapped and text formatting can be customized with the\n"
-		"<278>         CALIGN, LALIGN, RALIGN, and UALIGN options.\n"
+		"<278>         BALIGN, TALIGN, LALIGN, RALIGN, and UALIGN options.\n"
 		"\n"
 		"<178>Example<278>: #draw Blue box 1 1 3 20 {Hello world!}\n"
 		,

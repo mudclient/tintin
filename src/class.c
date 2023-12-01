@@ -452,13 +452,6 @@ DO_CLASS(class_save)
 
 DO_CLASS(class_size)
 {
-	if (node == NULL)
-	{
-		show_error(ses, LIST_CLASS, "#ERROR: #CLASS {%s} DOES NOT EXIST.", arg1);
-
-		return ses;
-	}
-
 	if (*arg1 == 0 || *arg2 == 0)
 	{
 		show_error(ses, LIST_CLASS, "#SYNTAX: #CLASS <NAME> SIZE <VARIABLE>");
@@ -466,7 +459,7 @@ DO_CLASS(class_size)
 		return ses;
 	}
 
-	set_nest_node_ses(ses, arg2, "%d", count_class(ses, node));
+	set_nest_node_ses(ses, arg2, "%d", node ? count_class(ses, node) : 0);
 
 	return ses;
 }
