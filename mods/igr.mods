@@ -1,5 +1,16 @@
 Mar 2023        2.02.32
 ------------------------------------------------------------------------------
+net.c           Added the PROCESSED LINE event. Like RECEIVED LINE, but it
+                triggers after line triggers have been processed.
+
+variable.c      Added support to use \A in #replace and #substitute to only
+                match the start of a line. When using ^ the behavior is more
+                ambiguous, matching at the start of each line and at the end
+                of each preceding match.
+
+net.c           Added the PACKET PATCH event which triggers when a broken
+                packet is detected. Has some utility for trouble shooting.
+
 list.c          Added #list <list> copy <variable> to copy a variable to the
                 given list. Will copy tables as well.
 

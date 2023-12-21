@@ -290,6 +290,8 @@ DO_ARRAY(array_copy)
 	if (list->root)
 	{
 		free_list(list->root);
+
+		list->root = NULL;
 	}
 
 	copy_nest_node(ses->list[LIST_VARIABLE], list, from);

@@ -959,6 +959,11 @@ void check_all_substitutions(struct session *ses, char *original, char *line)
 	{
 		node = root->list[root->update];
 
+		if (HAS_BIT(node->flags, NODE_FLAG_MULTI))
+		{
+			continue;
+		}
+
 		if (check_one_regexp(ses, node, line, original, 0))
 		{
 			pto = original;
@@ -1010,7 +1015,7 @@ void check_all_substitutions(struct session *ses, char *original, char *line)
 					break;
 				}
 			}
-			while (*pto && check_one_regexp(ses, node, ptl, pto, 0));
+			while (*pto && check_one_regexp(ses, node, ptl, pto, PCRE_NOTBOL));
 
 			if (node->shots && --node->shots == 0)
 			{
@@ -1095,13 +1100,13 @@ void check_all_substitutions_multi(struct session *ses, char *original, char *li
 				show_debug(ses, LIST_SUBSTITUTE, COLOR_DEBUG "#DEBUG SUBSTITUTE " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "} {" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1, match);
 
 				ptm = node->arg1 + (*node->arg1 == '~');
-				
+
 				if (ptm[0] == '\\' && ptm[1] == 'A')
 				{
 					break;
 				}
 			}
-			while (*pto && check_one_regexp(ses, node, ptl, pto, 0));
+			while (*pto && check_one_regexp(ses, node, ptl, pto, PCRE_NOTBOL));
 
 			if (node->shots && --node->shots == 0)
 			{
