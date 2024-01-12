@@ -3762,7 +3762,7 @@ struct help_type help_table[] =
 		"<278>         Available MSDP events can be queried using the MSDP protocol\n"
 		"<278>         as described in the specification.\n"
 		"\n"
-		"<278>         <168>https://tintin.sourceforge.io/protocols/msdp\n"
+		"<278>         <168>https://tintin.mudhalla.net/protocols/msdp\n"
 		,
 		"event port"
 	},
@@ -4505,7 +4505,7 @@ struct help_type help_table[] =
 		"<278>         is being used by utilizing the MTTS standard. The MTTS specification\n"
 		"<278>         is available at:\n"
 		"\n"
-		"<278>         http://tintin.sourceforge.net/protocols/mtts\n"
+		"<278>         https://tintin.mudhalla.net/protocols/mtts\n"
 		"\n"
 		"<278>         With the screen reader mode enabled TinTin++ will try to remove or\n"
 		"<278>         alter visual elements where possible.\n"
@@ -5155,7 +5155,7 @@ struct help_type help_table[] =
 		"<278>         underscores in order to be substituted.  If you do not meet these\n"
 		"<278>         requirements do not panic, simply encapsulate the variable in braces:\n"
 		"\n"
-		"<178>Example<278>: #variable {cool website} {http://tintin.sourceforge.net}\n"
+		"<178>Example<278>: #variable {cool website} {https://tintin.mudhalla.net}\n"
 		"<278>         #chat I was on ${cool website} yesterday!.\n"
 		"\n"
 		"<278>         Variables can be escaped by adding additional $ signs.\n"

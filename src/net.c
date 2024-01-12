@@ -638,7 +638,7 @@ void process_more_output(struct session *ses, char *append, int prompt)
 
 void process_mud_output(struct session *ses, char *linebuf, int prompt)
 {
-	char line[STRING_SIZE];
+	char line[STRING_SIZE], temp[STRING_SIZE];
 	int str_len, raw_len;
 
 	push_call("process_mud_output(%p,%p,%d)",ses,linebuf,prompt);
@@ -684,13 +684,13 @@ void process_mud_output(struct session *ses, char *linebuf, int prompt)
 	{
 		ses->gagline--;
 
-		strip_non_vt102_codes(linebuf, line);
+		strip_non_vt102_codes(linebuf, temp);
 
-		print_stdout(0, 0, "%s", line);
+		print_stdout(0, 0, "%s", temp);
 
-		strip_vt102_codes(linebuf, line);
+		strip_vt102_codes(linebuf, temp);
 
-		show_debug(ses, LIST_GAG, COLOR_DEBUG "#DEBUG GAG " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "} " COLOR_COMMAND "[" COLOR_STRING "%d" COLOR_COMMAND "]", line, ses->gagline + 1);
+		show_debug(ses, LIST_GAG, COLOR_DEBUG "#DEBUG GAG " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "} " COLOR_COMMAND "[" COLOR_STRING "%d" COLOR_COMMAND "]", temp, ses->gagline + 1);
 
 		pop_call();
 		return;
@@ -698,11 +698,11 @@ void process_mud_output(struct session *ses, char *linebuf, int prompt)
 
 	if (HAS_BIT(ses->event_flags, EVENT_FLAG_OUTPUT|EVENT_FLAG_CATCH))
 	{
-		strip_vt102_codes(linebuf, line);
+		strip_vt102_codes(linebuf, temp);
 
-		check_all_events(ses, SUB_SEC|EVENT_FLAG_OUTPUT, 0, 3, "PROCESSED LINE", linebuf, line, ntos(prompt));
+		check_all_events(ses, SUB_SEC|EVENT_FLAG_OUTPUT, 0, 3, "PROCESSED LINE", linebuf, temp, ntos(prompt));
 
-		if (check_all_events(ses, SUB_SEC|EVENT_FLAG_CATCH, 0, 3, "CATCH PROCESSED LINE", linebuf, line, ntos(prompt)))
+		if (check_all_events(ses, SUB_SEC|EVENT_FLAG_CATCH, 0, 3, "CATCH PROCESSED LINE", linebuf, temp, ntos(prompt)))
 		{
 			pop_call();
 			return;
@@ -725,11 +725,11 @@ void process_mud_output(struct session *ses, char *linebuf, int prompt)
 			{
 				int height, width;
 
-				word_wrap_split(ses, linebuf, line, ses->wrap, 0, 0, FLAG_NONE, &height, &width);
+				word_wrap_split(ses, linebuf, temp, ses->wrap, 0, 0, FLAG_NONE, &height, &width);
 
 				if (height > 1)
 				{
-					word_wrap_split(ses, linebuf, line, ses->wrap, height, height, WRAP_FLAG_SPLIT, &height, &width);
+					word_wrap_split(ses, linebuf, temp, ses->wrap, height, height, WRAP_FLAG_SPLIT, &height, &width);
 				}
 				ses->input->str_off = 1 + width;
 			}

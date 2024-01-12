@@ -1,11 +1,34 @@
+- 3Kingdoms loses color with #config color_patch on
+
+#SESSION {3k} {3k.org} {3000};
+user
+pass
+#CONFIG {COLOR PATCH} {on};
+#EVENT {RECEIVED PROMPT}
+{
+  #NOP Do Something;
+};
+
 - Problem with restoring true color subs.
 #sub bla {<F00AA00>bla}
 #high blo <118>
 #showme <158>test bli bla blo test
 
+- named delays don't work in gts
+
+- #SPLIT when you give the top bar a negative value for its size, TinTin isn’t drawing the white box around it
+
+- https://github.com/mintty/mintty/wiki/CtrlSeqs#audio-support
+- mintty --configdir DIRNAME
+
 - split screen scrollback setting in #screen
 
+- terrain based weight modifier
+- weightless mode for #map list and #map find
+
 - Make #draw scroll grid table work properly.
+
+- update https://tintin.mudhalla.net/info/ansicolor/
 
 - Make sure #config compact also applies to the log file.
 
@@ -29,6 +52,8 @@
 
 - look into GMCP larger than buffer size
 
+- look into #button SWIPED MOUSE BUTTON ONE option
+
 - finish ? : support in #math
 
 - finish create_node()
@@ -36,6 +61,7 @@
 - Look into #split 1 1 1 1 on termux when hiding / showing keyboard.
 
 - look into invalid { } in MSDP / GMCP handling
+
 
 - mapper.c FAST handling
 

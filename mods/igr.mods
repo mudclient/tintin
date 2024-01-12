@@ -1,6 +1,13 @@
+Jan 2024        2.02.42
+------------------------------------------------------------------------------
+net.c           Fixed a bug causing #config color_patch to strip all colors.
+
 Jan 2024        2.02.41
 ------------------------------------------------------------------------------
+
 tokenize.c      Fixed issues with tailing spaces for several statements.
+
+parse.c         On entering #exit or #quit tintin suggests using #end or #zap.
 
 Mar 2023        2.02.40
 ------------------------------------------------------------------------------
