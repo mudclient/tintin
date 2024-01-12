@@ -1,0 +1,63 @@
+To create the most basic link insert text between \e[4m and \e[24m. These are
+the VT100 codes for underline on and underline off.
+
+#showme {Example: \e[4mlink1\e[24m ... \e[4mlink2\e[24m}
+
+------------------------------------------------------------------------------
+
+If you want to create a link without the underline use \e[4;24m instead of
+\e[4m.
+
+#showme {Example: \e[4;24mlink3 (no underline)\e[24m}
+
+------------------------------------------------------------------------------
+
+Links when clicked generate a LINK event, which are visible if you use
+#config mouse info. Example:
+
+#event {SHORT-CLICKED LINK MOUSE BUTTON ONE} {#showme {click!}}
+
+------------------------------------------------------------------------------
+
+If you want to create a complex link use an OSC code.
+
+\e]68;hello world\a\e[4mlink4\e[24m
+
+The link part remains the same, \e[4mlink4\e[24m, but since it is prefixed
+with the OSC code \e]68;hello world\a the %4 argument of the triggered LINK
+event will contain hello world.
+
+------------------------------------------------------------------------------
+
+\e]68;\001test\002hello world\a\e[4mlink5\e[24m
+
+The OSC code can contain MSDP. \001 indicates the start of a variable
+name, and \002 indicates the start of a variable value. In tintin
+this gets translated to {test}{hello world} which is available in the
+%4 argument of the event.
+
+------------------------------------------------------------------------------
+
+\e]68;\001name6a\002value6a\001name6b\002value6b\a\e[4mlink6\e[24m};
+
+In tintin this gets translated to {name6a}{value6a}{name6b}{value6b}
+
+------------------------------------------------------------------------------
+
+\e]68;0;command\a
+
+This is the most basic link.
+
+\e]68;0;
+\e]68;1;
+
+These three are identical and generate a standard link event.
+
+------------------------------------------------------------------------------
+
+\e]68;2;
+
+In tintin the ;2; option is used for internal help files.
+
+------------------------------------------------------------------------------
+
