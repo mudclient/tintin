@@ -2,6 +2,8 @@ Jan 2024        2.02.42
 ------------------------------------------------------------------------------
 net.c           Fixed a bug causing #config color_patch to strip all colors.
 
+data.c          Classes are properly cleared when removed with #kill.
+
 Jan 2024        2.02.41
 ------------------------------------------------------------------------------
 

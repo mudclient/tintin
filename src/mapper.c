@@ -286,11 +286,11 @@ int delete_map(struct session *ses)
 
 	// probably need to use a dummy node
 
-	delete_node(LIST_ACTION, ses->map->search->area);
-	delete_node(LIST_ACTION, ses->map->search->desc);
-	delete_node(LIST_ACTION, ses->map->search->name);
-	delete_node(LIST_ACTION, ses->map->search->note);
-	delete_node(LIST_ACTION, ses->map->search->terrain);
+	delete_node(ses, LIST_ACTION, ses->map->search->area);
+	delete_node(ses, LIST_ACTION, ses->map->search->desc);
+	delete_node(ses, LIST_ACTION, ses->map->search->name);
+	delete_node(ses, LIST_ACTION, ses->map->search->note);
+	delete_node(ses, LIST_ACTION, ses->map->search->terrain);
 
 	free(ses->map->search);
 

@@ -369,7 +369,7 @@ void delete_node_list(struct session *ses, int type, struct listnode *node)
 	delete_index_list(ses->list[type], index);
 }
 
-void delete_node(int type, struct listnode *node)
+void delete_node(struct session *ses, int type, struct listnode *node)
 {
 	if (HAS_BIT(list_table[type].flags, LIST_FLAG_REGEX))
 	{
@@ -382,6 +382,8 @@ void delete_node(int type, struct listnode *node)
 	switch (type)
 	{
 		case LIST_CLASS:
+			clear_class(ses, node);
+
 			if (node->data)
 			{
 				free(node->data);
@@ -409,6 +411,14 @@ void delete_node(int type, struct listnode *node)
 	// dispose in memory update for one shot handling
 
 	insert_index_list(gtd->dispose_list, node, gtd->dispose_list->used);
+
+	switch (type)
+	{
+		case LIST_CLASS:
+			check_all_events(ses, EVENT_FLAG_CLASS, 0, 1, "CLASS DESTROYED", node->arg1);
+			check_all_events(ses, EVENT_FLAG_CLASS, 1, 1, "CLASS DESTROYED %s", node->arg1, node->arg1);
+			break;
+	}
 }
 
 void delete_index_list(struct listroot *root, int index)
@@ -417,7 +427,7 @@ void delete_index_list(struct listroot *root, int index)
 
 	remove_index_list(root, index);
 
-	delete_node(root->type, node);
+	delete_node(root->ses, root->type, node);
 }
 
 void dispose_node(struct listnode *node)
