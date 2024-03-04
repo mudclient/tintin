@@ -1187,6 +1187,8 @@ void check_one_line_multi(struct session *ses, char *original, char *stripped)
 		return;
 	}
 
+	gtd->mud_output_line = original;
+
 	buf = str_alloc_stack(0);
 
 	if (!HAS_BIT(ses->list[LIST_ACTION]->flags, LIST_FLAG_IGNORE))
@@ -1221,6 +1223,7 @@ void check_one_line(struct session *ses, char *line)
 	strip = str_alloc_stack(0);
 	buf   = str_alloc_stack(0);
 
+	gtd->mud_output_line = line;
 	strip_vt102_codes(line, strip);
 
 	if (!HAS_BIT(ses->list[LIST_ACTION]->flags, LIST_FLAG_IGNORE))
