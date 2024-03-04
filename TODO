@@ -1,13 +1,6 @@
-- 3Kingdoms loses color with #config color_patch on
+- Add an example script to display time left on tickers using #info tickers save
 
-#SESSION {3k} {3k.org} {3000};
-user
-pass
-#CONFIG {COLOR PATCH} {on};
-#EVENT {RECEIVED PROMPT}
-{
-  #NOP Do Something;
-};
+- comprehensive memory breakdown for variables/triggers/mapper/etc
 
 - Problem with restoring true color subs.
 #sub bla {<F00AA00>bla}
@@ -62,6 +55,7 @@ pass
 
 - look into invalid { } in MSDP / GMCP handling
 
+- MSLP jump link handling
 
 - mapper.c FAST handling
 
@@ -94,6 +88,9 @@ pass
 - Look into delete_index_list leaving a table with ->used set to 0 causing #list crashes
 
 - #daemon attach fails under high cpu load
+
+- https://github.com/scandum/tintin/issues/161
+  Add note to package maintainers
 
 ----------------
   - add shadow session support with access to all events.

@@ -367,15 +367,23 @@ struct room_data *create_room(struct session *ses, char *format, ...)
 		newroom->weight = 1;
 	}
 
-	if (newroom->vnum > 0 && newroom->vnum < ses->map->size)
+	if (newroom->vnum <= 0)
+	{
+		return newroom;
+	}
+
+	if (newroom->vnum < ses->map->size)
 	{
 		ses->map->room_list[newroom->vnum] = newroom;
 	}
 
-	if (!HAS_BIT(ses->map->flags, MAP_FLAG_READ) && newroom->vnum)
+	if (gtd->level->debug || !HAS_BIT(ses->map->flags, MAP_FLAG_READ))
 	{
 		show_message(ses, LIST_PATH, "#MAP CREATE ROOM %5d {%s}.", newroom->vnum, newroom->name);
+	}
 
+	if (!HAS_BIT(ses->map->flags, MAP_FLAG_READ))
+	{
 		check_all_events(ses, EVENT_FLAG_MAP, 0, 2, "MAP CREATE ROOM", ntos(newroom->vnum), newroom->name);
 	}
 
@@ -6554,9 +6562,9 @@ DO_MAP(map_info)
 
 	if (is_abbrev(arg1, "SAVE"))
 	{
-		set_nest_node_ses(ses, "info[map]", "{DIRECTION}{%d}", ses->map->dir);
-		add_nest_node_ses(ses, "info[map]", "{EXITS}{%d}", exits);
-		add_nest_node_ses(ses, "info[map]", "{FLAGS}{{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}}",
+		set_nest_node_ses(ses, "info[MAP]", "{DIRECTION}{%d}", ses->map->dir);
+		add_nest_node_ses(ses, "info[MAP]", "{EXITS}{%d}", exits);
+		add_nest_node_ses(ses, "info[MAP]", "{FLAGS}{{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}{%s}{%d}}",
 			"ASCIIGRAPHICS", HAS_BIT(ses->map->flags, MAP_FLAG_ASCIIGRAPHICS) != 0,
 			"ASCIILENGTH", HAS_BIT(ses->map->flags, MAP_FLAG_ASCIILENGTH) != 0,
 			"ASCIIVNUMS", HAS_BIT(ses->map->flags, MAP_FLAG_ASCIIVNUMS) != 0,
@@ -6570,9 +6578,9 @@ DO_MAP(map_info)
 			"SYMBOLGRAPHICS", HAS_BIT(ses->map->flags, MAP_FLAG_SYMBOLGRAPHICS) != 0,
 			"TERRAIN", HAS_BIT(ses->map->flags, MAP_FLAG_TERRAIN) != 0,
 			"UNICODEGRAPHICS", HAS_BIT(ses->map->flags, MAP_FLAG_UNICODEGRAPHICS) != 0);
-		add_nest_node_ses(ses, "info[map]", "{LAST_ROOM}{%d}", ses->map->last_room);
-		add_nest_node_ses(ses, "info[map]", "{ROOMS}{%d}", cnt);
-		add_nest_node_ses(ses, "info[map]", "{ROOMS_MAX}{%d}", ses->map->size);
+		add_nest_node_ses(ses, "info[MAP]", "{LAST_ROOM}{%d}", ses->map->last_room);
+		add_nest_node_ses(ses, "info[MAP]", "{ROOMS}{%d}", cnt);
+		add_nest_node_ses(ses, "info[MAP]", "{ROOMS_MAX}{%d}", ses->map->size);
 
 		return;
 	}

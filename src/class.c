@@ -229,40 +229,44 @@ DO_CLASS(class_close)
 {
 	if (node == NULL)
 	{
-		show_message(ses, LIST_CLASS, "#CLASS {%s} DOES NOT EXIST.", arg1);
+		node = search_node_list(ses->list[LIST_CLASS], arg1);
+
+		if (node == NULL)
+		{
+			show_message(ses, LIST_CLASS, "#CLASS {%s} DOES NOT EXIST.", arg1);
+			return ses;
+		}
+	}
+
+	if (atoi(node->arg3) == 0)
+	{
+		show_message(ses, LIST_CLASS, "#CLASS {%s} IS ALREADY CLOSED.", arg1);
 	}
 	else
 	{
-		if (atoi(node->arg3) == 0)
-		{
-			show_message(ses, LIST_CLASS, "#CLASS {%s} IS ALREADY CLOSED.", arg1);
-		}
-		else
-		{
-			show_message(ses, LIST_CLASS, "#CLASS {%s} HAS BEEN CLOSED.", arg1);
+		show_message(ses, LIST_CLASS, "#CLASS {%s} HAS BEEN CLOSED.", arg1);
 
-			update_node_list(ses->list[LIST_CLASS], arg1, "", "0", node->arg4);
+		update_node_list(ses->list[LIST_CLASS], arg1, "", "0", node->arg4);
 
-			if (!strcmp(ses->group, arg1))
+		if (!strcmp(ses->group, arg1))
+		{
+			check_all_events(ses, EVENT_FLAG_CLASS, 0, 1, "CLASS DEACTIVATED", ses->group);
+			check_all_events(ses, EVENT_FLAG_CLASS, 1, 1, "CLASS DEACTIVATED %s", ses->group, ses->group);
+
+			node = ses->list[LIST_CLASS]->list[0];
+
+			if (atoi(node->arg3))
 			{
-				check_all_events(ses, EVENT_FLAG_CLASS, 0, 1, "CLASS DEACTIVATED", ses->group);
-				check_all_events(ses, EVENT_FLAG_CLASS, 1, 1, "CLASS DEACTIVATED %s", ses->group, ses->group);
+				RESTRING(ses->group, node->arg1);
 
-				node = ses->list[LIST_CLASS]->list[0];
+				show_message(ses, LIST_CLASS, "#CLASS {%s} HAS BEEN ACTIVATED.", node->arg1);
 
-				if (atoi(node->arg3))
-				{
-					RESTRING(ses->group, node->arg1);
-
-					show_message(ses, LIST_CLASS, "#CLASS {%s} HAS BEEN ACTIVATED.", node->arg1);
-
-					check_all_events(ses, EVENT_FLAG_CLASS, 0, 1, "CLASS ACTIVATED", node->arg1);
-					check_all_events(ses, EVENT_FLAG_CLASS, 1, 1, "CLASS ACTIVATED %s", arg1, arg1);
-				}
-				else
-				{
-					RESTRING(ses->group, "");
-				}
+				check_all_events(ses, EVENT_FLAG_CLASS, 0, 1, "CLASS ACTIVATED", node->arg1);
+				check_all_events(ses, EVENT_FLAG_CLASS, 1, 1, "CLASS ACTIVATED %s", arg1, arg1);
+			}
+			else
+			{
+				RESTRING(ses->group, "");
 			}
 		}
 	}

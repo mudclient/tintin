@@ -772,6 +772,36 @@
 }
 
 #nop -------------------------------------------------------------------------
+#nop Example script for creating clickable menus in the scrolling region.
+#nop -------------------------------------------------------------------------
+
+#con mouse on
+
+#function link {#var result {\e]68;1;%1;%2\a\e[4m%3\e[24m}}
+
+#event {PRESSED LINK MENU MOUSE BUTTON ONE}
+{
+	#local {link} {%4};
+
+	#foreach {*link[]} {key}
+	{
+		#line {substitute} {variables;functions}
+		{
+			#var link[$key] {@link{MENU_ITEM;$link[$key];<faa>$key}}
+		}
+	};
+	#draw Azure scaled box %0+1 %1 %0+1 %1+9 $link[%*]
+}
+
+#event {PRESSED LINK MENU_ITEM MOUSE BUTTON ONE}
+{
+	#showme {<ffa>%4};
+	#buffer refresh
+}
+
+#showme {Example link: @link{MENU;{{bli}{bla}{blo}{blu}};<128>click me}}
+
+#nop -------------------------------------------------------------------------
 #nop This creates two input lines that can be switched between using the tab
 #nop key.
 #nop -------------------------------------------------------------------------

@@ -2518,7 +2518,7 @@ extern void write_line_mud(struct session *ses, char *line, int size);
 extern int read_buffer_mud(struct session *ses);
 extern void readmud(struct session *ses);
 extern void process_more_output(struct session *ses, char *append, int prompt);
-extern void process_mud_output(struct session *ses, char *linebuf, int prompt);
+extern void process_one_line(struct session *ses, char *linebuf, int prompt);
 
 #endif
 

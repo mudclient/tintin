@@ -1,11 +1,11 @@
 #!./tt++ -G
 
-#nop   1: #math
-#nop   2: #line
-#nop   3: #return
-#nop   4: #buffer
-#nop   5: #switch
-#nop   6: #class
+#0   1: #math
+#0   2: #line
+#0   3: #return
+#0   4: #buffer
+#0   5: #switch
+#0   6: #class
 
 
 #line sub arg #var arg {%0}
@@ -510,7 +510,12 @@ sethash blo hello
 
 #regex {blibla} {%10bli%+3..3a} {#if {"&11" !== "bla"} {error 34.1: regex argument indexing (&11)}}
 #regex {blibla} {%.%+%.%*}      {#if {"&4" !== "bla"}  {error 34.2: regex argument indexing (&4)}}
-#regex {blibla} {%99bli%+3..3*}      {#if {"&99" !== "bla"} {error 34.3: regex argument indexing (&99)}}
+#regex {blibla} {%99bli%+3..3*} {#if {"&99" !== "bla"} {error 34.3: regex argument indexing (&99)}}
+#regex {blibla} {bli%!+}        {#if {"&1" !== ""}     {error 34.4: regex argument indexing (&1)}}
+#regex {blibla} {%+2*%+3*}      {#if {"&2" !== "ibl"}  {error 34.5: regex argument indexing (&2)}}
+#regex {blibla} {%+1..2*}       {#if {"&1" !== "bl"}   {error 34.6: regex argument indexing (&1)}}
+#regex {blibla} {%!+5*%*}       {#if {"&1" !== "a"}    {error 34.7: regex argument indexing (&1)}}
+#regex {blibla} {%+%*}          {#if {"&1" !== "b"}    {error 34.8: regex argument indexing (&1)}}
 
 #0 )=-=( ERROR 35 )=-=( 0#
 

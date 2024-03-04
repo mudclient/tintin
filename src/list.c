@@ -190,6 +190,25 @@ DO_ARRAY(array_add)
 		list->root = init_list(ses, LIST_VARIABLE, LIST_SIZE);
 	}
 
+	if (list->root->used)
+	{
+		int numerate = atoi(list->root->list[0]->arg1) == 1 && atoi(list->root->list[list->root->used - 1]->arg1) == list->root->used;
+
+		if (numerate == 0)
+		{
+			for (index = 0 ; index < list->root->used ; index++)
+			{
+				if (atoi(list->root->list[index]->arg1) != index + 1)
+				{
+					break;
+				}
+			}
+			show_error(ses, LIST_COMMAND, "#ERROR: #LIST {%s} ADD: INVALID LIST. INDEX %d IS SET TO {%s}.", var, index + 1, list->root->list[index]->arg1);
+
+			return ses;
+		}
+	}
+
 	index = list->root->used + 1;
 
 	while (*arg)
@@ -599,7 +618,7 @@ DO_ARRAY(array_indexate)
 			}
 			else
 			{
-				show_error(ses, LIST_COMMAND, "#ERROR: #LIST {%s} INDEXATE: FAILED TO POPULATE INDEX {%s}.", var, list->root->list[cnt]->arg1);
+				show_error(ses, LIST_COMMAND, "#ERROR: #LIST {%s} INDEXATE: ABORTED DUE TO INVALID INDEX {%s}.", var, list->root->list[cnt]->arg1);
 				break;
 			}
 		}
@@ -625,7 +644,7 @@ DO_ARRAY(array_indexate)
 			}
 			else
 			{
-				show_error(ses, LIST_COMMAND, "#ERROR: #LIST {%s} INDEXATE: FAILED TO POPULATE INDEX {%s}.", var, list->root->list[cnt]->arg1);
+				show_error(ses, LIST_COMMAND, "#ERROR: #LIST {%s} INDEXATE: ABORTED DUE TO INVALID INDEX {%s}.", var, list->root->list[cnt]->arg1);
 				break;
 			}
 		}
