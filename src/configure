@@ -3458,7 +3458,7 @@ if test "x$ac_cv_header_gnutls_gnutls_h" = xyes; then :
 #define HAVE_GNUTLS_GNUTLS_H 1
 _ACEOF
 
-$as_echo "#define HAVE_GNUTLS_H /**/" >>confdefs.h
+$as_echo "#define HAVE_GNUTLS_H 1" >>confdefs.h
 
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: gnutls header file not found, is the develoment part present" >&5

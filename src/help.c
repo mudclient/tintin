@@ -2111,7 +2111,7 @@ struct help_type help_table[] =
 		"<278>         settings, as well as the list names that you can ignore.\n"
 		"\n"
 		"<278>         If you for example use #IGNORE ACTIONS ON actions will no longer\n"
-		"<278>         triger. Not every list can be ignored.\n"
+		"<278>         trigger. Not every list can be ignored.\n"
 		,
 		"class debug info kill message"
 	},
@@ -4110,8 +4110,10 @@ struct help_type help_table[] =
 		"<178>      \\\\ <278>Match a backslash                              \\\\\n"
 		"\n"
 		"<278>         \\s matches one space, \\s+ matches one or multiple spaces, the use\n"
-		"<278>         of {\\s+} is required for this sequence to work in tintin, \\s by"
+		"<278>         of {\\s+} is required for this sequence to work in tintin, \\s by\n"
 		"<278>         itself will work outside of a set of braces.\n"
+		"\n"
+		"<278>         Use \\% to forcibly match a literal % character.\n"
 		"\n"
 		"<278>         <128>Color triggers\n"
 		"\n"
@@ -4264,6 +4266,7 @@ struct help_type help_table[] =
 		"<178>      %0 <278>should be avoided in triggers, and if left alone lists all matches.\n"
 		"<178>     { } <278>embed a raw regular expression, matches are stored to %1-%99.\n"
 		"<178>   %!{ } <278>embed a raw regular expression, matches are not stored.\n"
+		"\n"
 		"<178>         <278>[ ] . + | ( ) ? * are treated as normal text unlessed used within\n"
 		"<178>         <278>braces. Keep in mind that { } is replaced with ( ) automatically\n"
 		"<178>         <278>unless %!{ } is used.\n"

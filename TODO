@@ -11,6 +11,8 @@
 
 - #SPLIT when you give the top bar a negative value for its size, TinTin isn’t drawing the white box around it
 
+- Add an option to insert multiple items to a list
+
 - https://github.com/mintty/mintty/wiki/CtrlSeqs#audio-support
 - mintty --configdir DIRNAME
 

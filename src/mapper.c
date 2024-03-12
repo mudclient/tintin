@@ -5974,7 +5974,7 @@ DO_MAP(map_entrance)
 
 	if (rev_exit == NULL)
 	{
-		show_message(ses, LIST_COMMAND, "#MAP ENTRANCE {%s}: EXIT {%s} HAS NO MATCHING ENTRANCE.");
+		show_message(ses, LIST_COMMAND, "#MAP ENTRANCE: EXIT {%s} HAS NO MATCHING ENTRANCE.", arg1);
 
 		return;
 	}
