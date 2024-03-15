@@ -639,7 +639,7 @@ void scale_drawing(struct session *ses, int *top_row, int *top_col, int *bot_row
 
 	while (*arg)
 	{
-		arg = sub_arg_in_braces(ses, arg, buf, GET_ALL, SUB_VAR|SUB_FUN|SUB_COL|SUB_LIT|SUB_ESC);
+		arg = sub_arg_in_braces(ses, arg, buf, GET_ALL, SUB_COL|SUB_LIT|SUB_ESC);
 
 		word_wrap_split(ses, buf, out, max_width - bor_width, 0, 0, WRAP_FLAG_NONE, &height, &width);
 
@@ -1568,7 +1568,7 @@ DO_DRAW(draw_line_horizontal)
 
 	corner = flags;
 
-	sub_arg_in_braces(ses, arg, arg2, GET_ALL, SUB_COL|SUB_LIT|SUB_ESC|SUB_VAR|SUB_FUN);
+	sub_arg_in_braces(ses, arg, arg2, GET_ALL, SUB_COL|SUB_LIT|SUB_ESC);
 
 	arg = arg2;
 
@@ -2347,7 +2347,7 @@ DO_DRAW(draw_table_grid)
 					{
 						strcpy(buf2, row_color);
 
-						str = sub_arg_in_braces(ses, str, buf2 + strlen(buf2), GET_ALL, SUB_VAR|SUB_FUN|SUB_LIT|SUB_ESC|SUB_COL);
+						str = sub_arg_in_braces(ses, str, buf2 + strlen(buf2), GET_ALL, SUB_LIT|SUB_ESC|SUB_COL);
 
 //						get_color_codes(row_color, buf2, row_color, GET_ALL);
 
@@ -2468,11 +2468,6 @@ DO_DRAW(draw_text)
 
 	txt = buf2;
 
-	substitute(ses, arg, buf1, SUB_VAR|SUB_FUN);
-	substitute(ses, buf1, buf3, SUB_ESC|SUB_COL|SUB_LIT);
-
-	arg = buf3;
-
 	if (*arg3)
 	{
 		txt += substitute(ses, arg3, txt, SUB_COL|SUB_LIT|SUB_ESC);
@@ -2486,7 +2481,7 @@ DO_DRAW(draw_text)
 	{
 		while (*arg)
 		{
-			arg = get_arg_in_braces(ses, arg, buf1, GET_ALL);
+			arg = sub_arg_in_braces(ses, arg, buf1, GET_ALL, SUB_COL|SUB_LIT|SUB_ESC);
 
 			txt += sprintf(txt, "%s\n", buf1);
 

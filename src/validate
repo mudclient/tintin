@@ -57,6 +57,12 @@
 	#draw Lime Azure ualign  box 28 61 31 79 { u\na\nl\ni\ng\nn};
 	#draw Lime Azure scaled  box 28 81 31 99 scaled;
 
+	#draw Violet Jade box 32  1 37 19 test of a test of a test;
+	#draw Violet Jade box 32 21 37 39 {test} {of a test} {of a test};
+	#draw Violet Jade box 32 41 37 59 test\nof a test\nof a test;
+	#draw Violet Jade box 32 61 37 79 color<118>test<128>test<138>test<148>test;
+	#draw Violet Jade box 32 81 37 99 {  offset test};
+
 
 
 	#end \
