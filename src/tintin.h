@@ -650,6 +650,8 @@ enum operators
 #define CONFIG_FLAG_WORDWRAP          BV19
 #define CONFIG_FLAG_IAC_GA            BV30
 #define CONFIG_FLAG_MULTI_TRIGGER     BV31
+#define CONFIG_FLAG_EXTRA_ACTION_ARGS BV32
+#define CONFIG_FLAG_EXTRA_ALIAS_ARGS  BV33
 
 
 #define SES_FLAG_BUFFERUPDATE         BV01
@@ -1166,7 +1168,9 @@ struct tintin_data
 	char                    verbatim_char;
 	char                    repeat_char;
 	int                     match[303];
+	char                  * alias_name;
 	char                  * vars[100];
+	char                  * vars_raw[100];
 	char                  * cmds[100];
 	int                     args[100];
 	int                     varc;
@@ -1207,7 +1211,7 @@ struct session
 	int                     telopts;
 	int                     telopt_flag[8];
 	int                     event_flags;
-        int                     config_flags;
+	long                    config_flags;
 	int                     flags;
 	int                     charset;
 	char                  * session_host;

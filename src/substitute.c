@@ -1634,7 +1634,14 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 					}
 					else
 					{
+						int secure = 0;
+
 						i = is_digit(pti[2]) ? (pti[1] - '0') * 10 + pti[2] - '0' : pti[1] - '0';
+
+						if (HAS_BIT(flags, SUB_SEC) || (HAS_BIT(ses->config_flags, CONFIG_FLAG_EXTRA_ALIAS_ARGS) && i >= 20 && i <= 39))
+						{
+							secure = 1;
+						}
 
 						ptt = gtd->vars[i];
 
@@ -1647,7 +1654,7 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 								continue;
 							}
 
-							if (HAS_BIT(flags, SUB_SEC))
+							if (secure)
 							{
 								switch (*ptt)
 								{
@@ -1687,15 +1694,8 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 									case '$':
 									case '&':
 									case '*':
-										if (is_variable(ses, ptt))
-										{
-											*pto++ = '\\';
-											*pto++ = *ptt;
-										}
-										else
-										{
-											*pto++ = *ptt;
-										}
+										*pto++ = '\\';
+										*pto++ = *ptt;
 										break;
 
 									case '@':

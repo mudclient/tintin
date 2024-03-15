@@ -85,6 +85,12 @@ void check_all_actions(struct session *ses, char *original, char *line, char *bu
 		{
 			show_debug(ses, LIST_ACTION, COLOR_DEBUG "#DEBUG ACTION " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1);
 
+			if (HAS_BIT(ses->config_flags, CONFIG_FLAG_EXTRA_ACTION_ARGS))
+			{
+				RESTRING(gtd->vars[99], original);
+				RESTRING(gtd->vars[98], line);
+			}
+
 			substitute(ses, node->arg2, buf, SUB_ARG|SUB_SEC);
 
 			if (node->shots && --node->shots == 0)
@@ -130,6 +136,12 @@ void check_all_actions_multi(struct session *ses, char *original, char *stripped
 				break;
 			}
 			show_debug(ses, LIST_ACTION, COLOR_DEBUG "#DEBUG MULTI ACTION " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1);
+
+			if (HAS_BIT(ses->config_flags, CONFIG_FLAG_EXTRA_ACTION_ARGS))
+			{
+				RESTRING(gtd->vars[99], pto);
+				RESTRING(gtd->vars[98], pts);
+			}
 
 			substitute(ses, node->arg2, buf, SUB_ARG|SUB_SEC);
 
@@ -216,6 +228,7 @@ int check_all_aliases(struct session *ses, char *input)
 	struct listnode *node;
 	struct listroot *root;
 	char *buf, *line, *arg;
+	char *buf2, *arg2;
 	int i;
 
 	root = ses->list[LIST_ALIAS];
@@ -232,6 +245,7 @@ int check_all_aliases(struct session *ses, char *input)
 	}
 
 	buf  = str_alloc_stack(0);
+	buf2 = str_alloc_stack(0);
 	line = str_alloc_stack(0);
 
 	substitute(ses, input, line, SUB_VAR|SUB_FUN);
@@ -253,14 +267,56 @@ int check_all_aliases(struct session *ses, char *input)
 						continue;
 					}
 					arg = &line[i + 1];
+					if (HAS_BIT(ses->config_flags, CONFIG_FLAG_EXTRA_ALIAS_ARGS))
+					{
+						RESTRING(gtd->vars[90], node->arg1)
+						RESTRING(gtd->vars[80], node->group)
+						arg2 = &input[i + 1];
+					}
 				}
 				else
 				{
 					arg = &line[i];
+					if (HAS_BIT(ses->config_flags, CONFIG_FLAG_EXTRA_ALIAS_ARGS))
+					{
+						RESTRING(gtd->vars[90], node->arg1)
+						RESTRING(gtd->vars[80], node->group)
+						arg2 = &input[i];
+					}
 				}
 
 				RESTRING(gtd->vars[0], arg)
+				if (HAS_BIT(ses->config_flags, CONFIG_FLAG_EXTRA_ALIAS_ARGS))
+				{
+					RESTRING(gtd->vars[20], arg2)
+				}
 
+			// 这里因为是新加了一路流程，所以为了遵循最小 diff 原则，故意减少了一重缩进
+			if (HAS_BIT(ses->config_flags, CONFIG_FLAG_EXTRA_ALIAS_ARGS))
+			{
+				for (i = 1 ; i < 20 ; i++)
+				{
+					gtd->varc = i;
+
+					if (*arg == 0)
+					{
+						for(; i < 20; i++)
+						{
+							*gtd->vars[i] = 0;
+							*gtd->vars[i+20] = 0;
+						}
+						break;
+					}
+
+					arg = get_arg_in_braces(ses, arg, buf, GET_ONE);
+					arg2 = get_arg_in_braces(ses, arg2, buf2, GET_ONE);
+
+					RESTRING(gtd->vars[i], buf);
+					RESTRING(gtd->vars[i+20], buf2);
+				}
+			}
+			else
+			{
 				for (i = 1 ; i < 100 ; i++)
 				{
 					gtd->varc = i;
@@ -279,6 +335,7 @@ int check_all_aliases(struct session *ses, char *input)
 					RESTRING(gtd->vars[i], buf);
 				}
 			}
+		}
 
 			substitute(ses, node->arg2, buf, SUB_ARG);
 

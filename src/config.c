@@ -60,6 +60,8 @@ DO_CONFIG(config_verbatim);
 DO_CONFIG(config_verbatimchar);
 DO_CONFIG(config_verbose);
 DO_CONFIG(config_wordwrap);
+DO_CONFIG(config_extra_action_args);
+DO_CONFIG(config_extra_alias_args);
 DO_CONFIG(config_iac_ga);
 DO_CONFIG(config_multi_trigger);
 
@@ -304,6 +306,20 @@ struct config_type config_table[] =
 		"Server output is word wrapped",
 		"Server output is line wrapped",
 		config_wordwrap
+	},
+
+	{
+		"EXTRA ACTION ARGS",
+		"Enable extra action arguments",
+		"Disable extra action arguments",
+		config_extra_action_args
+	},
+
+	{
+		"EXTRA ALIAS ARGS",
+		"Enable extra alias arguments",
+		"Disable extra alias arguments",
+		config_extra_alias_args
 	},
 
 	{
@@ -1357,6 +1373,54 @@ DO_CONFIG(config_wordwrap)
 		}
 	}
 	strcpy(arg2, HAS_BIT(ses->config_flags, CONFIG_FLAG_WORDWRAP) ? "ON" : "OFF");
+
+	return ses;
+}
+
+DO_CONFIG(config_extra_action_args)
+{
+	if (*arg2)
+	{
+		if (is_abbrev(arg2, "ON"))
+		{
+			SET_BIT(ses->config_flags, CONFIG_FLAG_EXTRA_ACTION_ARGS);
+		}
+		else if (is_abbrev(arg2, "OFF"))
+		{
+			DEL_BIT(ses->config_flags, CONFIG_FLAG_EXTRA_ACTION_ARGS);
+		}
+		else
+		{
+			show_error(ses, LIST_CONFIG, "#SYNTAX: #CONFIG {%s} <ON|OFF>", config_table[index].name);
+
+			return NULL;
+		}
+	}
+	strcpy(arg2, HAS_BIT(ses->config_flags, CONFIG_FLAG_EXTRA_ACTION_ARGS) ? "ON" : "OFF");
+
+	return ses;
+}
+
+DO_CONFIG(config_extra_alias_args)
+{
+	if (*arg2)
+	{
+		if (is_abbrev(arg2, "ON"))
+		{
+			SET_BIT(ses->config_flags, CONFIG_FLAG_EXTRA_ALIAS_ARGS);
+		}
+		else if (is_abbrev(arg2, "OFF"))
+		{
+			DEL_BIT(ses->config_flags, CONFIG_FLAG_EXTRA_ALIAS_ARGS);
+		}
+		else
+		{
+			show_error(ses, LIST_CONFIG, "#SYNTAX: #CONFIG {%s} <ON|OFF>", config_table[index].name);
+
+			return NULL;
+		}
+	}
+	strcpy(arg2, HAS_BIT(ses->config_flags, CONFIG_FLAG_EXTRA_ALIAS_ARGS) ? "ON" : "OFF");
 
 	return ses;
 }
