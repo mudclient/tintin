@@ -110,6 +110,14 @@ struct listroot *copy_list(struct session *ses, struct listroot *sourcelist, int
 					node->val64 = sourcelist->list[i]->val64;
 					break;
 
+				case LIST_CLASS:
+					if (sourcelist->list[i]->data)
+					{
+						node->data = malloc(atoi(node->arg4));
+						memcpy(node->data, sourcelist->list[i]->data, atoi(node->arg4));
+					}
+					break;
+
 				case LIST_VARIABLE:
 					copy_nest_node(ses->list[type], node, sourcelist->list[i]);
 					break;
