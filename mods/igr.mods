@@ -1,5 +1,7 @@
 Jan 2024        2.02.42
 ------------------------------------------------------------------------------
+chat.c          Increased to timeout for the handshake from 5 to 30 seconds.
+
 substitute.c    %%%s would get escaped to %%s in aliases and actions. This was
                 changed so only %%%1 gets escaped to %%1, %%%s stays the same.
 

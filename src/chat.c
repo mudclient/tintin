@@ -153,7 +153,7 @@ DO_CHAT(chat_initialize)
 		syserr_printf(gtd->ses, "chat_initialize: setsockopt");
 	}
 
-	ld.l_onoff  = 0; 
+	ld.l_onoff  = 0;
 	ld.l_linger = 100;
 
 	setsockopt(sock, SOL_SOCKET, SO_LINGER, (char *) &ld, sizeof(ld));
@@ -380,11 +380,31 @@ void *threaded_chat_call(void *arg)
 	new_buddy->prefix   = strdup("");
 	new_buddy->version  = strdup("");
 
+	new_buddy->timeout  = gtd->time + CALL_TIMEOUT * 6;
+
 	strip_vt102_codes(gtd->chat->name, name);
 
 	chat_socket_printf(new_buddy, "CHAT:%s\n%s%-5u", name, gtd->chat->ip, gtd->chat->port);
 
 	chat_printf("Socket connected, negotiating protocol...");
+
+#ifdef HAVE_LIBPTHREAD
+	while (gtd->chat->update)
+	{
+		chat_printf("Blocking the linking of %s.", new_buddy->name);
+
+		usleep(1000);
+
+		continue;
+	}
+#endif
+	LINK(new_buddy, gtd->chat->next, gtd->chat->prev);
+
+	freeaddrinfo(address);
+
+	return NULL;
+
+//	old code
 
 	FD_ZERO(&rds);
 	FD_SET(sock, &rds);
@@ -690,6 +710,8 @@ int process_chat_input(struct chat_data *buddy)
 			{
 				if (node != buddy && !strcasecmp(name, node->name))
 				{
+					// allow a relog from the same IP.
+
 					if (!strcmp(buddy->ip, node->ip))
 					{
 						close_chat(node, TRUE);
@@ -717,6 +739,15 @@ int process_chat_input(struct chat_data *buddy)
 				return -1;
 			}
 		}
+		else
+		{
+			chat_socket_printf(buddy, "%c\n%s has refused your connection due to an invalid handshake. (%s)\n%c", CHAT_MESSAGE, gtd->chat->name, buf, CHAT_END_OF_COMMAND);
+
+			chat_printf("Refusing connection from %.21s:%d, invalid handshake.", buddy->ip, buddy->port);
+
+			pop_call();
+			return -1;
+		}
 
 		strip_vt102_codes(gtd->chat->name, name);
 
@@ -739,6 +770,10 @@ int process_chat_input(struct chat_data *buddy)
 			strip_vt102_codes(&temp[4], name);
 
 			RESTRING(buddy->name, name);
+
+			buddy->timeout = 0;
+
+			chat_printf("Connection made to %s.", buddy->name);
 
 			chat_socket_printf(buddy, "%c%s %s%c", CHAT_VERSION, CLIENT_NAME, CLIENT_VERSION, CHAT_END_OF_COMMAND);
 
@@ -1445,7 +1480,7 @@ DO_CHAT(chat_paste)
 			if ((buddy = find_buddy(name)) != NULL)
 			{
 				chat_printf("You paste to %s:\n%s", buddy->name, gtd->chat->paste_buf);
-	
+
 				chat_socket_printf(buddy, "%c\n%s pastes to you:\n%s\n%c", CHAT_TEXT_EVERYBODY, gtd->chat->name, gtd->chat->paste_buf, CHAT_END_OF_COMMAND);
 			}
 			else if (find_group(name) != NULL)
@@ -1621,12 +1656,12 @@ DO_CHAT(chat_serve)
 	if (HAS_BIT(buddy->flags, CHAT_FLAG_SERVE))
 	{
 		chat_printf("You are now chat serving %s.", buddy->name);
-		chat_socket_printf(buddy, "%c\n%s is now chat serving you.\n%c", CHAT_MESSAGE, gtd->chat->name, CHAT_END_OF_COMMAND); 
+		chat_socket_printf(buddy, "%c\n%s is now chat serving you.\n%c", CHAT_MESSAGE, gtd->chat->name, CHAT_END_OF_COMMAND);
 	}
 	else
 	{
 		chat_printf("You are no longer chat serving %s.", buddy->name);
-		chat_socket_printf(buddy, "%c\n%s is no longer chat serving you.\n%c", CHAT_MESSAGE, gtd->chat->name, CHAT_END_OF_COMMAND); 
+		chat_socket_printf(buddy, "%c\n%s is no longer chat serving you.\n%c", CHAT_MESSAGE, gtd->chat->name, CHAT_END_OF_COMMAND);
 	}
 }
 
@@ -1885,7 +1920,7 @@ void chat_receive_file(char *arg, struct chat_data *buddy)
 		deny_file(buddy, "\nFile protocol error. (no file size was transmitted)\n");
 
 		pop_call();
-		return;	
+		return;
 	}
 	*comma = 0;
 
@@ -2079,7 +2114,7 @@ void file_cleanup(struct chat_data *buddy)
 	if (buddy->file_name)
 	{
 		free(buddy->file_name);
-		
+
 		buddy->file_name = NULL;
 	}
 }
@@ -2325,7 +2360,7 @@ DO_CHAT(chat_private)
 			{
 				chat_socket_printf(buddy, "%c\n%s marked your connection private.\n%c", CHAT_MESSAGE, gtd->chat->name, CHAT_END_OF_COMMAND);
 
-				chat_printf("Your connection with %s is now private.", buddy->name);				
+				chat_printf("Your connection with %s is now private.", buddy->name);
 
 				SET_BIT(buddy->flags, CHAT_FLAG_PRIVATE);
 			}
@@ -2363,7 +2398,7 @@ DO_CHAT(chat_public)
 			{
 				chat_socket_printf(buddy, "%c\n%s marked your connection public.\n%c", CHAT_MESSAGE, gtd->chat->name, CHAT_END_OF_COMMAND);
 
-				chat_printf("Your connection with %s is now public.", buddy->name);				
+				chat_printf("Your connection with %s is now public.", buddy->name);
 
 				DEL_BIT(buddy->flags, CHAT_FLAG_PRIVATE);
 			}

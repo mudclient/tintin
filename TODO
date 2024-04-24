@@ -1,8 +1,12 @@
 - #draw tile 1 1 1 1 {\x7B}
 
+- With internet down, #session reconnect events might fail
+
 - Add an example script to display time left on tickers using #info tickers save
 
 - comprehensive memory breakdown for variables/triggers/mapper/etc
+
+- a better trigger stack debug buffer
 
 - Problem with restoring true color subs.
 #sub bla {<F00AA00>bla}
@@ -19,6 +23,8 @@
 
 - https://github.com/mintty/mintty/wiki/CtrlSeqs#audio-support
 - mintty --configdir DIRNAME
+
+- Fix: #ERROR: UNKNOWN TOKEN TYPE: 14 (#info tokenizer)
 
 - split screen scrollback setting in #screen
 
@@ -218,6 +224,8 @@
 --------------------------------------------------------------------------------
 
 * LOW PRIORITY
+
+  - #if {1 || bla} errors out
 
   - ./configure might error on /dev/ptmx
 
