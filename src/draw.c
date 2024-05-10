@@ -457,12 +457,11 @@ DO_COMMAND(do_draw)
 
 			if (!is_math(ses, arg1) || !is_math(ses, arg2) || !is_math(ses, arg3) || !is_math(ses, arg4))
 			{
-				show_error(ses, LIST_COMMAND, "#ERROR: #DRAW: NON-NUMERIC SQUARE: %s {%s %s %s %s}",
-					draw_table[index].name,
-					is_math(ses, arg1) ? ntos(top_row) : arg1,
-					is_math(ses, arg2) ? ntos(top_col) : arg2,
-					is_math(ses, arg3) ? ntos(bot_row) : arg3,
-					is_math(ses, arg4) ? ntos(bot_col) : arg4);
+				show_error(ses, LIST_COMMAND, "#ERROR: #DRAW: INVALID SQUARE: %s {%s} {%s} {%s} {%s}", draw_table[index].name, arg1, arg2, arg3, arg4);
+//					is_math(ses, arg1) ? ntos(top_row) : arg1,
+//					is_math(ses, arg2) ? ntos(top_col) : arg2,
+//					is_math(ses, arg3) ? ntos(bot_row) : arg3,
+//					is_math(ses, arg4) ? ntos(bot_col) : arg4);
 
 				return ses;
 			}

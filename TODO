@@ -1,5 +1,8 @@
 - #draw tile 1 1 1 1 {\x7B}
 
+#draw RED ROUNDED BOX {1 1 2 2} gives a poor error message
+
+
 - With internet down, #session reconnect events might fail
 
 - Add an example script to display time left on tickers using #info tickers save

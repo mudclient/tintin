@@ -601,7 +601,7 @@ DO_ARRAY(array_indexate)
 
 	arg = sub_arg_in_braces(ses, arg, arg1, GET_ALL, SUB_VAR|SUB_FUN);
 
-	if (list->root == NULL || list->root->list[0]->root == NULL)
+	if (list->root == NULL || list->root->used == 0 || list->root->list[0]->root == NULL)
 	{
 		show_error(ses, LIST_COMMAND, "#ERROR: #LIST {%s} INDEXATE: NOT AN INDEXABLE LIST TABLE.", var);
 
