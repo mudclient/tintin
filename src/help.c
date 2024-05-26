@@ -1378,7 +1378,7 @@ struct help_type help_table[] =
 		"<278>         The edit command can be used to turn the default line editor into a\n"
 		"<278>         text editor.\n"
 		"\n"
-		"<278>         <178>#edit create [name] [arguments]\n"
+		"<278>         <178>#edit create [filename] [arguments]\n"
 		"<278>           Create an editor, initialize using the provided arguments.\n"
 		"\n"
 		"<278>         <178>#edit load <variable>\n"
@@ -1400,7 +1400,7 @@ struct help_type help_table[] =
 		"<278>         <178>#edit write [filename]\n"
 		"<278>           Write the editor content to file.\n"
 		"\n"
-		"<178>Example<278>: #edit create {bli}{bla}{blo}\n",
+		"<178>Example<278>: #edit create {bla.txt} {line 1} {line 2}\n",
 		
 		"cursor macro"
 	},

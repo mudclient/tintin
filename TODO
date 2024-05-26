@@ -2,8 +2,9 @@
 
 #draw RED ROUNDED BOX {1 1 2 2} gives a poor error message
 
-
 - With internet down, #session reconnect events might fail
+
+- Write an example script that makes tintin mimic Discord, with soft enters, emoticons, etc.
 
 - Add an example script to display time left on tickers using #info tickers save
 

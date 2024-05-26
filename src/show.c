@@ -632,13 +632,17 @@ void tintin_puts3(struct session *ses, char *string, int prompt)
 
 	if (ses->line_capturefile)
 	{
+		char buf[BUFFER_SIZE];
+
+		substitute(ses, string, buf, SUB_BRA);
+
 		if (ses->line_captureindex == 1)
 		{
-			set_nest_node_ses(ses, ses->line_capturefile, "{%d}{%s}", ses->line_captureindex++, string);
+			set_nest_node_ses(ses, ses->line_capturefile, "{%d}{%s}", ses->line_captureindex++, buf);
 		}
 		else
 		{
-			add_nest_node_ses(ses, ses->line_capturefile, "{%d}{%s}", ses->line_captureindex++, string);
+			add_nest_node_ses(ses, ses->line_capturefile, "{%d}{%s}", ses->line_captureindex++, buf);
 		}
 	}
 
