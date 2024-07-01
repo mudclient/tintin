@@ -235,7 +235,7 @@ int check_one_regexp(struct session *ses, struct listnode *node, char *line, cha
 	else
 	{
 		str = line;
-	}	
+	}
 
 	return tintin_regexp(ses, node->regex, str, exp, comp_option, REGEX_FLAG_ARG);
 }
@@ -647,7 +647,8 @@ int tintin_regexp(struct session *ses, pcre *nodepcre, char *str, char *exp, int
 					case 'u':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
-						pto += sprintf(pto, "%s", *pti == 0 ? "((?:[\\x00-\\x7F|\\xC0-\\xF4][\\x80-\\xC0]{1,3})*)" : "((?:[\\xC0-\\xF4][\\x80-\\xC0]{1,3})*?)");
+						pto += sprintf(pto, "%s", *pti == 0 ? "((?:[\\x00-\\x7F]|[\\xC0-\\xF4][\\x80-\\xC0]{1,3})*)" : "((?:[\\x00-\\x7F]|[\\xC0-\\xF4][\\x80-\\xC0]{1,3})*?)");
+//						pto += sprintf(pto, "%s", *pti == 0 ? "((?:[\\x00-\\x7F|\\xC0-\\xF4][\\x80-\\xC0]{1,3})*)" : "((?:[\\x00-\\x7F|\\xC0-\\xF4][\\x80-\\xC0]{1,3})*?)");
 						break;
 
 					case 'U':
@@ -926,7 +927,7 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 				}
 				{
 					int i = 1;
-	
+
 					while (pti[i] == '$') i++;
 
 					if (pti[i])
@@ -1008,7 +1009,7 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 						pti += 2;
 						pto += sprintf(pto, "%s", *pti == 0 ? "([^\\x20-\\xfe]*)" : "([^\\x20-\\xfe]*?)");
 						break;
-						
+
 					case 's':
 						pti += 2;
 						pto += sprintf(pto, "%s", *pti == 0 ? "(\\s*)" : "(\\s*?)");
