@@ -1092,7 +1092,12 @@ DO_SCREEN(screen_resize)
 	}
 	else if (*arg1 != 0 || *arg2 != 0)
 	{
-		if (*arg1 != 0 && *arg2 != 0 && is_math(ses, arg1) && is_math(ses, arg2))
+		if (*arg1 != 0 && *arg2 != 0 && strcmp(arg1, "0") == 0 && strcmp(arg2, "0") == 0)
+		{
+			SET_BIT(gtd->flags, TINTIN_FLAG_WINCHUPDATE);
+			gtd->time_session = gtd->time;
+		}
+		else if (*arg1 != 0 && *arg2 != 0 && is_math(ses, arg1) && is_math(ses, arg2))
 		{
 			screen_csit(ses, "8", arg1, arg2);
 		}
