@@ -301,6 +301,9 @@ int get_regex_range(char *in, char *out, int *var, int *arg)
 			case 'c':
 				pto += sprintf(pto, "%s", "(?:\\e\\[[0-9;]*m)");
 				break;
+			case 'C':
+				pto += sprintf(pto, "%s", "(?:\\e\\[[0-9;]*m|\\s)");
+				break;
 			case 'd':
 				pto += sprintf(pto, "%s", "[0-9]");
 				break;
@@ -405,6 +408,7 @@ int tintin_regexp_check(struct session *ses, char *exp)
 					case 'a':
 					case 'A':
 					case 'c':
+					case 'C':
 					case 'd':
 					case 'D':
 					case 'i':
@@ -430,6 +434,7 @@ int tintin_regexp_check(struct session *ses, char *exp)
 							case 'a':
 							case 'A':
 							case 'c':
+							case 'C':
 							case 'd':
 							case 'D':
 							case 'p':
@@ -598,6 +603,12 @@ int tintin_regexp(struct session *ses, pcre *nodepcre, char *str, char *exp, int
 						pto += sprintf(pto, "%s", *pti == 0 ? "((?:\\e\\[[0-9;]*m)*)" : "((?:\\e\\[[0-9;]*m)*?)");
 						break;
 
+					case 'C':
+						gtd->args[next_arg(var)] = next_arg(arg);
+						pti += 2;
+						pto += sprintf(pto, "%s", *pti == 0 ? "((?:\\e\\[[0-9;]*m|\\s)*)" : "((?:\\e\\[[0-9;]*m|\\s)*?)");
+						break;
+
 					case 'd':
 						gtd->args[next_arg(var)] = next_arg(arg);
 						pti += 2;
@@ -717,6 +728,11 @@ int tintin_regexp(struct session *ses, pcre *nodepcre, char *str, char *exp, int
 							case 'c':
 								pti += 3;
 								pto += sprintf(pto, "%s", *pti == 0 ? "(?:\\e\\[[0-9;]*m)*" : "(?:\\e\\[[0-9;]*m)*?");
+								break;
+
+							case 'C':
+								pti += 3;
+								pto += sprintf(pto, "%s", *pti == 0 ? "(?:\\e\\[[0-9;]*m|\\s)*" : "(?:\\e\\[[0-9;]*m|\\s)*?");
 								break;
 
 							case 'd':
@@ -984,6 +1000,12 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 						pto += sprintf(pto, "%s", *pti == 0 ? "((?:\\e\\[[0-9;]*m)*)" : "((?:\\e\\[[0-9;]*m)*?)");
 						break;
 
+					case 'C':
+						SET_BIT(node->flags, NODE_FLAG_COLOR);
+						pti += 2;
+						pto += sprintf(pto, "%s", *pti == 0 ? "((?:\\e\\[[0-9;]*m|\\s)*)" : "((?:\\e\\[[0-9;]*m|\\s)*?)");
+						break;
+
 					case 'd':
 						pti += 2;
 						pto += sprintf(pto, "%s", *pti == 0 ? "([0-9]*)" : "([0-9]*?)");
@@ -1081,6 +1103,12 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 								SET_BIT(node->flags, NODE_FLAG_COLOR);
 								pti += 3;
 								pto += sprintf(pto, "%s", *pti == 0 ? "(?:\\e\\[[0-9;]*m)*" : "(?:\\e\\[[0-9;]*m)*?");
+								break;
+
+							case 'C':
+								SET_BIT(node->flags, NODE_FLAG_COLOR);
+								pti += 3;
+								pto += sprintf(pto, "%s", *pti == 0 ? "(?:\\e\\[[0-9;]*m|\\s)*" : "(?:\\e\\[[0-9;]*m|\\s)*?");
 								break;
 
 							case 'd':
