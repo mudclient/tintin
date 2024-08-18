@@ -175,7 +175,11 @@ void add_line_buffer(struct session *ses, char *line, int prompt)
 	temp = str_alloc_stack(0);
 
 	SET_BIT(gtd->flags, TINTIN_FLAG_SESSIONUPDATE);
-	SET_BIT(ses->flags, SES_FLAG_BUFFERUPDATE);
+
+	if (gtd->level->ignore == 0)
+	{
+		SET_BIT(ses->flags, SES_FLAG_BUFFERUPDATE);
+	}
 
 	if (HAS_BIT(ses->config_flags, CONFIG_FLAG_CONVERTMETA))
 	{

@@ -964,9 +964,9 @@
 
 #config mouse on
 
-#event {MAP SHORT-CLICKED MOUSE BUTTON ONE}
+#event {MAP ROOM SHORT-CLICKED MOUSE BUTTON ONE}
 {
-	#map run {%0} 0.25
+	#map run {%4} 0.25
 }
 
 #nop -------------------------------------------------------------------------
@@ -991,6 +991,51 @@
 		#cursor end;
 		#history insert {}
 	}
+}
+
+#nop -------------------------------------------------------------------------
+#nop Digitalize a spoken number, example: wton one hundred and thirty-six
+#nop -------------------------------------------------------------------------
+
+#alias {wton}
+{
+	#var wton {%0};
+	#replace wton {-} {};
+	#replace wton { and } {};
+
+	#replace wton {ninety} {+90};
+	#replace wton {eighty} {+80};
+	#replace wton {seventy} {+70};
+	#replace wton {sixty} {+60};
+	#replace wton {fifty} {+50};
+	#replace wton {forty} {+40};
+	#replace wton {thirty} {+30};
+	#replace wton {twenty} {+20};
+	#replace wton {twelve} {+12};
+	#replace wton {eleven} {+11};
+	#replace wton {teen} {+10};
+	#replace wton {ten} {+10};
+	#replace wton {nine} {+9};
+	#replace wton {eight} {+8};
+	#replace wton {eigh} {+8};
+	#replace wton {seven} {+7};
+	#replace wton {six} {+6};
+	#replace wton {five} {+5};
+	#replace wton {fif} {+5};
+	#replace wton {four} {+4};
+	#replace wton {three} {+3};
+	#replace wton {thir} {+3};
+	#replace wton {two} {+2};
+	#replace wton {one} {+1};
+
+	#replace wton {%S billion} {+ (&1) * 1000000000};
+	#replace wton {%S million} {+ (&1) * 1000000};
+	#replace wton {%S thousand} {+ (&1) * 1000};
+	#replace wton {%S hundred} {+ (&1) * 100};
+
+	#math wton $wton;
+
+	#line ignore #showme <118>wton %0 = $wton
 }
 
 #nop -------------------------------------------------------------------------

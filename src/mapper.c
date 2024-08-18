@@ -6022,10 +6022,10 @@ DO_MAP(map_exitflag)
 
 	if (*arg2 == 0)
 	{
-		tintin_printf2(ses, "#MAP: AVOID FLAG IS SET TO %s.", HAS_BIT(exit->flags, EXIT_FLAG_AVOID) ? "ON" : "OFF");
-		tintin_printf2(ses, "#MAP: HIDE FLAG IS SET TO %s.", HAS_BIT(exit->flags, EXIT_FLAG_HIDE) ? "ON" : "OFF");
-		tintin_printf2(ses, "#MAP: INVIS FLAG IS SET TO %s.", HAS_BIT(exit->flags, EXIT_FLAG_INVIS) ? "ON" : "OFF");
-		tintin_printf2(ses, "#MAP: BLOCK FLAG IS SET TO %s.", HAS_BIT(exit->flags, EXIT_FLAG_BLOCK) ? "ON" : "OFF");
+		tintin_printf2(ses, "#MAP: AVOID FLAG IS SET TO %s. (%d)", HAS_BIT(exit->flags, EXIT_FLAG_AVOID) ? "ON" : "OFF", EXIT_FLAG_AVOID);
+		tintin_printf2(ses, "#MAP: BLOCK FLAG IS SET TO %s. (%d)", HAS_BIT(exit->flags, EXIT_FLAG_BLOCK) ? "ON" : "OFF", EXIT_FLAG_BLOCK);
+		tintin_printf2(ses, "#MAP: HIDE FLAG IS SET TO %s.  (%d)",  HAS_BIT(exit->flags, EXIT_FLAG_HIDE) ? "ON" : "OFF", EXIT_FLAG_HIDE);
+		tintin_printf2(ses, "#MAP: INVIS FLAG IS SET TO %s. (%d)", HAS_BIT(exit->flags, EXIT_FLAG_INVIS) ? "ON" : "OFF", EXIT_FLAG_INVIS);
 
 		return;
 	}
@@ -7625,10 +7625,19 @@ DO_MAP(map_offset)
 		arg = sub_arg_in_braces(ses, arg, arg3, GET_ONE, SUB_VAR|SUB_FUN);
 		arg = sub_arg_in_braces(ses, arg, arg4, GET_ONE, SUB_VAR|SUB_FUN);
 
-		ses->map->sav_top_row = get_number(ses, arg1);
-		ses->map->sav_top_col = get_number(ses, arg2);
-		ses->map->sav_bot_row = get_number(ses, arg3);
-		ses->map->sav_bot_col = get_number(ses, arg4);
+		if (*arg1 && *arg2 && *arg3 && *arg4)
+		{
+			ses->map->sav_top_row = get_number(ses, arg1);
+			ses->map->sav_top_col = get_number(ses, arg2);
+			ses->map->sav_bot_row = get_number(ses, arg3);
+			ses->map->sav_bot_col = get_number(ses, arg4);
+		}
+		else
+		{
+			show_error(ses, LIST_COMMAND, "#MAP OFFSET: THIS COMMAND REQUIRES 4 ARGUMENTS.");
+
+			return;
+		}
 	}
 
 	show_vtmap(ses, 1);

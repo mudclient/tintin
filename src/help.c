@@ -3015,8 +3015,10 @@ struct help_type help_table[] =
 		TOKEN_TYPE_COMMAND,
 		"<178>Command<278>: #log <178>{<278>option<178>} {<278>argument<178>}\n"
 		"\n"
-		"<278>         The log command allows logging session output to file. You can set the\n"
-		"<278>         data type to either plain, raw, or html with the config command.\n"
+		"<278>         The log command allows logging session output to file.\n"
+		"\n"
+		"<278>         <178>#config log_mode <html|plain|raw>\n"
+		"<278>           Set the log's data type to either html, plain, or raw.\n"
 		"\n"
 		"<278>         <178>#log append <filename>\n"
 		"<278>           Start logging to the given file, if the file already exists it won't\n"

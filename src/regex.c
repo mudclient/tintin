@@ -235,7 +235,7 @@ int check_one_regexp(struct session *ses, struct listnode *node, char *line, cha
 	else
 	{
 		str = line;
-	}
+	}	
 
 	return tintin_regexp(ses, node->regex, str, exp, comp_option, REGEX_FLAG_ARG);
 }
@@ -899,6 +899,10 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 							return NULL;
 						}
 					}
+					if (pto[0] == '\\' && pto[1] == 'n')
+					{
+						SET_BIT(node->flags, NODE_FLAG_MULTI);
+					}
 					pto++;
 				}
 				*pto++ = ')';
@@ -927,7 +931,7 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 				}
 				{
 					int i = 1;
-
+	
 					while (pti[i] == '$') i++;
 
 					if (pti[i])
@@ -1009,7 +1013,7 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 						pti += 2;
 						pto += sprintf(pto, "%s", *pti == 0 ? "([^\\x20-\\xfe]*)" : "([^\\x20-\\xfe]*?)");
 						break;
-
+						
 					case 's':
 						pti += 2;
 						pto += sprintf(pto, "%s", *pti == 0 ? "(\\s*)" : "(\\s*?)");
@@ -1150,6 +1154,10 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 										{
 											return NULL;
 										}
+									}
+									if (pto[0] == '\\' && pto[1] == 'n')
+									{
+										SET_BIT(node->flags, NODE_FLAG_MULTI);
 									}
 									pto++;
 								}
