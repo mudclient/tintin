@@ -1,6 +1,14 @@
+- switch to pcre2
+
+- #alias test {#if {1} {%1}} gives an error on an empty input.
+
+- check if #scan file is escaping braces
+
+- If I set #config log_level low then it ignores #log timestamp {%Y-%m-%d-%H:%M:%S}
+
 - Update script's --time-style=full-iso doesn't work on Mac.
 
-- Investigate: #var bla {{test};{tost};{tust}};#showme {--$bla[t%*]}
+- Investigate: EVENT_FLAG_UPDATE running as gtd->level->quiet++ in check_all_events
 
 - Add an example #edit script to SCRIPTS
 
@@ -23,6 +31,8 @@
 - Add an example script to display time left on tickers using #info tickers save
 
 - comprehensive memory breakdown for variables/triggers/mapper/etc
+
+- #draw calign grid table {2} {2} {8} {42} {n;s;w;e} {n;s;w;e}; doesn't work properly.
 
 - a better trigger stack debug buffer
 
@@ -51,6 +61,7 @@
 
 - Make #draw scroll grid table work properly.
 
+
 - update https://tintin.mudhalla.net/info/ansicolor/
 
 - Make sure #config compact also applies to the log file.
@@ -63,7 +74,7 @@
 
 - catch event to handle #map global exceptions
 
-- switch to pcre2
+
 
 - Add routine to escape 0x00 in port.c RECEIVED DATA event.
 

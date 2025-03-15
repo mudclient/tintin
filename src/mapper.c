@@ -83,8 +83,6 @@ DO_COMMAND(do_map)
 
 	if (*arg1 == 0)
 	{
-		info:
-
 		tintin_header(ses, 80, " MAP OPTIONS ");
 
 		for (cnt = 0 ; *map_table[cnt].fun != NULL ; cnt++)
@@ -136,8 +134,7 @@ DO_COMMAND(do_map)
 				return ses;
 			}
 		}
-
-		goto info;
+		show_error(ses, LIST_COMMAND, "#ERROR: #MAP {%s}: INVALID MAP OPTION.", arg1);
 	}
 	pop_call();
 	return ses;
@@ -1828,7 +1825,7 @@ int follow_map(struct session *ses, char *argument)
 
 	room = ses->map->room_list[ses->map->in_room];
 
-	if (HAS_BIT(ses->map->flags, MAP_FLAG_NOFOLLOW))
+	if (HAS_BIT(ses->map->flags, MAP_FLAG_NOFOLLOW) && ses->map->nofollow == 0)
 	{
 		if (check_global(ses, room->vnum) && find_exit(ses, ses->map->global_vnum, argument))
 		{
@@ -1874,8 +1871,14 @@ int follow_map(struct session *ses, char *argument)
 		{
 			if (HAS_BIT(exit->flags, EXIT_FLAG_BLOCK) || HAS_BIT(ses->map->room_list[vnum]->flags, ROOM_FLAG_BLOCK))
 			{
-				show_error(ses, LIST_COMMAND, "#MAP FOLLOW: %s {%d} HAS THE BLOCK FLAG SET.", HAS_BIT(exit->flags, EXIT_FLAG_BLOCK) ? "EXIT" : "ROOM", vnum);
-
+				if (HAS_BIT(exit->flags, EXIT_FLAG_BLOCK))
+				{
+					show_error(ses, LIST_COMMAND, "#MAP FOLLOW: EXIT {%s} HAS THE BLOCK FLAG SET.", exit->name);
+				}
+				else
+				{
+					show_error(ses, LIST_COMMAND, "#MAP FOLLOW: ROOM {%d} HAS THE BLOCK FLAG SET.", vnum);
+				}
 				pop_call();
 				return 1;
 			}

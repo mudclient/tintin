@@ -79,8 +79,6 @@ DO_COMMAND(do_chat)
 
 	if (*cmd == 0)
 	{
-		info:
-
 		tintin_header(ses, 80, " CHAT OPTIONS ");
 
 		for (cnt = 0 ; *chat_table[cnt].name != 0 ; cnt++)
@@ -114,7 +112,7 @@ DO_COMMAND(do_chat)
 		return ses;
 	}
 
-	goto info;
+	show_error(ses, LIST_COMMAND, "#ERROR: #CHAT {%s}: INVALID CHAT OPTION.", cmd);
 
 	return ses;
 }

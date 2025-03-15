@@ -589,13 +589,14 @@ void tokenize_script(struct scriptroot *root, int lvl, char *str)
 						str = get_arg_in_braces(root->ses, arg, line, GET_ONE);
 						addtoken(root, lvl++, TOKEN_TYPE_CASE, cmd, line);
 
-						str = get_arg_in_braces(root->ses, str, line, GET_ALL);
-						tokenize_script(root, lvl--, line);
-
 						if (*line == 0)
 						{
 							show_error(root->ses, LIST_COMMAND, "#SYNTAX: #CASE <CONDITIONAL> <COMMANDS>");
 						}
+
+						str = get_arg_in_braces(root->ses, str, line, GET_ALL);
+						tokenize_script(root, lvl--, line);
+
 						addtoken(root, lvl, TOKEN_TYPE_END, -1, "endcase");
 						break;
 
@@ -610,10 +611,6 @@ void tokenize_script(struct scriptroot *root, int lvl, char *str)
 						str = get_arg_in_braces(root->ses, arg, line, GET_ALL);
 						tokenize_script(root, lvl--, line);
 
-						if (*line == 0)
-						{
-							show_error(root->ses, LIST_COMMAND, "#SYNTAX: #DEFAULT <COMMANDS>");
-						}
 						addtoken(root, lvl, TOKEN_TYPE_END, -1, "enddefault");
 						break;
 
@@ -623,10 +620,6 @@ void tokenize_script(struct scriptroot *root, int lvl, char *str)
 						str = get_arg_in_braces(root->ses, arg, line, GET_ALL);
 						tokenize_script(root, lvl--, line);
 
-						if (*line == 0)
-						{
-							show_error(root->ses, LIST_COMMAND, "#SYNTAX: #ELSE <COMMANDS>");
-						}
 						addtoken(root, lvl, TOKEN_TYPE_END, -1, "endelse");
 						break;
 
@@ -634,13 +627,14 @@ void tokenize_script(struct scriptroot *root, int lvl, char *str)
 						str = get_arg_in_braces(root->ses, arg, line, GET_ONE);
 						addtoken(root, lvl++, TOKEN_TYPE_ELSEIF, cmd, line);
 
-						str = get_arg_in_braces(root->ses, str, line, GET_ALL);
-						tokenize_script(root, lvl--, line);
-
 						if (*line == 0)
 						{
 							show_error(root->ses, LIST_COMMAND, "#SYNTAX: #ELSEIF <CONDITIONAL> <COMMANDS>");
 						}
+
+						str = get_arg_in_braces(root->ses, str, line, GET_ALL);
+						tokenize_script(root, lvl--, line);
+
 						addtoken(root, lvl, TOKEN_TYPE_END, -1, "endelseif");
 						break;
 
@@ -661,13 +655,14 @@ void tokenize_script(struct scriptroot *root, int lvl, char *str)
 						str = get_arg_in_braces(root->ses, arg, line, GET_ONE);
 						addtoken(root, lvl++, TOKEN_TYPE_IF, cmd, line);
 
-						str = get_arg_in_braces(root->ses, str, line, GET_ALL);
-						tokenize_script(root, lvl--, line);
-
 						if (*line == 0)
 						{
 							show_error(root->ses, LIST_COMMAND, "#SYNTAX: #IF <CONDITIONAL> <TRUE> [FALSE]");
 						}
+
+						str = get_arg_in_braces(root->ses, str, line, GET_ALL);
+						tokenize_script(root, lvl--, line);
+
 						addtoken(root, lvl, TOKEN_TYPE_END, -1, "endif");
 
 						str = space_out(str);

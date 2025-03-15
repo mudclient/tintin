@@ -1389,7 +1389,8 @@ char *draw_vertical(long long flags, char *str)
 
 DO_DRAW(draw_bot_side)
 {
-	int col, corner;
+	int col;
+	long long corner;
 
 	if (!HAS_BIT(flags, DRAW_FLAG_LEFT) && !HAS_BIT(flags, DRAW_FLAG_RIGHT) && !HAS_BIT(flags, DRAW_FLAG_BOT))
 	{
@@ -1549,7 +1550,8 @@ DO_DRAW(draw_corner)
 
 DO_DRAW(draw_line_horizontal)
 {
-	int col, corner, ins_len;
+	int col, ins_len;
+	long long corner;
 	char *line;
 
 	if (!HAS_BIT(flags, DRAW_FLAG_VER))
@@ -1645,7 +1647,8 @@ DO_DRAW(draw_line_horizontal)
 
 DO_DRAW(draw_line_vertical)
 {
-	int row, corner;
+	int row;
+	long long corner;
 
 	if (!HAS_BIT(flags, DRAW_FLAG_HOR))
 	{
@@ -2198,7 +2201,8 @@ DO_DRAW(draw_square)
 DO_DRAW(draw_table_grid)
 {
 	char buf1[BUFFER_SIZE], *str, buf2[BUFFER_SIZE], buf3[BUFFER_SIZE], row_color[COLOR_SIZE];
-	int corner, blank, row, col, max_r, max_c, r, c, top_r, top_c, bot_r, bot_c, tot_r, tot_c;
+	int blank, row, col, max_r, max_c, r, c, top_r, top_c, bot_r, bot_c, tot_r, tot_c;
+	long long corner;
 
 	row = cnt_arg_all(ses, arg, GET_ALL);
 
@@ -2696,7 +2700,8 @@ DO_DRAW(draw_text)
 
 DO_DRAW(draw_top_side)
 {
-	int col, corner;
+	int col;
+	long long corner;
 
 	SET_BIT(flags, HAS_BIT(flags, DRAW_FLAG_VER) ? DRAW_FLAG_VER : DRAW_FLAG_HOR);
 

@@ -1,5 +1,13 @@
+Jan 2025        2.02.50
+------------------------------------------------------------------------------
+
 Jan 2024        2.02.42
 ------------------------------------------------------------------------------
+map.c           Fixed #map move not working with nofollow flag set.
+
+list.c          Made #list indexate no longer require a uniform key layout,
+                but the indexation key must be present in all list entries.
+
 chat.c          Increased to timeout for the handshake from 5 to 30 seconds.
 
 substitute.c    %%%s would get escaped to %%s in aliases and actions. This was

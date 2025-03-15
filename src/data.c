@@ -1422,18 +1422,20 @@ DO_COMMAND(do_info)
 			case CTRL_A:
 				if (is_abbrev(arg1, "ARGUMENTS"))
 				{
+					int vars = atoi(arg2) ? atoi(arg2) : gtd->varc;
+
 					if (is_abbrev(arg2, "SAVE"))
 					{
 						set_nest_node_ses(ses, "info[ARGUMENTS]", "");
 
-						for (index = 0 ; index < gtd->varc ; index++)
+						for (index = 0 ; index < vars ; index++)
 						{
 							add_nest_node_ses(ses, "info[ARGUMENTS]", "{%d}{%s}", index, gtd->vars[index]);
 						}
 					}
 					else
 					{
-						for (index = 0 ; index < gtd->varc ; index++)
+						for (index = 0 ; index < vars ; index++)
 						{
 							tintin_printf2(ses, "#INFO ARGUMENTS: %2d: %s", index, gtd->vars[index]);
 						}

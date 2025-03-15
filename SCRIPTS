@@ -270,7 +270,7 @@
 #showme $temp
 
 #nop -------------------------------------------------------------------------
-#nop Draw a health bar. Alternatively: #draw bar -2 1 -2 20 {%1;%2<faa><afa>}
+#nop Draw a health bar. Alternatively: #draw bar -2 1 -2 20 {%1;%2;<faa><afa>}
 #nop -------------------------------------------------------------------------
 
 #alias {hpbar}
