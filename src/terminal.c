@@ -94,7 +94,7 @@ void reset_terminal(struct session *ses)
 	{
 		return;
 	}
-	
+
 	if (gtd->detach_port == 0)
 	{
 		if (tcsetattr(0, TCSANOW, &gtd->old_terminal))

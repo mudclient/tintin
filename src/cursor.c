@@ -709,7 +709,7 @@ DO_CURSOR(cursor_check_line_modified)
 
 	if (gtd->ses->input->str_len != width)
 	{
-		tintin_printf2(ses, "\e[1;31merror: cursor_check_line_modified2: str: %d vs %d", gtd->ses->input->str_len, width);
+		tintin_printf2(ses, "\e[1;31merror: cursor_check_line_modified2: str: %d vs %d raw: %d", gtd->ses->input->str_len, width, gtd->ses->input->raw_len);
 	}
 
 	if (gtd->ses->input->str_pos > gtd->ses->input->str_len)
@@ -854,9 +854,9 @@ DO_CURSOR(cursor_delete)
 				remove_line(gtd->ses->input->edit, gtd->ses->input->edit->update);
 
 				inputline_set(gtd->ses->input->edit->line[gtd->ses->input->edit->update]->str, 0);
-				
+
 				cursor_redraw_edit(ses, arg);
-				
+
 				modified_input();
 			}
 		}
@@ -1166,6 +1166,11 @@ DO_CURSOR(cursor_escape_enter)
 						}
 						pti += 2;
 					}
+					else if (pti[1] == 't')
+					{
+						*pto++ = '\t';
+						pti += 2;
+					}
 					else if (pti[1])
 					{
 						*pto++ = *pti++;
@@ -1185,7 +1190,7 @@ DO_CURSOR(cursor_escape_enter)
 	}
 	cursor_enter(ses, "");
 }
-	
+
 DO_CURSOR(cursor_soft_enter)
 {
 	if (!inputline_editor())
@@ -1217,7 +1222,7 @@ DO_CURSOR(cursor_enter_finish)
 	if (inputline_editor())
 	{
 		cursor_redraw_line(gtd->ses, "");
-		
+
 		return;
 	}
 
@@ -1387,7 +1392,7 @@ DO_CURSOR(cursor_history_next)
 				inputline_max_str_len() - inputline_cur_off() - inputline_cur_str_len(),
 				UMAX(0, inputline_max_str_len() - inputline_cur_off() - inputline_cur_str_len() - 4),
 				root->list[root->update]->arg1);
-			
+
 			goto_pos(gtd->ses, inputline_cur_row(), inputline_cur_col());
 		}
 		return;
@@ -1459,7 +1464,7 @@ DO_CURSOR(cursor_history_prev)
 				inputline_max_str_len() - inputline_cur_off() - inputline_cur_str_len(),
 				UMAX(0, inputline_max_str_len() - inputline_cur_off() - inputline_cur_str_len() - 4),
 				root->list[root->update]->arg1);
-			
+
 			goto_pos(gtd->ses, inputline_cur_row(), inputline_cur_col());
 		}
 		return;
@@ -1546,6 +1551,17 @@ DO_CURSOR(cursor_history_find)
 
 	push_call("cursor_history_find(%s)", gtd->ses->input->buf);
 
+	if (HAS_BIT(gtd->ses->event_flags, EVENT_FLAG_INPUT))
+	{
+		check_all_events(gtd->ses, EVENT_FLAG_INPUT, 0, 0, "MODIFIED INPUT");
+	}
+
+	if (!HAS_BIT(gtd->ses->input->flags, INPUT_FLAG_HISTORYSEARCH))
+	{
+		pop_call();
+		return;
+	}
+
 	if (inputline_str_chk(0, gtd->ses->input->raw_len) == FALSE)
 	{
 		pop_call();
@@ -1608,7 +1624,7 @@ DO_CURSOR(cursor_home)
 		if (gtd->ses->input->str_pos)
 		{
 			gtd->ses->input->str_pos = 0;
-			
+
 			return cursor_redraw_line(ses, arg);
 		}
 		return;
@@ -1651,7 +1667,7 @@ DO_CURSOR(cursor_move_page_up)
 	int rows = UMAX(1, inputline_rows(gtd->ses) / 2);
 
 	DEL_BIT(gtd->ses->input->flags, INPUT_FLAG_HISTORYSEARCH);
-	
+
 	cursor_move_up(ses, ntos(rows));
 }
 
@@ -1712,7 +1728,7 @@ DO_CURSOR(cursor_move_page_down)
 	int rows = UMAX(1, inputline_rows(gtd->ses) / 2);
 
 	DEL_BIT(gtd->ses->input->flags, INPUT_FLAG_HISTORYSEARCH);
-	
+
 	cursor_move_down(ses, ntos(rows));
 }
 
@@ -2372,7 +2388,7 @@ DO_CURSOR(cursor_set)
 {
 	char arg1[BUFFER_SIZE];
 
-	arg = sub_arg_in_braces(ses, arg, arg1, GET_ALL, SUB_VAR|SUB_FUN);
+	arg = sub_arg_in_braces(ses, arg, arg1, GET_ALL, SUB_VAR|SUB_FUN|SUB_ESC);
 
 	if (*arg1 == 0)
 	{
@@ -2522,9 +2538,24 @@ int cursor_scrollback_tab_add(int flag)
 
 		while (*ptb)
 		{
-			while (*ptb && is_space(*ptb))
+			while (*ptb)
 			{
-				ptb++;
+				switch (*ptb)
+				{
+					case ' ':
+					case '[':
+					case ']':
+					case '"':
+					case ':':
+					case '\t':
+					case '\n':
+					case '\r':
+					case '\v':
+					case '\f':
+						ptb++;
+						continue;
+				}
+				break;
 			}
 
 			if (HAS_BIT(flag, TAB_FLAG_CASELESS))
@@ -2559,6 +2590,129 @@ int cursor_scrollback_tab_add(int flag)
 					case '?':
 					case ':':
 					case '"':
+					case '[':
+					case ']':
+						*ptt++ = 0;
+						ptb++;
+						break;
+
+					default:
+						*ptt++ = *ptb++;
+						break;
+				}
+			}
+			*ptt = 0;
+
+			if (search_node_list(gtd->ses->list[LIST_COMMAND], tab))
+			{
+				goto end;
+			}
+
+			node = create_node_list(gtd->ses->list[LIST_COMMAND], tab, "", "", "");
+
+			node->val32[0] = scroll_cnt;
+
+			if (HAS_BIT(flag, TAB_FLAG_FORWARD))
+			{
+				return TRUE;
+			}
+
+			if (root->used > 100)
+			{
+				return FALSE;
+			}
+
+			end:
+
+			while (*ptb && !is_space(*ptb))
+			{
+				ptb++;
+			}
+		}
+	}
+	return FALSE;
+}
+
+int cursor_input_tab_add(int flag)
+{
+	char tab[BUFFER_SIZE];
+	struct listroot *root = gtd->ses->list[LIST_COMMAND];
+	struct listnode *node;
+	int scroll_cnt, tab_len, tail_len;
+	char *ptb, *ptt, *tail;
+
+	tail     = root->list[0]->arg1;
+	tail_len = str_len(tail);
+
+	if (root->list[root->used - 1]->val32[0])
+	{
+		scroll_cnt = UMIN(root->list[root->used - 1]->val32[0], gtd->ses->list[LIST_HISTORY]->used - 1);
+	}
+	else
+	{
+		scroll_cnt = gtd->ses->list[LIST_HISTORY]->used - 1;
+	}
+
+	for ( ; scroll_cnt > 0 ; scroll_cnt--)
+	{
+		ptb = gtd->ses->list[LIST_HISTORY]->list[scroll_cnt]->arg1;
+
+		while (*ptb)
+		{
+			while (*ptb)
+			{
+				switch (*ptb)
+				{
+					case ' ':
+					case '[':
+					case ']':
+					case '"':
+					case ':':
+					case '\t':
+					case '\n':
+					case '\r':
+					case '\v':
+					case '\f':
+						ptb++;
+						continue;
+				}
+				break;
+			}
+
+			if (HAS_BIT(flag, TAB_FLAG_CASELESS))
+			{
+				if (strncasecmp(ptb, tail, tail_len) != 0)
+				{
+					goto end;
+				}
+			}
+			else
+			{
+				if (*ptb != *tail || strncmp(ptb, tail, tail_len) != 0)
+				{
+					goto end;
+				}
+			}
+			ptt = tab;
+
+			for (tab_len = 0 ; tab_len < tail_len ; tab_len++)
+			{
+				*ptt++ = *ptb++;
+			}
+
+			while (*ptb && *ptb != ' ')
+			{
+				switch (*ptb)
+				{
+					case ';':
+					case '.':
+					case ',':
+					case '!':
+					case '?':
+					case ':':
+					case '"':
+					case '[':
+					case ']':
 						*ptt++ = 0;
 						ptb++;
 						break;
@@ -2631,6 +2785,11 @@ void cursor_tab_forward(struct session *ses, int flag)
 		tab_found = cursor_scrollback_tab_add(flag);
 	}
 
+	if (tab_found == 0 && HAS_BIT(flag, TAB_FLAG_INPUT))
+	{
+		tab_found = cursor_input_tab_add(flag);
+	}
+
 	if (tab_found == 0 && HAS_BIT(flag, TAB_FLAG_DICTIONARY))
 	{
 		tab_found = cursor_dictionary_tab_add(flag);
@@ -2681,6 +2840,11 @@ void cursor_tab_backward(struct session *ses, int flag)
 			cursor_scrollback_tab_add(flag);
 		}
 
+		if (HAS_BIT(flag, TAB_FLAG_INPUT))
+		{
+			cursor_input_tab_add(flag);
+		}
+
 		if (HAS_BIT(flag, TAB_FLAG_DICTIONARY))
 		{
 			cursor_dictionary_tab_add(flag);
@@ -2708,6 +2872,7 @@ DO_CURSOR(cursor_tab)
 		tintin_printf2(ses, "  [%-18s] %s", "CASELESS", "Make the tab completion caseless");
 		tintin_printf2(ses, "  [%-18s] %s", "COMPLETE", "Make the tab completion work while editing");
 		tintin_printf2(ses, "  [%-18s] %s", "DICTIONARY", "Make the tab completion include the dictionary");
+		tintin_printf2(ses, "  [%-18s] %s", "INPUT", "Make the tab completion include the input history");
 		tintin_printf2(ses, "  [%-18s] %s", "LIST", "Make the tab completion include the tab completion list");
 		tintin_printf2(ses, "  [%-18s] %s", "SCROLLBACK", "Make the tab completion include the scrollback buffer");
 		tintin_printf2(ses, "  [%-18s] %s", "BACKWARD", "Make the tab completion go backward");
@@ -2738,6 +2903,10 @@ DO_CURSOR(cursor_tab)
 		{
 			SET_BIT(flag, TAB_FLAG_LIST);
 		}
+		else if (is_abbrev(arg1, "INPUT"))
+		{
+			SET_BIT(flag, TAB_FLAG_INPUT);
+		}
 		else if (is_abbrev(arg1, "SCROLLBACK"))
 		{
 			SET_BIT(flag, TAB_FLAG_SCROLLBACK);
@@ -2764,9 +2933,9 @@ DO_CURSOR(cursor_tab)
 			return cursor_redraw_line(ses, arg);
 		}
 
-		if (!HAS_BIT(flag, TAB_FLAG_DICTIONARY|TAB_FLAG_LIST|TAB_FLAG_SCROLLBACK))
+		if (!HAS_BIT(flag, TAB_FLAG_DICTIONARY|TAB_FLAG_INPUT|TAB_FLAG_LIST|TAB_FLAG_SCROLLBACK))
 		{
-			show_error(ses, LIST_COMMAND, "#SYNTAX: #CURSOR TAB {<DICTIONARY|LIST|SCROLLBACK> FORWARD}");
+			show_error(ses, LIST_COMMAND, "#SYNTAX: #CURSOR TAB {<DICTIONARY|INPUT|LIST|SCROLLBACK> FORWARD}");
 		}
 		else
 		{
@@ -2780,15 +2949,15 @@ DO_CURSOR(cursor_tab)
 		if (!HAS_BIT(flag, TAB_FLAG_COMPLETE) && inputline_editor())
 		{
 			snprintf(arg1, BUFFER_SIZE, "%*s", gtd->ses->tab_width, "");
-			
+
 			inputline_insert(arg1, 0);
 
 			return cursor_redraw_line(ses, arg);
 		}
 
-		if (!HAS_BIT(flag, TAB_FLAG_DICTIONARY|TAB_FLAG_LIST|TAB_FLAG_SCROLLBACK))
+		if (!HAS_BIT(flag, TAB_FLAG_DICTIONARY|TAB_FLAG_INPUT|TAB_FLAG_LIST|TAB_FLAG_SCROLLBACK))
 		{
-			show_error(ses, LIST_COMMAND, "#SYNTAX: #CURSOR TAB {<DICTIONARY|LIST|SCROLLBACK> BACKWARD}");
+			show_error(ses, LIST_COMMAND, "#SYNTAX: #CURSOR TAB {<DICTIONARY|INPUT|LIST|SCROLLBACK> BACKWARD}");
 		}
 		else
 		{
@@ -2797,6 +2966,6 @@ DO_CURSOR(cursor_tab)
 	}
 	else
 	{
-		show_error(ses, LIST_COMMAND, "#SYNTAX: #CURSOR TAB {<DICTIONARY|LIST|SCROLLBACK> <BACKWARD|FORWARD>}");
+		show_error(ses, LIST_COMMAND, "#SYNTAX: #CURSOR TAB {<DICTIONARY|INPUT|LIST|SCROLLBACK> <BACKWARD|FORWARD>}");
 	}
 }

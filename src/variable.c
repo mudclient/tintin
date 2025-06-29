@@ -298,7 +298,7 @@ DO_COMMAND(do_replace)
 	}
 	else
 	{
-//		show_debug(ses, LIST_VARIABLE, "#REPLACE {%s} {%s} {%s}", node->arg2, arg2, arg3);
+//		show_debug(ses, LIST_VARIABLE, node, "#REPLACE {%s} {%s} {%s}", node->arg2, arg2, arg3);
 
 		pti = node->arg2;
 		str = str_alloc_stack(0);
@@ -833,7 +833,7 @@ void metricgroupingstring(struct session *ses, char *str)
 		else
 		{
 			snprintf(tmp, NUMBER_SIZE, "%Lf", val);
-		} 
+		}
 		sprintf(str, "%.5s%c", tmp, small[index]);
 	}
 	else if (val <= -1000)
@@ -1027,7 +1027,7 @@ int string_str_raw_len(struct session *ses, char *str, int start, int end)
 		{
 			ret_cnt += (str_cnt >= start) ? 1 : 0;
 			raw_cnt++;
-			
+
 			if (str[raw_cnt] == '\\')
 			{
 				ret_cnt += (str_cnt >= start) ? 1 : 0;
@@ -1107,7 +1107,7 @@ int string_str_str_len(struct session *ses, char *str, int start, int end)
 		if (str[raw_cnt] == '\\')
 		{
 			raw_cnt++;
-			
+
 			if (str[raw_cnt] == '\\')
 			{
 				ret_cnt += (str_cnt >= start) ? 1 : 0;
@@ -1411,7 +1411,7 @@ void format_string(struct session *ses, char *format, char *arg, char *out)
 							{
 								ptt = arg2;
 								ptn = ptn + 1;
-		
+
 								while (*ptn)
 								{
 									*ptt++ = *ptn++;
@@ -1459,7 +1459,7 @@ void format_string(struct session *ses, char *format, char *arg, char *out)
 
 							ptt = argformat;
 							ptn = pts;
-		
+
 							while (*ptt)
 							{
 								*ptn++ = *ptt++;

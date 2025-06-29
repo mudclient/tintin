@@ -33,7 +33,7 @@
 #include <util.h>
 #endif
 #endif
-#include <fcntl.h>  
+#include <fcntl.h>
 #include <dirent.h>
 #include <termios.h>
 #include <sys/un.h>
@@ -55,7 +55,7 @@ DO_COMMAND(do_run)
 	if (*arg1 == 0 || *arg2 == 0)
 	{
 		show_error(ses, LIST_COMMAND, "#SYNTAX: #RUN <NAME> <SHELL COMMAND>");
-		
+
 		return ses;
 	}
 
@@ -121,7 +121,7 @@ DO_COMMAND(do_script)
 					*cptr = 0;
 				}
 
-				ses = script_driver(ses, LIST_COMMAND, buf);
+				ses = script_driver(ses, LIST_COMMAND, NULL, buf);
 			}
 
 			pclose(script);
@@ -170,6 +170,12 @@ DO_COMMAND(do_script)
 
 DO_COMMAND(do_suspend)
 {
+	if (!strcmp(gtd->system->os, "WINTIN++"))
+	{
+		show_error(gtd->ses, LIST_COMMAND, "#ERROR: #SUSPEND / ctrl-z is not supported for WinTin++.");
+
+		return ses;
+	}
 	print_stdout(0, 0, "\e[?1049l\e[r\e[%d;%dH", gtd->screen->rows, 1);
 
 	fflush(NULL);
@@ -203,7 +209,7 @@ DO_COMMAND(do_system)
 	if (*arg1 == 0)
 	{
 		show_error(ses, LIST_COMMAND, "#SYNTAX: #SYSTEM {SHELL COMMAND}");
-		
+
 		return ses;
 	}
 
@@ -281,7 +287,7 @@ DO_COMMAND(do_system)
 	if (*arg1 == 0)
 	{
 		show_error(ses, LIST_COMMAND, "#SYNTAX: #SYSTEM <COMMAND>");
-		
+
 		return ses;
 	}
 
@@ -321,7 +327,7 @@ DO_COMMAND(do_textin)
 	if ((fp = fopen(arg1, "r")) == NULL)
 	{
 		show_error(ses, LIST_COMMAND, "#ERROR: #TEXTIN {%s}: FILE NOT FOUND.", arg1);
-		
+
 		return ses;
 	}
 

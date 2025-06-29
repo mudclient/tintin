@@ -43,7 +43,7 @@ DO_COMMAND(do_all)
 
 			if (!HAS_BIT(sesptr->flags, SES_FLAG_CLOSED))
 			{
-				script_driver(sesptr, LIST_COMMAND, arg1);
+				script_driver(sesptr, LIST_COMMAND, NULL, arg1);
 			}
 		}
 	}
@@ -161,7 +161,7 @@ DO_COMMAND(do_snoop)
 
 	arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
 	arg = sub_arg_in_braces(ses, arg, arg2, GET_ONE, SUB_VAR|SUB_FUN);
-	
+
 	if (*arg1)
 	{
 		sesptr = find_session(arg1);
@@ -169,7 +169,7 @@ DO_COMMAND(do_snoop)
 		if (sesptr == NULL)
 		{
 			show_error(ses, LIST_COMMAND, "#SNOOP: THERE'S NO SESSION NAMED {%s}.", arg1);
-			
+
 			return ses;
 		}
 	}
@@ -773,6 +773,11 @@ void dispose_session(struct session *ses)
 	if (ses->map)
 	{
 		delete_map(ses);
+	}
+
+	for (index = 0 ; index < LIST_MAX ; index++)
+	{
+		kill_list(ses->list[index]);
 	}
 
 	for (index = 0 ; index < LIST_MAX ; index++)

@@ -113,14 +113,14 @@ struct session *repeat_history(struct session *ses, char *line)
 
 			gtd->level->repeat++;
 
-			ses = script_driver(ses, LIST_COMMAND, root->list[root->used - 1]->arg1);
+			ses = script_driver(ses, LIST_COMMAND, NULL, root->list[root->used - 1]->arg1);
 
 			gtd->level->repeat--;
 
 			return ses;
 		}
 	}
-	tintin_printf2(ses, "#REPEAT: NO MATCH FOUND FOR '%s'", line);	
+	tintin_printf2(ses, "#REPEAT: NO MATCH FOUND FOR '%s'", line);
 
 	return ses;
 }
@@ -258,7 +258,7 @@ DO_HISTORY(history_read)
 
 	fclose(file);
 
-	if (ses->list[LIST_HISTORY]->used > gtd->history_size) 
+	if (ses->list[LIST_HISTORY]->used > gtd->history_size)
 	{
 		command(gts, do_configure, "{HISTORY SIZE} {%d}", UMIN(ses->list[LIST_HISTORY]->used, 9999));
 	}

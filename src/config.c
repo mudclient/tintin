@@ -533,7 +533,7 @@ DO_CONFIG(config_childlock)
 DO_CONFIG(config_colormode)
 {
 	if (*arg2)
-	{	
+	{
 		if (is_abbrev(arg2, "NONE") || is_abbrev(arg2, "OFF"))
 		{
 			ses->color = 0;
@@ -888,7 +888,7 @@ DO_CONFIG(config_mousetracking)
 	{
 		DEL_BIT(ses->config_flags, CONFIG_FLAG_MOUSEDEBUG);
 		DEL_BIT(ses->config_flags, CONFIG_FLAG_MOUSEINFO);
-		DEL_BIT(ses->config_flags, CONFIG_FLAG_MOUSEPIXELS);	
+		DEL_BIT(ses->config_flags, CONFIG_FLAG_MOUSEPIXELS);
 		DEL_BIT(ses->config_flags, CONFIG_FLAG_MOUSEPIXELS);
 		DEL_BIT(gtd->flags, TINTIN_FLAG_MOUSETRACKING);
 
@@ -1124,7 +1124,7 @@ DO_CONFIG(config_screenreader)
 DO_CONFIG(config_scrolllock)
 {
 	if (*arg2)
-	{	
+	{
 		if (is_abbrev(arg2, "ON"))
 		{
 			SET_BIT(ses->config_flags, CONFIG_FLAG_SCROLLLOCK);
@@ -1140,7 +1140,7 @@ DO_CONFIG(config_scrolllock)
 			return NULL;
 		}
 	}
-	strcpy(arg2, HAS_BIT(ses->config_flags, CONFIG_FLAG_SCROLLLOCK) ? "ON" : "OFF");	
+	strcpy(arg2, HAS_BIT(ses->config_flags, CONFIG_FLAG_SCROLLLOCK) ? "ON" : "OFF");
 
 	return ses;
 }
@@ -1198,7 +1198,7 @@ DO_CONFIG(config_tabwidth)
 
 	return ses;
 }
-	
+
 DO_CONFIG(config_telnet)
 {
 	if (*arg2)

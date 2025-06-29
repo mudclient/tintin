@@ -1172,7 +1172,7 @@ DO_BUFFER(buffer_info)
 
 	check_buffer(ses);
 
-	arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);	
+	arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
 	arg = sub_arg_in_braces(ses, arg, arg2, GET_ONE, SUB_VAR|SUB_FUN);
 
 	if (*arg1 == 0)
@@ -1331,7 +1331,7 @@ DO_COMMAND(do_grep)
 				if (grep_cnt + grep_add >= grep_min)
 				{
 					grep_cnt += grep_add;
-					
+
 					tintin_puts2(ses, ses->scroll->buffer[scroll_cnt]->str);
 
 					if (grep_cnt + grep_add > grep_max)

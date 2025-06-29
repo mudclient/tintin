@@ -420,12 +420,15 @@ void delete_node(struct session *ses, int type, struct listnode *node)
 
 	insert_index_list(gtd->dispose_list, node, gtd->dispose_list->used);
 
-	switch (type)
+	if (!HAS_BIT(ses->flags, SES_FLAG_CLOSED))
 	{
-		case LIST_CLASS:
-			check_all_events(ses, EVENT_FLAG_CLASS, 0, 1, "CLASS DESTROYED", node->arg1);
-			check_all_events(ses, EVENT_FLAG_CLASS, 1, 1, "CLASS DESTROYED %s", node->arg1, node->arg1);
-			break;
+		switch (type)
+		{
+			case LIST_CLASS:
+				check_all_events(ses, EVENT_FLAG_CLASS, 0, 1, "CLASS DESTROYED", node->arg1);
+				check_all_events(ses, EVENT_FLAG_CLASS, 1, 1, "CLASS DESTROYED %s", node->arg1, node->arg1);
+				break;
+		}
 	}
 }
 
@@ -494,7 +497,7 @@ int search_index_list(struct listroot *root, char *text, char *priority)
 		case SORT_ALPHA:
 		case SORT_STABLE:
 			return bsearch_alpha_list(root, text, 0);
-		
+
 		case SORT_ALNUM:
 			return bsearch_alnum_list(root, text, 0);
 
@@ -508,7 +511,7 @@ int search_index_list(struct listroot *root, char *text, char *priority)
 
 	return nsearch_list(root, text);
 }
- 
+
 /*
 	Return insertion index.
 */
@@ -1148,7 +1151,7 @@ DO_COMMAND(do_message)
 			else
 			{
 				show_error(ses, LIST_COMMAND, "#SYNTAX: #MESSAGE {%s} [ON|OFF]",  arg1);
-				
+
 				return ses;
 			}
 			show_message(ses, LIST_COMMAND, "#OK: #MESSAGE STATUS FOR %s HAS BEEN SET TO: %s.", list_table[index].name_multi, HAS_BIT(ses->list[index]->flags, LIST_FLAG_MESSAGE) ? "ON" : "OFF");
@@ -1221,7 +1224,7 @@ DO_COMMAND(do_ignore)
 				else
 				{
 					show_error(ses, LIST_COMMAND, "#SYNTAX: #IGNORE {%s} [ON|OFF]", arg1);
-				
+
 					return ses;
 				}
 				show_message(ses, LIST_COMMAND, "#OK: #IGNORE STATUS FOR %s HAS BEEN SET TO: %s.", list_table[index].name_multi, HAS_BIT(ses->list[index]->flags, LIST_FLAG_IGNORE) ? "ON" : "OFF");
@@ -1299,7 +1302,7 @@ DO_COMMAND(do_debug)
 			else
 			{
 				show_error(ses, LIST_COMMAND, "#SYNTAX: #DEBUG {%s} [ON|OFF|LOG]", arg1);
-				
+
 				return ses;
 			}
 			show_message(ses, LIST_COMMAND, "#OK: #DEBUG STATUS FOR %s HAS BEEN SET TO: %s.", list_table[index].name_multi, is_abbrev(arg2, "LOG") ? "LOG" : HAS_BIT(ses->list[index]->flags, LIST_FLAG_DEBUG) ? "ON" : "OFF");
@@ -1708,14 +1711,14 @@ DO_COMMAND(do_info)
 					}
 					else
 					{
-						tintin_printf2(ses, "{NAME}{%s}", ses->name);
-						tintin_printf2(ses, "{ACTIVE}{%d}", gtd->ses == ses);
-						tintin_printf2(ses, "{CLASS}{%s}", ses->group);
-						tintin_printf2(ses, "{CREATED}{%d}", ses->created);
-						tintin_printf2(ses, "{HOST} {%s}", ses->session_host);
-						tintin_printf2(ses, "{IP} {%s}", ses->session_ip);
-						tintin_printf2(ses, "{MTTS} {%d}", get_mtts_val(ses));
-						tintin_printf2(ses, "{PORT} {%s}", ses->session_port);
+						tintin_printf2(ses, "#INFO SESSION: {NAME}{%s}", ses->name);
+						tintin_printf2(ses, "#INFO SESSION: {ACTIVE}{%d}", gtd->ses == ses);
+						tintin_printf2(ses, "#INFO SESSION: {CLASS}{%s}", ses->group);
+						tintin_printf2(ses, "#INFO SESSION: {CREATED}{%d}", ses->created);
+						tintin_printf2(ses, "#INFO SESSION: {HOST} {%s}", ses->session_host);
+						tintin_printf2(ses, "#INFO SESSION: {IP} {%s}", ses->session_ip);
+						tintin_printf2(ses, "#INFO SESSION: {MTTS} {%d}", get_mtts_val(ses));
+						tintin_printf2(ses, "#INFO SESSION: {PORT} {%s}", ses->session_port);
 					}
 				}
 				else if (is_abbrev(arg1, "SESSIONS"))
@@ -1745,14 +1748,14 @@ DO_COMMAND(do_info)
 					{
 						for (sesptr = gts ; sesptr ; sesptr = sesptr->next)
 						{
-							tintin_printf2(ses, "{%s}{NAME}{%s}", sesptr->name, sesptr->name);
-							tintin_printf2(ses, "{%s}{ACTIVE}{%d}", sesptr->name, gtd->ses == sesptr);
-							tintin_printf2(ses, "{%s}{CLASS}{%s}", sesptr->name, sesptr->group);
-							tintin_printf2(ses, "{%s}{CREATED}{%d}", sesptr->name, sesptr->created);
-							tintin_printf2(ses, "{%s}{HOST} {%s}", sesptr->name, sesptr->session_host);
-							tintin_printf2(ses, "{%s}{IP} {%s}", sesptr->name, sesptr->session_ip);
-							tintin_printf2(ses, "{%s}{MTTS} {%d}", sesptr->name, get_mtts_val(ses));
-							tintin_printf2(ses, "{%s}{PORT} {%s}", sesptr->name, sesptr->session_port);
+							tintin_printf2(ses, "#INFO SESSIONS: {%s}{NAME}{%s}", sesptr->name, sesptr->name);
+							tintin_printf2(ses, "#INFO SESSIONS: {%s}{ACTIVE}{%d}", sesptr->name, gtd->ses == sesptr);
+							tintin_printf2(ses, "#INFO SESSIONS: {%s}{CLASS}{%s}", sesptr->name, sesptr->group);
+							tintin_printf2(ses, "#INFO SESSIONS: {%s}{CREATED}{%d}", sesptr->name, sesptr->created);
+							tintin_printf2(ses, "#INFO SESSIONS: {%s}{HOST} {%s}", sesptr->name, sesptr->session_host);
+							tintin_printf2(ses, "#INFO SESSIONS: {%s}{IP} {%s}", sesptr->name, sesptr->session_ip);
+							tintin_printf2(ses, "#INFO SESSIONS: {%s}{MTTS} {%d}", sesptr->name, get_mtts_val(ses));
+							tintin_printf2(ses, "#INFO SESSIONS: {%s}{PORT} {%s}", sesptr->name, sesptr->session_port);
 						}
 					}
 				}

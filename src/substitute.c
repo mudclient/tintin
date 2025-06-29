@@ -937,7 +937,7 @@ int color_gradient(char *pti, int min, int max)
 						}
 						lvl++;
 					}
-					
+
 					if (buf[1] > 'a' && pti[6] < buf[1])
 					{
 						buf[1]--;
@@ -1004,7 +1004,7 @@ int color_gradient(char *pti, int min, int max)
 						}
 						lvl++;
 					}
-					
+
 					if (pti[6] < buf[1])
 					{
 						buf[1]--;
@@ -1193,7 +1193,7 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 					{
 						substitute(ses, temp, buf, flags_neol);
 					}
-					show_debug(ses, LIST_FUNCTION, COLOR_DEBUG "#DEBUG FUNCTION " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1);
+					show_debug(ses, LIST_FUNCTION, node, COLOR_DEBUG "#DEBUG FUNCTION " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1);
 
 					RESTRING(gtd->vars[0], buf);
 
@@ -1228,7 +1228,7 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 						delete_node_list(ses, LIST_FUNCTION, node);
 					}
 
-					script_driver(ses, LIST_FUNCTION, buf);
+					script_driver(ses, LIST_FUNCTION, node, buf);
 
 					node = search_nest_node_ses(ses, "result");
 
@@ -1823,7 +1823,7 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 						else if (pti[1] >= 'a' && pti[1] <= 'f' && pti[2] >= 'a' && pti[2] <= 'f' && pti[3] >= 'a' && pti[3] <= 'f' && pti[4] == '>')
 						{
 							cnt = 16 + (pti[1] - 'a') * 36 + (pti[2] - 'a') * 6 + (pti[3] - 'a');
-							
+
 							if (ses->color >= 256)
 							{
 								pto += sprintf(pto, "\e[22;38;5;%dm", cnt);
@@ -2234,7 +2234,7 @@ int substitute(struct session *ses, char *string, char *result, int flags)
 				{
 					*pto++ = *pti++;
 				}
-				break;	
+				break;
 
 			default:
 				*pto++ = *pti++;
@@ -2516,7 +2516,7 @@ int get_color_names(struct session *ses, char *string, char *result)
 				result += substitute(ses, result, result, SUB_COL);
 
 				continue;
-			
+
 			case '\\':
 				skip = find_escaped_color_code(string);
 

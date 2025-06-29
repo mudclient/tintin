@@ -284,22 +284,22 @@ int skip_vt102_codes_non_graph(char *str)
 	switch (str[skip])
 	{
 		case   7:   // BEL
-//		case   8:   // BS  
-//		case   9:   // HT  
-//		case  10:   // LF  
-		case  11:   // VT  
-		case  12:   // FF  
-		case  13:   // CR  
-		case  14:   // SO  
-		case  15:   // SI  
-		case  17:   // DC1 
-		case  19:   // DC3 
-		case  24:   // CAN 
-		case  26:   // SUB 
-		case 127:   // DEL 
+//		case   8:   // BS
+//		case   9:   // HT
+//		case  10:   // LF
+		case  11:   // VT
+		case  12:   // FF
+		case  13:   // CR
+		case  14:   // SO
+		case  15:   // SI
+		case  17:   // DC1
+		case  19:   // DC3
+		case  24:   // CAN
+		case  26:   // SUB
+		case 127:   // DEL
 			return 1;
 
-		case  27:   // ESC 
+		case  27:   // ESC
 			break;
 
 		default:
@@ -656,7 +656,7 @@ void strip_non_vt102_codes(char *str, char *buf)
 }
 
 char *strip_vt102_strstr(char *str, char *buf, int *len)
-{ 
+{
 	char *pti, *ptm, *pts;
 
 	push_call("strip_vt102_strstr(%p,%p,%p)",str,buf,len);
@@ -804,9 +804,9 @@ void get_color_codes(char *old, char *str, char *buf, int flags)
 					rgb[2] = URANGE(0, atoi(col), 255);
 
 					fgc = rgb[0] * 256 * 256 + rgb[1] * 256 + rgb[2];
-					
+
 					DEL_BIT(vtc, COL_TCF_2|COL_TCF_R);
-					SET_BIT(vtc, COL_TCB);
+					SET_BIT(vtc, COL_TCF);
 				}
 			}
 			else if (HAS_BIT(vtc, COL_TCB_R))
@@ -824,7 +824,7 @@ void get_color_codes(char *old, char *str, char *buf, int flags)
 					rgb[5] = URANGE(0, atoi(col), 255);
 
 					fgc = rgb[3] * 256 * 256 + rgb[4] * 256 + rgb[5];
-					
+
 					DEL_BIT(vtc, COL_TCB_2|COL_TCF_R);
 					SET_BIT(vtc, COL_TCB);
 				}
@@ -916,7 +916,7 @@ void get_color_codes(char *old, char *str, char *buf, int flags)
 								fgc = atoi(col);
 								DEL_BIT(vtc, COL_XTF|COL_TCF);
 								break;
-							
+
 							case 4:
 							case 9:
 								bgc = atoi(col);
@@ -1009,7 +1009,7 @@ int strip_vt102_strlen(struct session *ses, char *str)
 {
 	char *pti;
 	int size, width, str_len;
-	
+
 	str_len = 0;
 
 	pti = str;
@@ -1232,7 +1232,7 @@ int interpret_vt102_codes(struct session *ses, char *str, int real)
 			ses->split->top_row = URANGE(1, ses->split->top_row, gtd->screen->rows);
 
 			ses->split->bot_row = ses->split->bot_row ? URANGE(1, ses->split->bot_row, gtd->screen->rows) : gtd->screen->rows;
-			
+
 			return TRUE;
 		}
 	}
@@ -1255,7 +1255,7 @@ int catch_vt102_codes(struct session *ses, unsigned char *str, int cplen)
 			}
 			pop_call();
 			return 0;
-			
+
 		case ASCII_ESC:
 			break;
 
@@ -1410,9 +1410,9 @@ int catch_vt102_codes(struct session *ses, unsigned char *str, int cplen)
 					if (cplen >= 10)
 					{
 						sprintf(osc, "%.*s", 8, str + 3);
-							
+
 						check_all_events(ses, EVENT_FLAG_VT100, 0, 1, "VT100 OSC COLOR PALETTE", osc);
-							
+
 						if (check_all_events(ses, EVENT_FLAG_CATCH, 0, 1, "CATCH VT100 OSC", osc))
 						{
 							pop_call();
@@ -1448,7 +1448,7 @@ int catch_vt102_codes(struct session *ses, unsigned char *str, int cplen)
 							return 1;
 						}
 					}
-					
+
 					while (cplen >= skip && skip < BUFFER_SIZE)
 					{
 						if (str[skip] == ASCII_BEL)
@@ -1457,7 +1457,7 @@ int catch_vt102_codes(struct session *ses, unsigned char *str, int cplen)
 						}
 						skip++;
 					}
-	
+
 					snprintf(osc, BUFFER_SIZE, "%.*s", skip - 2, str + 2);
 
 					check_all_events(ses, SUB_SEC|EVENT_FLAG_VT100, 0, 1, "VT100 OSC", osc);

@@ -215,7 +215,7 @@ int check_all_events(struct session *ses, int flags, int args, int vars, char *f
 			syserr_printf(ses, "check_all_events: vasprintf:");
 		}
 
-		va_end(list); 
+		va_end(list);
 	}
 	else
 	{
@@ -268,9 +268,12 @@ int check_all_events(struct session *ses, int flags, int args, int vars, char *f
 
 				substitute(ses_ptr, node->arg2, buf, sub);
 
-				if (!HAS_BIT(flags, EVENT_FLAG_UPDATE) && HAS_BIT(ses_ptr->list[LIST_EVENT]->flags, LIST_FLAG_DEBUG))
+				if (!HAS_BIT(flags, EVENT_FLAG_UPDATE))
 				{
-					show_debug(ses_ptr, LIST_EVENT, COLOR_DEBUG "#DEBUG EVENT " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1);
+					if (HAS_BIT(ses_ptr->list[LIST_EVENT]->flags, LIST_FLAG_DEBUG) || HAS_BIT(node->flags, NODE_FLAG_DEBUG))
+					{
+						show_debug(ses_ptr, LIST_EVENT, node, COLOR_DEBUG "#DEBUG EVENT " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1);
+					}
 				}
 
 				if (node->shots && --node->shots == 0)
@@ -280,7 +283,7 @@ int check_all_events(struct session *ses, int flags, int args, int vars, char *f
 
 				gtd->level->quiet += HAS_BIT(flags, EVENT_FLAG_UPDATE) ? 1 : 0;
 
-				script_driver(ses_ptr, LIST_EVENT, buf);
+				script_driver(ses_ptr, LIST_EVENT, node, buf);
 
 				gtd->level->quiet -= HAS_BIT(flags, EVENT_FLAG_UPDATE) ? 1 : 0;
 
@@ -576,7 +579,7 @@ void mouse_handler(struct session *ses, int flags, int row, int col)
 			{
 				strcpy(dir, swipe[9] > 0 ? "NE" : "NW");
 			}
-			check_all_events(ses, EVENT_FLAG_MOUSE, 0, 12, "SWIPED", dir, arg2, ntos(swipe[0]), ntos(swipe[1]), ntos(swipe[2]), ntos(swipe[3]), ntos(swipe[4]), ntos(swipe[5]), ntos(swipe[6]), ntos(swipe[7]), ntos(swipe[8]), ntos(swipe[9]));			
+			check_all_events(ses, EVENT_FLAG_MOUSE, 0, 12, "SWIPED", dir, arg2, ntos(swipe[0]), ntos(swipe[1]), ntos(swipe[2]), ntos(swipe[3]), ntos(swipe[4]), ntos(swipe[5]), ntos(swipe[6]), ntos(swipe[7]), ntos(swipe[8]), ntos(swipe[9]));
 			check_all_events(ses, EVENT_FLAG_MOUSE, 1, 12, "SWIPED %s", dir, dir, arg2, ntos(swipe[0]), ntos(swipe[1]), ntos(swipe[2]), ntos(swipe[3]), ntos(swipe[4]), ntos(swipe[5]), ntos(swipe[6]), ntos(swipe[7]), ntos(swipe[8]), ntos(swipe[9]));
 			check_all_events(ses, EVENT_FLAG_MOUSE, 2, 12, "SWIPED %s %s", arg2, dir, dir, arg2, ntos(swipe[0]), ntos(swipe[1]), ntos(swipe[2]), ntos(swipe[3]), ntos(swipe[4]), ntos(swipe[5]), ntos(swipe[6]), ntos(swipe[7]), ntos(swipe[8]), ntos(swipe[9]));
 		}

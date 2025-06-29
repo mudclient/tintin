@@ -377,7 +377,7 @@ DO_SCREEN(screen_cursor)
 	else
 	{
 		show_error(ses, LIST_COMMAND, "#SYNTAX: #SCREEN {CURSOR} {HIDE|SHOW|BLINK|STEADY}");
-	}	
+	}
 }
 
 DO_SCREEN(screen_clear)
@@ -483,9 +483,9 @@ DO_SCREEN(screen_fill)
 			command(ses, do_screen, "CLEAR SPLIT");
 		}
 
-		if (ses->split->sav_top_row > 0)
+		if (ses->split->top_row > 1)
 		{
-			if (ses->split->sav_top_row == 1)
+			if (ses->split->top_row == 2)
 			{
 				command(ses, do_draw, "%s LINE %d %d %d %d", arg2, 1, 1, ses->split->top_row - 1, gtd->screen->cols);
 			}
@@ -499,9 +499,9 @@ DO_SCREEN(screen_fill)
 
 		if (ses->split->sav_bot_row)
 		{
-			if (ses->split->sav_bot_row - inputline_max_row() >= 0)
+			if (ses->split->bot_row + inputline_max_row() < gtd->screen->rows)
 			{
-				if (ses->split->sav_bot_row - inputline_max_row() == 0)
+				if (ses->split->bot_row + inputline_max_row() == gtd->screen->rows - 1)
 				{
 					command(ses, do_draw, "%s LINE %d %d %d %d", arg2, ses->split->bot_row + 1, 1, gtd->screen->rows - inputline_max_row(), gtd->screen->cols);
 				}
@@ -539,7 +539,7 @@ DO_SCREEN(screen_fill)
 				{
 					if (ses->split->sav_top_row > 1)
 					{
-						command(ses, do_draw, "%s HORIZONTAL TEED TOP RIGHT CORNER %d %d %d %d", arg2, ses->split->top_row - 1, ses->split->bot_col + 1, ses->split->bot_row + 1, ses->split->bot_col + 1);						
+						command(ses, do_draw, "%s HORIZONTAL TEED TOP RIGHT CORNER %d %d %d %d", arg2, ses->split->top_row - 1, ses->split->bot_col + 1, ses->split->bot_row + 1, ses->split->bot_col + 1);
 					}
 					if (ses->split->sav_bot_row > 1)
 					{
@@ -618,7 +618,7 @@ DO_SCREEN(screen_get)
 	{
 		tintin_printf2(ses, "#SYNTAX: #SCREEN {GET} {FOCUS} <VAR>");
 		tintin_printf2(ses, "#SYNTAX: #SCREEN {GET} {ROWS|COLS|HEIGHT|WIDTH} <VAR>");
-		
+
 		tintin_printf2(ses, "#SYNTAX: #SCREEN {GET} {CHAR_HEIGHT|CHAR_WIDTH}");
 		tintin_printf2(ses, "#SYNTAX: #SCREEN {GET} {SPLIT_TOP_BAR|SPLIT_BOT_BAR|SPLIT_LEFT_BAR|SPLIT_RIGHT_BAR} <VAR>");
 		tintin_printf2(ses, "#SYNTAX: #SCREEN {GET} {SCROLL_TOP_ROW|SCROLL_TOP_COL|SCROLL_BOT_ROW|SCROLL_BOT_COL} <VAR>");
@@ -1712,7 +1712,7 @@ DO_SCREEN(screen_info)
 		set_nest_node_ses(ses, arg2, "{SCROLLMODE}{%d}", HAS_BIT(gtd->screen->flags, SCREEN_FLAG_SCROLLMODE));
 
 		show_message(ses, LIST_COMMAND, "#INFO: DATA WRITTEN TO {info[SCREEN]}");
-		
+
 		return;
 	}
 	if (*arg1)

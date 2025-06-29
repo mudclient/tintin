@@ -73,65 +73,65 @@ void debugtoken(struct session *ses, struct scriptroot *root, struct scriptnode 
 		switch (token->type)
 		{
 			case TOKEN_TYPE_REPEAT:
-				show_debug(ses, root->list, "%s" COLOR_REPEAT "!\e[0m%s", indent(token->lvl + 1), token->str);
+				show_debug(ses, root->list, NULL, "%s" COLOR_REPEAT "!\e[0m%s", indent(token->lvl + 1), token->str);
 				break;
 
 			case TOKEN_TYPE_STRING:
-				show_debug(ses, root->list, "%s%s", indent(token->lvl + 1), token->str);
+				show_debug(ses, root->list, NULL, "%s%s", indent(token->lvl + 1), token->str);
 				break;
 
 			case TOKEN_TYPE_SESSION:
-				show_debug(ses, root->list, "%s" COLOR_TINTIN "%c" COLOR_SESSION "%s", indent(token->lvl + 1), gtd->tintin_char, token->str);
+				show_debug(ses, root->list, NULL, "%s" COLOR_TINTIN "%c" COLOR_SESSION "%s", indent(token->lvl + 1), gtd->tintin_char, token->str);
 				break;
 
 			case TOKEN_TYPE_ELSE:
 			case TOKEN_TYPE_END:
-				show_debug(ses, root->list, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s\e[0m", indent(token->lvl + 1), gtd->tintin_char, token->str);
+				show_debug(ses, root->list, NULL, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s\e[0m", indent(token->lvl + 1), gtd->tintin_char, token->str);
 				break;
 
 			case TOKEN_TYPE_DEFAULT:
-				show_debug(ses, root->list, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s\e[0m", indent(token->lvl + 1), gtd->tintin_char, command_table[token->cmd].name);
+				show_debug(ses, root->list, NULL, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s\e[0m", indent(token->lvl + 1), gtd->tintin_char, command_table[token->cmd].name);
 				break;
 
 			case TOKEN_TYPE_BREAK:
 			case TOKEN_TYPE_CONTINUE:
-				show_debug(ses, root->list, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s\e[0m", indent(token->lvl + 1), gtd->tintin_char, command_table[token->cmd].name);
+				show_debug(ses, root->list, NULL, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s\e[0m", indent(token->lvl + 1), gtd->tintin_char, command_table[token->cmd].name);
 				break;
 
 			case TOKEN_TYPE_COMMAND:
-				show_debug(ses, root->list, "%s" COLOR_TINTIN "%c" COLOR_COMMAND   "%s " COLOR_STRING "%s\e[0m", indent(token->lvl + 1), gtd->tintin_char, command_table[token->cmd].name, token->str);
+				show_debug(ses, root->list, NULL, "%s" COLOR_TINTIN "%c" COLOR_COMMAND   "%s " COLOR_STRING "%s\e[0m", indent(token->lvl + 1), gtd->tintin_char, command_table[token->cmd].name, token->str);
 				break;
 
 			case TOKEN_TYPE_RETURN:
-				show_debug(ses, root->list, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s " COLOR_STRING "%s\e[0m", indent(token->lvl + 1), gtd->tintin_char, command_table[token->cmd].name, token->str);
+				show_debug(ses, root->list, NULL, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s " COLOR_STRING "%s\e[0m", indent(token->lvl + 1), gtd->tintin_char, command_table[token->cmd].name, token->str);
 				break;
 
 			case TOKEN_TYPE_CASE:
 			case TOKEN_TYPE_ELSEIF:
 			case TOKEN_TYPE_IF:
 			case TOKEN_TYPE_WHILE:
-				show_debug(ses, root->list, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}\e[0m", indent(token->lvl + 1), gtd->tintin_char, command_table[token->cmd].name, token->str);
+				show_debug(ses, root->list, NULL, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}\e[0m", indent(token->lvl + 1), gtd->tintin_char, command_table[token->cmd].name, token->str);
 				break;
 
 			case TOKEN_TYPE_FOREACH:
 			case TOKEN_TYPE_LOOP:
 			case TOKEN_TYPE_PARSE:
 			case TOKEN_TYPE_SWITCH:
-				show_debug(ses, root->list, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s " COLOR_STRING "%s\e[0m", indent(token->lvl + 1), gtd->tintin_char, command_table[token->cmd].name, token->data->hlt);
+				show_debug(ses, root->list, NULL, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s " COLOR_STRING "%s\e[0m", indent(token->lvl + 1), gtd->tintin_char, command_table[token->cmd].name, token->data->hlt);
 				break;
 
 			case TOKEN_TYPE_REGEX:
-				show_debug(ses, root->list, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "} {" COLOR_STRING "%s" COLOR_BRACE "}\e[0m", indent(token->lvl + 1), gtd->tintin_char, command_table[token->cmd].name, token->str, token->regex->str);
+				show_debug(ses, root->list, NULL, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "} {" COLOR_STRING "%s" COLOR_BRACE "}\e[0m", indent(token->lvl + 1), gtd->tintin_char, command_table[token->cmd].name, token->str, token->regex->str);
 				break;
 
 			default:
 				if (token == (struct scriptnode *) ses)
 				{
-					show_debug(ses, root->list, "[--] (error) token == ses");
+					show_debug(ses, root->list, NULL, "[--] (error) token == ses");
 				}
 				else
 				{
-					show_debug(ses, root->list, "[%02d] %s\e[1;33m%d {\e[0m%s\e[1;32m}\e[0m", token->type, indent(token->lvl + 1), token->cmd, token->str);
+					show_debug(ses, root->list, NULL, "[%02d] %s\e[1;33m%d {\e[0m%s\e[1;32m}\e[0m", token->type, indent(token->lvl + 1), token->cmd, token->str);
 				}
 				break;
 		}
@@ -297,7 +297,7 @@ void handlereturntoken(struct session *ses, struct scriptnode *token)
 
 		SET_BIT(gtd->flags, TINTIN_FLAG_LOCAL);
 	}
-//	show_debug(ses, LIST_FUNCTION, COLOR_DEBUG "#DEBUG RETURN " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", arg);
+//	show_debug(ses, LIST_FUNCTION, NULL, COLOR_DEBUG "#DEBUG RETURN " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", arg);
 }
 
 void handleswitchtoken(struct session *ses, struct scriptnode *token)
@@ -1052,7 +1052,7 @@ struct scriptnode *parse_script(struct scriptroot *root, int lvl, struct scriptn
 				{
 					substitute(root->ses, token->regex->bod, token->regex->buf, SUB_CMD);
 
-					root->ses = script_driver(root->ses, LIST_COMMAND, token->regex->buf);
+					root->ses = script_driver(root->ses, LIST_COMMAND, NULL, token->regex->buf);
 				}
 				else
 				{
@@ -1269,6 +1269,9 @@ char *view_script(struct session *ses, struct scriptroot *root)
 			case TOKEN_TYPE_LOOP:
 			case TOKEN_TYPE_PARSE:
 			case TOKEN_TYPE_SWITCH:
+			case TOKEN_TYPE_BROKEN_FOREACH:
+			case TOKEN_TYPE_BROKEN_LOOP:
+			case TOKEN_TYPE_BROKEN_PARSE:
 				cat_sprintf(buf, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s " COLOR_STRING "%s\n%s" COLOR_BRACE "{\n", indent(token->lvl), gtd->tintin_char, command_table[token->cmd].name, token->data->hlt, indent(token->lvl));
 				break;
 
@@ -1276,6 +1279,7 @@ char *view_script(struct session *ses, struct scriptroot *root)
 			case TOKEN_TYPE_ELSEIF:
 			case TOKEN_TYPE_IF:
 			case TOKEN_TYPE_WHILE:
+			case TOKEN_TYPE_BROKEN_WHILE:
 				cat_sprintf(buf, "%s" COLOR_TINTIN "%c" COLOR_STATEMENT "%s " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}" COLOR_STRING "\n%s" COLOR_BRACE "{\n", indent(token->lvl), gtd->tintin_char, command_table[token->cmd].name, token->str, indent(token->lvl));
 				break;
 
@@ -1308,9 +1312,10 @@ char *view_script(struct session *ses, struct scriptroot *root)
 	return buf;
 }
 
-struct session *script_driver(struct session *ses, int list, char *str)
+struct session *script_driver(struct session *ses, int list, struct listnode *node, char *str)
 {
 	struct scriptroot *root;
+	int debug;
 
 	push_call("script_driver(%p,%d,%p)",ses,list,str);
 
@@ -1318,14 +1323,21 @@ struct session *script_driver(struct session *ses, int list, char *str)
 
 	gtd->level->input += list != LIST_COMMAND;
 
+	debug = node ? HAS_BIT(node->flags, NODE_FLAG_DEBUG) : 0;
+
+	gtd->level->debug += debug;
+
 	tokenize_script(root, 0, str);
 
 	ses = (struct session *) parse_script(root, 0, root->next, root->prev);
 
 	if (list != LIST_COMMAND)
 	{
-		show_debug(ses, list, COLOR_DEBUG "#END%s", list_table[list].name);
+		show_debug(ses, list, NULL, COLOR_DEBUG "#END%s", list_table[list].name);
 	}
+
+	gtd->level->debug -= debug;
+
 	gtd->level->input -= list != LIST_COMMAND;
 
 	while (root->prev)

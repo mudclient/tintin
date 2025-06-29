@@ -153,7 +153,7 @@ struct advertisement_type advertisement_table[] =
                 "\n"
                 "<178>To connect to 3Kingdoms enter:  #session 3K 3k.org 3000\n"
                 "\n",
- 
+
                 "\n"
                 "<138>3Kingdoms\n"
                 "<168>http://3k.org\n"
@@ -165,8 +165,8 @@ struct advertisement_type advertisement_table[] =
 	},
 
 	{
-		1400000000,  /* 2014 */ 
-		1800000000,  /* 2027 */ 
+		1400000000,  /* 2014 */
+		1800000000,  /* 2027 */
 		100,
 
 		"\n"
@@ -244,7 +244,7 @@ struct advertisement_type advertisement_table[] =
 		"\n"
 		"<178>To connect to Primal Darkness enter: #session pd mud.primaldarkness.com 5000\n"
 		"\n",
-		
+
 		"\n"
 		"<138>Primal Darkness\n"
 		"<168>http://www.primaldarkness.com\n"
@@ -318,8 +318,8 @@ struct advertisement_type advertisement_table[] =
 
 /*
 	{
-		1400000000, 
-		1700000000, 
+		1400000000,
+		1700000000,
 		100,
 		"\n"
 		"<138>               Carrion Fields  -  http://carrionfields.net\n"
@@ -333,12 +333,12 @@ struct advertisement_type advertisement_table[] =
 		"\n"
                 "<178>To connect to Carrion Fields enter: #session cf carrionfields.net 4449\n"
                 "\n"
-		                
+
 	},
 
 	{
-		1400000000, 
-		1700000000, 
+		1400000000,
+		1700000000,
 		100,
 		"\n"
 		"<138>                 Alter Aeon  -  http://www.alteraeon.com\n"
@@ -356,7 +356,7 @@ struct advertisement_type advertisement_table[] =
 	},
 
 	{
-		1388166000, 
+		1388166000,
 		1600000000,
 		100,
 		"\n"
@@ -520,7 +520,7 @@ DO_COMMAND(do_advertise)
 		"\n"
                 "<178>To connect to Lost Souls enter: #session ls lostsouls.org 23\n"
                 "\n"
-		                
+
 	},
 
 	{

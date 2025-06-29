@@ -32,7 +32,7 @@
 #include <util.h>
 #endif
 #endif
-#include <fcntl.h>  
+#include <fcntl.h>
 #include <dirent.h>
 #include <termios.h>
 #include <sys/un.h>
@@ -223,7 +223,7 @@ DO_DAEMON(daemon_attach)
 	if (pid == getpid())
 	{
 		show_error(ses, LIST_COMMAND, "#ERROR: #DAEMON ATTACH: {%s} CANNOT ATTACH TO ITSELF.", filename);
-		
+
 		return;
 	}
 
@@ -313,7 +313,7 @@ DO_DAEMON(daemon_attach)
 
 		gtd->attach_sock = 0;
 //		gtd->attach_sock = close(gtd->attach_sock);
-		
+
 		return;
 	}
 

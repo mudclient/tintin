@@ -98,7 +98,7 @@ struct session *read_file(struct session *ses, FILE *file, char *filename)
 	if (fread(bufi, 1, size, file) <= 0)
 	{
 		check_all_events(ses, EVENT_FLAG_SYSTEM, 0, 2, "READ ERROR", filename, "FREAD FAILURE");
-		
+
 		tintin_printf(ses, "#ERROR: #READ {%s}: FREAD FAILURE.", filename);
 
 		return ses;
@@ -332,7 +332,7 @@ struct session *read_file(struct session *ses, FILE *file, char *filename)
 
 		gtd->level->quiet++;
 
-		script_driver(ses, LIST_COMMAND, temp);
+		script_driver(ses, LIST_COMMAND, NULL, temp);
 
 		gtd->level->quiet--;
 	}
@@ -360,12 +360,12 @@ struct session *read_file(struct session *ses, FILE *file, char *filename)
 
 		if (pto - bufi >= BUFFER_SIZE)
 		{
-			show_debug(ses, LIST_COMMAND, "#WARNING: #READ {%s}: POSSIBLE BUFFER OVERFLOW AT COMMAND: %.30s", filename, bufi);
+			show_debug(ses, LIST_COMMAND, NULL, "#WARNING: #READ {%s}: POSSIBLE BUFFER OVERFLOW AT COMMAND: %.30s", filename, bufi);
 		}
 
 		if (bufi[0])
 		{
-			ses = script_driver(ses, LIST_COMMAND, bufi);
+			ses = script_driver(ses, LIST_COMMAND, NULL, bufi);
 		}
 		pto = bufi;
 		pti++;
@@ -426,7 +426,7 @@ DO_COMMAND(do_write)
 
 		return ses;
 	}
-	
+
 	if (is_suffix(arg1, ".map") && !is_abbrev(arg2, "FORCE"))
 	{
 		check_all_events(ses, EVENT_FLAG_SYSTEM, 0, 2, "WRITE ERROR", arg1, "INVALID FILE EXTENSION");

@@ -137,7 +137,7 @@ struct listnode *search_nest_node_ses(struct session *ses, char *variable)
 	return NULL;
 }
 
-	
+
 struct listnode *search_nest_node(struct listroot *root, char *variable)
 {
 	char name[BUFFER_SIZE], *arg;
@@ -282,7 +282,7 @@ void update_nest_node(struct listroot *root, char *arg)
 		{
 			update_nest_node(update_nest_root(root, arg1), arg2);
 		}
-		else if (*arg1)
+		else //if (*arg1)
 		{
 			update_node_list(root, arg1, arg2, "", "");
 		}
@@ -370,7 +370,7 @@ int delete_nest_node_with_wild(struct listroot *root, char *variable)
 				{
 					show_message(root->ses, LIST_VARIABLE, "#OK. {%s} IS NO LONGER A VARIABLE.", root->list[index]->arg1);
 				}
-				
+
 				delete_index_list(root, index);
 
 				found = TRUE;

@@ -354,7 +354,7 @@ void write_line_mud(struct session *ses, char *line, int size)
 				syserr_printf(ses, "write_line_mud: write");
 			}
 		}
-		
+
 		if (result == -1)
 		{
 			cleanup_session(ses);
@@ -690,7 +690,7 @@ void process_one_line(struct session *ses, char *linebuf, int prompt)
 
 		strip_vt102_codes(linebuf, temp);
 
-		show_debug(ses, LIST_GAG, COLOR_DEBUG "#DEBUG GAG " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "} " COLOR_COMMAND "[" COLOR_STRING "%d" COLOR_COMMAND "]", temp, ses->gagline + 1);
+		show_debug(ses, LIST_GAG, NULL, COLOR_DEBUG "#DEBUG GAG " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "} " COLOR_COMMAND "[" COLOR_STRING "%d" COLOR_COMMAND "]", temp, ses->gagline + 1);
 
 		pop_call();
 		return;
@@ -714,7 +714,7 @@ void process_one_line(struct session *ses, char *linebuf, int prompt)
 	if (ses == gtd->ses)
 	{
 		char *output = str_alloc_stack(0);
-		
+
 		str_cpy(&output, linebuf);
 
 		print_line(ses, &output, prompt);

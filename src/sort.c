@@ -218,7 +218,7 @@ void quad_swap32(int *array, int *swap, size_t nmemb, CMPFUNC *cmp)
 
 				pta -= 8;
 
-				*pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; 
+				*pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++;
 
 				pta += 8;
 
@@ -226,7 +226,7 @@ void quad_swap32(int *array, int *swap, size_t nmemb, CMPFUNC *cmp)
 
 				pta -= 8;
 
-				*pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; 
+				*pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++;
 
 				pta += 4;
 
@@ -238,7 +238,7 @@ void quad_swap32(int *array, int *swap, size_t nmemb, CMPFUNC *cmp)
 
 			pta -= 8;
 
-			*pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; 
+			*pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++;
 
 			pta += 4;
 		}
@@ -562,7 +562,7 @@ void quad_swap64(long long *array, long long *swap, size_t nmemb, CMPFUNC *cmp)
 
 				pta -= 8;
 
-				*pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; 
+				*pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++;
 
 				pta += 8;
 
@@ -570,7 +570,7 @@ void quad_swap64(long long *array, long long *swap, size_t nmemb, CMPFUNC *cmp)
 
 				pta -= 8;
 
-				*pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; 
+				*pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++;
 
 				pta += 4;
 
@@ -582,7 +582,7 @@ void quad_swap64(long long *array, long long *swap, size_t nmemb, CMPFUNC *cmp)
 
 			pta -= 8;
 
-			*pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; 
+			*pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++; *pts++ = *pta++;
 
 			pta += 4;
 		}

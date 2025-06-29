@@ -73,7 +73,7 @@ DO_COMMAND(do_regexp)
 		{
 			substitute(ses, arg3, arg3, SUB_CMD);
 
-			ses = script_driver(ses, LIST_COMMAND, arg3);
+			ses = script_driver(ses, LIST_COMMAND, NULL, arg3);
 		}
 		else
 		{
@@ -83,7 +83,7 @@ DO_COMMAND(do_regexp)
 
 			if (*arg4)
 			{
-				ses = script_driver(ses, LIST_COMMAND, arg4);
+				ses = script_driver(ses, LIST_COMMAND, NULL, arg4);
 			}
 		}
 	}
@@ -212,12 +212,10 @@ pcre *regexp_compile(struct session *ses, char *exp, int comp_option)
 
 int check_one_regexp(struct session *ses, struct listnode *node, char *line, char *original, int comp_option)
 {
-	char *exp, *str;
+	char *exp, *str, result[BUFFER_SIZE];
 
 	if (node->regex == NULL)
 	{
-		char result[BUFFER_SIZE];
-
 		substitute(ses, node->arg1, result, SUB_VAR|SUB_FUN);
 
 		exp = result;
@@ -235,7 +233,7 @@ int check_one_regexp(struct session *ses, struct listnode *node, char *line, cha
 	else
 	{
 		str = line;
-	}	
+	}
 
 	return tintin_regexp(ses, node->regex, str, exp, comp_option, REGEX_FLAG_ARG);
 }
@@ -931,7 +929,7 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 				}
 				{
 					int i = 1;
-	
+
 					while (pti[i] == '$') i++;
 
 					if (pti[i])
@@ -1013,7 +1011,7 @@ pcre *tintin_regexp_compile(struct session *ses, struct listnode *node, char *ex
 						pti += 2;
 						pto += sprintf(pto, "%s", *pti == 0 ? "([^\\x20-\\xfe]*)" : "([^\\x20-\\xfe]*?)");
 						break;
-						
+
 					case 's':
 						pti += 2;
 						pto += sprintf(pto, "%s", *pti == 0 ? "(\\s*)" : "(\\s*?)");

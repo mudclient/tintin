@@ -36,7 +36,7 @@ void *zlib_alloc( void *opaque, unsigned int items, unsigned int size )
 }
 
 
-void zlib_free( void *opaque, void *address ) 
+void zlib_free( void *opaque, void *address )
 {
 	free(address);
 }

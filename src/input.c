@@ -174,7 +174,7 @@ void process_input(void)
 	}
 	else
 	{
-		gtd->ses = script_driver(gtd->ses, LIST_COMMAND, gtd->ses->input->buf);
+		gtd->ses = script_driver(gtd->ses, LIST_COMMAND, NULL, gtd->ses->input->buf);
 	}
 
 	if (HAS_BIT(input_ses->telopts, TELOPT_FLAG_ECHO))
@@ -311,7 +311,7 @@ void read_line(char *input, int len)
 					cursor_delete(gtd->ses, "");
 				}
 
-				
+
 				str_ins_printf(&gtd->ses->input->buf, gtd->ses->input->raw_pos, "%.*s", size, gtd->macro_buf);
 
 				gtd->ses->input->str_pos += width;
@@ -337,10 +337,8 @@ void read_line(char *input, int len)
 
 				kill_list(gtd->ses->list[LIST_COMMAND]);
 
-				if (HAS_BIT(gtd->ses->input->flags, INPUT_FLAG_HISTORYSEARCH))
-				{
-					cursor_history_find(gtd->ses, "");
-				}
+				cursor_history_find(gtd->ses, "");
+
 				break;
 		}
 	}
@@ -459,14 +457,14 @@ int check_key(char *input, int len)
 				{
 					strcpy(buf, node->arg2);
 
-					show_debug(gtd->ses, LIST_MACRO, COLOR_DEBUG "#DEBUG MACRO " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1);
+					show_debug(gtd->ses, LIST_MACRO, node, COLOR_DEBUG "#DEBUG MACRO " COLOR_BRACE "{" COLOR_STRING "%s" COLOR_BRACE "}", node->arg1);
 
 					if (node->shots && --node->shots == 0)
 					{
 						delete_node_list(gtd->ses, LIST_MACRO, node);
 					}
 
-					script_driver(gtd->ses, LIST_MACRO, buf);
+					script_driver(gtd->ses, LIST_MACRO, node, buf);
 
 					if (HAS_BIT(gtd->flags, TINTIN_FLAG_PRESERVEMACRO))
 					{
@@ -528,11 +526,11 @@ int check_key(char *input, int len)
 					gtd->macro_buf[0] = 0;
 
 					gtd->screen->focus = 1;
-					
+
 					check_all_events(gtd->ses, EVENT_FLAG_SCREEN, 0, 1, "SCREEN FOCUS", ntos(gtd->screen->focus));
 
 					msdp_update_all("SCREEN_FOCUS", "%d", gtd->screen->focus);
-					
+
 					pop_call();
 					return TRUE;
 				}
@@ -542,11 +540,11 @@ int check_key(char *input, int len)
 					gtd->macro_buf[0] = 0;
 
 					gtd->screen->focus = 0;
-					
+
 					check_all_events(gtd->ses, EVENT_FLAG_SCREEN, 0, 1, "SCREEN FOCUS", ntos(gtd->screen->focus));
-					
+
 					msdp_update_all("SCREEN_FOCUS", "%d", gtd->screen->focus);
-					 
+
 					pop_call();
 					return TRUE;
 				}
@@ -700,8 +698,8 @@ int check_key(char *input, int len)
 									}
 									pop_call();
 									return FALSE;
-										
-									
+
+
 								default:
 									pop_call();
 									return FALSE;
@@ -1078,14 +1076,10 @@ void modified_input(void)
 {
 	kill_list(gtd->ses->list[LIST_COMMAND]);
 
-	if (HAS_BIT(gtd->ses->input->flags, INPUT_FLAG_HISTORYSEARCH))
-	{
-		cursor_history_find(gtd->ses, "");
-	}
+	cursor_history_find(gtd->ses, "");
 
 	if (HAS_BIT(gtd->ses->input->flags, INPUT_FLAG_HISTORYBROWSE))
 	{
 		DEL_BIT(gtd->ses->input->flags, INPUT_FLAG_HISTORYBROWSE);
 	}
-
 }

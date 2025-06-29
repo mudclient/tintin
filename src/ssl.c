@@ -59,7 +59,7 @@ gnutls_session_t ssl_negotiate(struct session *ses)
 	gnutls_session_t ssl_ses;
 
 	int ret;
-	
+
 	if (!ssl_cred)
 	{
 		gnutls_global_init();
@@ -72,7 +72,7 @@ gnutls_session_t ssl_negotiate(struct session *ses)
 	gnutls_transport_set_ptr(ssl_ses, (gnutls_transport_ptr_t) (long int) ses->socket);
 	gnutls_server_name_set(ssl_ses, GNUTLS_NAME_DNS, ses->session_host, strlen(ses->session_host));
 
-	do 
+	do
 	{
 		ret = gnutls_handshake(ssl_ses);
 	}
@@ -137,7 +137,7 @@ static void load_cert(struct session *ses, gnutls_x509_crt_t *cert)
 	char cert_file[STRING_SIZE];
 	FILE *fp;
 	gnutls_datum_t bptr;
-	
+
 	if (!get_cert_file(ses, cert_file))
 	{
 		return;
@@ -152,7 +152,7 @@ static void load_cert(struct session *ses, gnutls_x509_crt_t *cert)
 	bptr.data = (unsigned char *) cert_file;
 
 	fclose(fp);
-	
+
 	gnutls_x509_crt_init(cert);
 
 	if (gnutls_x509_crt_import(*cert, &bptr, GNUTLS_X509_FMT_PEM))
@@ -168,7 +168,7 @@ static void save_cert(struct session *ses, gnutls_x509_crt_t cert, int new)
 	char filename[BUFFER_SIZE], buf[STRING_SIZE];
 	FILE *fp;
 	size_t len;
-	
+
 	len = STRING_SIZE;
 
 	if (gnutls_x509_crt_export(cert, GNUTLS_X509_FMT_PEM, buf, &len))
@@ -233,7 +233,7 @@ static int diff_certs(gnutls_x509_crt_t c1, gnutls_x509_crt_t c2)
 {
 	char buf1[STRING_SIZE], buf2[STRING_SIZE];
 	size_t len1, len2;
-	
+
 	len1 = len2 = STRING_SIZE;
 
 	if (gnutls_x509_crt_export(c1, GNUTLS_X509_FMT_DER, buf1, &len1))
@@ -262,7 +262,7 @@ static int ssl_check_cert(struct session *ses, gnutls_session_t ssl_ses)
 	gnutls_x509_crt_t cert, oldcert;
 	const gnutls_datum_t *cert_list;
 	unsigned int cert_list_size;
-	char *err = 0;
+	char *err = NULL;
 
 	oldcert = 0;
 
@@ -273,13 +273,13 @@ static int ssl_check_cert(struct session *ses, gnutls_session_t ssl_ses)
 		err = "#SSL: SERVER DOES NOT USE x509 -> NO KEY RETENTION.";
 		goto nocert;
 	}
-	
+
 	if ((cert_list = gnutls_certificate_get_peers(ssl_ses, &cert_list_size)) == NULL)
 	{
 		err = "#SSL: SERVER HAS NO x509 CERTIFICATE -> NO KEY RETENTION.";
 		goto nocert;
 	}
-	
+
 	gnutls_x509_crt_init(&cert);
 
 	if (gnutls_x509_crt_import(cert, &cert_list[0], GNUTLS_X509_FMT_DER) < 0)
@@ -296,7 +296,7 @@ static int ssl_check_cert(struct session *ses, gnutls_session_t ssl_ses)
 
 		err = buf2;
 	}
-	
+
 	if (gnutls_x509_crt_get_expiration_time(cert) < t)
 	{
 		sprintf(buf2, "CERTIFICATE HAS EXPIRED (%s)", str_time(ses, "%c", gnutls_x509_crt_get_expiration_time(cert)));
@@ -316,7 +316,11 @@ static int ssl_check_cert(struct session *ses, gnutls_session_t ssl_ses)
 		{
 			if (err)
 			{
-				sprintf(buf2, "CERTIFICATE MISMATCH, AND NEW %s", err);
+				char temp[BUFFER_SIZE];
+
+				snprintf(temp, BUFFER_SIZE - 1, "CERTIFICATE MISMATCH, AND NEW %s", err);
+
+				strcpy(buf2, temp);
 			}
 			else
 			{
@@ -351,7 +355,7 @@ static int ssl_check_cert(struct session *ses, gnutls_session_t ssl_ses)
 
 badcert:
 	gnutls_x509_crt_deinit(cert);
-	
+
 nocert:
 	if (oldcert)
 	{

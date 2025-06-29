@@ -397,11 +397,11 @@ void delete_room_data(struct room_data *room)
 	free(room->desc);
 	free(room->note);
 	free(room->terrain);
-	free(room->data); 
+	free(room->data);
 
 	return;
 }
-	
+
 void delete_room(struct session *ses, int room, int exits)
 {
 	struct exit_data *exit, *exit_next;
@@ -957,7 +957,7 @@ int get_terrain_density(struct room_data *room, int width)
 							case TERRAIN_FLAG_WIDE:
 								flag = TERRAIN_FLAG_AMPLE;
 								break;
-								
+
 							case TERRAIN_FLAG_WIDE|TERRAIN_FLAG_VAST:
 								flag = TERRAIN_FLAG_SPARSE;
 								break;
@@ -1885,7 +1885,7 @@ int follow_map(struct session *ses, char *argument)
 			else
 			{
 				ses->map->nofollow++;
-				script_driver(ses, LIST_COMMAND, exit->cmd);
+				script_driver(ses, LIST_COMMAND, NULL, exit->cmd);
 				ses->map->nofollow--;
 			}
 		}
@@ -1965,7 +1965,7 @@ int follow_map(struct session *ses, char *argument)
 		{
 			ses->map->nofollow++;
 
-			script_driver(ses, LIST_COMMAND, argument);
+			script_driver(ses, LIST_COMMAND, NULL, argument);
 
 			ses->map->nofollow--;
 		}
@@ -3865,7 +3865,7 @@ void search_keywords(struct session *ses, char *arg, char *out, char *var)
 		}
 	}
 
-	if (buf[MAP_SEARCH_DESC])
+	if (*buf[MAP_SEARCH_DESC])
 	{
 		str = buf[MAP_SEARCH_DESC];
 
@@ -4394,7 +4394,7 @@ int find_location(struct session *ses, char *arg)
 	struct listnode *dir;
 	char arg1[BUFFER_SIZE], arg2[BUFFER_SIZE], arg3[BUFFER_SIZE];
 	int x, y, z;
-	
+
 	push_call("find_location(%p,%p)",ses,arg);
 
 	if (find_exit(ses, ses->map->in_room, arg))
@@ -4618,7 +4618,7 @@ int check_global(struct session *ses, int room)
 	{
 		return FALSE;
 	}
-	
+
 	if (ses->map->room_list[ses->map->global_vnum] == NULL)
 	{
 		return FALSE;
@@ -5336,7 +5336,7 @@ void map_mouse_handler(struct session *ses, char *arg1, char *arg2, int row, int
 			check_all_events(ses, EVENT_FLAG_MOUSE, 0, 6, "MAP MOUSE LOCATION", ntos(row), ntos(col), exit, ntos(rev_row), ntos(rev_col), ntos(vnum), exit);
 		}
 	}
-		
+
 	pop_call();
 	return;
 }
@@ -5401,7 +5401,7 @@ DO_MAP(map_at)
 
 	ses->map->in_room = new_room;
 
-	script_driver(ses, LIST_COMMAND, arg2);
+	script_driver(ses, LIST_COMMAND, NULL, arg2);
 
 	if (ses->map)
 	{
@@ -5580,7 +5580,7 @@ DO_MAP(map_delete)
 	if (room == ses->map->in_room || room == ses->map->at_room)
 	{
 		show_error(ses, LIST_COMMAND, "#MAP DELETE: YOU MUST FIRST LEAVE THE ROOM YOU'RE TRYING TO DELETE.");
-		
+
 		return;
 	}
 
@@ -5766,7 +5766,7 @@ DO_MAP(map_dig)
 		if (room == ses->map->size)
 		{
 			show_error(ses, LIST_COMMAND, "#MAP DIG: MAXIMUM NUMBER OF ROOMS OF %d REACHED.", ses->map->size);
-			
+
 			return;
 		}
 		add_undo(ses, "%d %d %d", room, ses->map->in_room, MAP_UNDO_CREATE|MAP_UNDO_LINK);
@@ -5856,7 +5856,7 @@ void exit_edit(struct session *ses, struct exit_data *exit, char *opt, char *arg
 		else if ((dir = get_exit_dir(ses, arg3)) == 0)
 		{
 			show_error(ses, LIST_COMMAND, "#MAP %s {%s}: DIRECTION {%s} NOT FOUND.", opt, arg1, arg3);
-			
+
 			return;
 		}
 
@@ -5969,7 +5969,7 @@ DO_MAP(map_entrance)
 	if (exit == NULL)
 	{
 		show_message(ses, LIST_COMMAND, "#MAP ENTRANCE: CAN'T FIND EXIT {%s}.", arg1);
-		
+
 		return;
 	}
 
@@ -6585,6 +6585,8 @@ DO_MAP(map_info)
 		add_nest_node_ses(ses, "info[MAP]", "{ROOMS}{%d}", cnt);
 		add_nest_node_ses(ses, "info[MAP]", "{ROOMS_MAX}{%d}", ses->map->size);
 
+		show_message(ses, LIST_COMMAND, "#MAP INFO: DATA WRITTEN TO {info[MAP]}");
+
 		return;
 	}
 
@@ -6846,7 +6848,7 @@ DO_MAP(map_landmark)
 
 			show_message(ses, LIST_COMMAND, "#OK: LANDMARK {%s} HAS VNUM {%d} AND IS DESCRIBED AS {%s} WITH SIZE {%s}.", arg1, room, arg3, arg4);
 		}
-	} 
+	}
 }
 
 DO_MAP(map_unlandmark)
@@ -7394,7 +7396,7 @@ DO_MAP(map_map)
 					case 'O':
 						logit(ses, gtd->out, logfile, LOG_FLAG_LINEFEED);
 						break;
-					
+
 					case 'L':
 						cat_sprintf(arg1, "{%02d}{%s}", ++row, gtd->out);
 						break;
@@ -7538,7 +7540,7 @@ DO_MAP(map_map)
 					logit(ses, gtd->out, logfile, LOG_FLAG_LINEFEED);
 //					fprintf(logfile, "%s\n", gtd->out);
 					break;
-				
+
 				case 'L':
 					cat_sprintf(arg1, "{%02d}{%s}", ++row, gtd->out);
 					break;
@@ -7551,7 +7553,7 @@ DO_MAP(map_map)
 				case 'V':
 					cat_sprintf(arg1, "%s\n", gtd->out);
 					break;
-				
+
 				default:
 					tintin_puts2(ses, gtd->out);
 					break;
@@ -7634,6 +7636,13 @@ DO_MAP(map_offset)
 			ses->map->sav_top_col = get_number(ses, arg2);
 			ses->map->sav_bot_row = get_number(ses, arg3);
 			ses->map->sav_bot_col = get_number(ses, arg4);
+
+			if (ses->map->sav_top_row == 0 || ses->map->sav_top_col == 0 || ses->map->sav_bot_row == 0 || ses->map->sav_bot_col == 0)
+			{
+				show_error(ses, LIST_COMMAND, "#ERROR: #MAP OFFSET: INVALID SQUARE: {%s} {%s} {%s} {%s}", arg1, arg2, arg3, arg4);
+
+				return;
+			}
 		}
 		else
 		{
@@ -7683,7 +7692,7 @@ DO_MAP(map_read)
 		show_error(ses, LIST_COMMAND, "#MAP: INVALID READ ON LINE %d. ABORTING READ.", line);
 
 		fclose(myfile);
-		
+
 		return;
 	}
 
@@ -7845,7 +7854,7 @@ DO_MAP(map_read)
 
 			case '#':
 				buffer[0] = gtd->tintin_char;
-				ses = script_driver(ses, LIST_COMMAND, buffer);
+				ses = script_driver(ses, LIST_COMMAND, NULL, buffer);
 				break;
 
 			case  0:
@@ -8058,7 +8067,7 @@ DO_MAP(map_roomflag)
 
 	if (*arg2 == 0)
 	{
-		TOG_BIT(ses->map->room_list[ses->map->in_room]->flags, flag);	
+		TOG_BIT(ses->map->room_list[ses->map->in_room]->flags, flag);
 	}
 	else if (is_abbrev(arg2, "ON"))
 	{
@@ -8745,7 +8754,7 @@ DO_MAP(map_vnum)
 	{
 		vnum2 = vnum1;
 	}
-	
+
 	if (vnum1 <= 0 || vnum1 >= ses->map->size || vnum2 <= 0 || vnum2 >= ses->map->size)
 	{
 		show_error(ses, LIST_COMMAND, "#MAP VNUM {%s} {%s} - VNUMS MUST BE BETWEEN {1} and {%d}", arg1, arg2, ses->map->size - 1);
@@ -8867,7 +8876,7 @@ DO_MAP(map_write)
 	{
 		fprintf(file, "LM {%s} {%d} {%s} {%s}\n", root->list[index]->arg1, root->list[index]->val32[0], root->list[index]->arg3, root->list[index]->arg4);
 	}
-	fprintf(file, "\n\n");	
+	fprintf(file, "\n\n");
 
 	root = ses->list[LIST_TERRAIN];
 
@@ -8875,7 +8884,7 @@ DO_MAP(map_write)
 	{
 		fprintf(file, "T {%s} {%s} {%s}\n", root->list[index]->arg1, root->list[index]->arg2, root->list[index]->arg3);
 	}
-	fprintf(file, "\n\n");	
+	fprintf(file, "\n\n");
 
 	for (index = 0 ; index < ses->map->size ; index++)
 	{

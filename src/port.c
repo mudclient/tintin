@@ -95,7 +95,7 @@ DO_PORT(port_initialize)
 	if (*arg1 == 0 || *arg2 == 0)
 	{
 		show_error(ses, LIST_COMMAND, "#SYNTAX: #PORT INITIALIZE {NAME} {PORT} {FILE}");
-		
+
 		return ses;
 	}
 
@@ -141,7 +141,7 @@ DO_PORT(port_initialize)
 			return ses;
 		}
 
-		ld.l_onoff  = 0; 
+		ld.l_onoff  = 0;
 		ld.l_linger = 100;
 
 		setsockopt(sock, SOL_SOCKET, SO_LINGER, (char *) &ld, sizeof(ld));
@@ -392,6 +392,8 @@ void process_port_connections(struct session *ses, fd_set *read_set, fd_set *wri
 			FD_CLR(buddy->fd, read_set);
 
 			close_port(ses, buddy, TRUE);
+
+			continue;
 		}
 		else if (FD_ISSET(buddy->fd, read_set))
 		{
@@ -401,6 +403,8 @@ void process_port_connections(struct session *ses, fd_set *read_set, fd_set *wri
 				FD_CLR(buddy->fd, read_set);
 
 				close_port(ses, buddy, TRUE);
+
+				continue;
 			}
 		}
 
@@ -693,7 +697,7 @@ DO_PORT(port_call)
 		if (error)
 		{
 			port_printf(ses, "Failed to call %s, unknown host.", host);
-			
+
 			return ses;
 		}
 	}
@@ -1054,7 +1058,7 @@ DO_PORT(port_flag)
 		else
 		{
 			tintin_printf2(ses, "#SYNTAX: #PORT FLAG DND [ON|OFF]");
-			
+
 			return ses;
 		}
 
@@ -1084,7 +1088,7 @@ DO_PORT(port_flag)
 		else
 		{
 			tintin_printf2(ses, "#SYNTAX: #PORT FLAG PRIVATE [ON|OFF]");
-			
+
 			return ses;
 		}
 
@@ -1169,7 +1173,7 @@ DO_PORT(port_ignore)
 	{
 		port_printf(ses, "You are no longer ignoring %s.", buddy->name);
 	}
-	
+
 	return ses;
 }
 
@@ -1281,7 +1285,7 @@ DO_PORT(port_rank)
 	else
 	{
 		show_error(ses, LIST_COMMAND, "#SYNTAX: #PORT RANK <NAME> <SPY|SCOUT>");
-		
+
 		return ses;
 	}
 

@@ -458,14 +458,9 @@ DO_COMMAND(do_draw)
 			if (!is_math(ses, arg1) || !is_math(ses, arg2) || !is_math(ses, arg3) || !is_math(ses, arg4))
 			{
 				show_error(ses, LIST_COMMAND, "#ERROR: #DRAW: INVALID SQUARE: %s {%s} {%s} {%s} {%s}", draw_table[index].name, arg1, arg2, arg3, arg4);
-//					is_math(ses, arg1) ? ntos(top_row) : arg1,
-//					is_math(ses, arg2) ? ntos(top_col) : arg2,
-//					is_math(ses, arg3) ? ntos(bot_row) : arg3,
-//					is_math(ses, arg4) ? ntos(bot_col) : arg4);
 
 				return ses;
 			}
-
 
 			if (top_row == 0 && top_col == 0)
 			{
@@ -476,8 +471,6 @@ DO_COMMAND(do_draw)
 
 			if (top_row == 0)
 			{
-				top_row = 1;
-
 				SET_BIT(flags, DRAW_FLAG_SCROLL);
 			}
 			else
@@ -490,20 +483,10 @@ DO_COMMAND(do_draw)
 				}
 			}
 
-			if (top_col == 0)
-			{
-				top_col = 1;
-			}
-
-			if (bot_row == 0)
-			{
-				bot_row = 1;
-			}
-
-			if (bot_col == 0)
-			{
-				bot_col = 1;
-			}
+			if (top_row == 0) top_row = 1;
+			if (top_col == 0) top_col = 1;
+			if (bot_row == 0) bot_row = 1;
+			if (bot_col == 0) bot_col = 1;
 
 			if (top_row > bot_row || top_col > bot_col)
 			{
@@ -772,7 +755,7 @@ void string_to_font(struct session *ses, long long flags, char *in, char *out)
 			pto += sprintf(pto, "%.*s", skip, pti);
 
 			pti += skip;
-			
+
 			continue;
 		}
 
@@ -963,7 +946,7 @@ void string_to_stamp(struct session *ses, long long flags, char *in, char *out)
 			get_color_codes(color, pti, color, GET_ONE);
 
 			pti += skip;
-			
+
 			continue;
 		}
 		pti = get_char(ses, pti, chr1);
@@ -1543,7 +1526,7 @@ DO_DRAW(draw_corner)
 	else
 	{
 		goto_pos(ses, top_row, top_col);
-		
+
 		print_stdout(top_row, top_col, "%s%s", box_color, arg1);
 	}
 }
@@ -1731,7 +1714,7 @@ DO_DRAW(draw_line)
 	if (top_col == bot_col)
 	{
 		draw_line_vertical(ses, top_row, top_col, bot_row, bot_col, rows, cols, flags, box_color, txt_color, arg, arg1, arg2, arg3);
-		
+
 		return;
 	}
 
@@ -1791,7 +1774,7 @@ DO_DRAW(draw_map)
 // 3 use calign for centered bar
 // 4 use box drawing modifiers if no box is specified.
 // 4.1 rounded = (###)
-// 4.2 teed    = [---] 
+// 4.2 teed    = [---]
 // 4.3 jeweled = <###>
 // 4.4 crossed = +++++
 // 4.5 circled = OOOOO
@@ -2365,7 +2348,7 @@ DO_DRAW(draw_table_grid)
 						{
 							strcat(buf3, arg2);
 						}
-	
+
 						if (*str == COMMAND_SEPARATOR)
 						{
 							str++;

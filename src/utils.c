@@ -338,7 +338,7 @@ char *str_time(struct session *ses, char *format, time_t time)
 
 	return buf[cnt];
 }
-	
+
 void seed_rand(struct session *ses, unsigned long long seed)
 {
 	ses->rand = seed % 4294967291ULL;
@@ -387,6 +387,20 @@ char *capitalize(char *str)
 	for (cnt = 0 ; str[cnt] != 0 ; cnt++)
 	{
 		outbuf[cnt] = toupper((int) str[cnt]);
+	}
+	outbuf[cnt] = 0;
+
+	return outbuf;
+}
+
+char *decapitalize(char *str)
+{
+	char *outbuf = str_alloc_stack(0);
+	int cnt;
+
+	for (cnt = 0 ; str[cnt] != 0 ; cnt++)
+	{
+		outbuf[cnt] = tolower((int) str[cnt]);
 	}
 	outbuf[cnt] = 0;
 

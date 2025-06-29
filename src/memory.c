@@ -423,7 +423,7 @@ char *str_cat_printf(char **str, char *fmt, ...)
 	int len;
 
 	va_start(args, fmt);
-	
+
 	len = vasprintf(&arg, fmt, args);
 
 	va_end(args);

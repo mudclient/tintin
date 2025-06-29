@@ -71,8 +71,8 @@ char *help_related(struct session *ses, int index, int html)
 
 	push_call("help_related(%p,%d,%d)",ses,index,html);
 
-	tmp  = str_alloc_stack(0);
-	link = str_alloc_stack(0);
+	tmp   = str_alloc_stack(0);
+	link  = str_alloc_stack(0);
 
 	arg  = help_table[index].also;
 
@@ -84,7 +84,7 @@ char *help_related(struct session *ses, int index, int html)
 
 		if (html == 1)
 		{
-			sprintf(link, "\\c<a href='%s.php'\\c>%s\\c</a\\c>", tmp, tmp);
+			sprintf(link, "\\c<a href='%s.php'\\c>%s\\c</a\\c>", decapitalize(tmp), tmp);
 		}
 		else if (html == 2)
 		{
@@ -216,7 +216,7 @@ DO_COMMAND(do_help)
 
 		FILE *logfile = fopen("../docs/help.html", "w");
 
-		script_driver(ses, LIST_COMMAND, "#config {log} {html}");
+		script_driver(ses, LIST_COMMAND, NULL, "#config {log} {html}");
 
 		if (HAS_BIT(ses->log->mode, LOG_FLAG_HTML))
 		{
@@ -415,7 +415,7 @@ DO_COMMAND(do_help)
 	{
 		FILE *logfile;
 
-		script_driver(ses, LIST_COMMAND, "#config {log} {html}");
+		script_driver(ses, LIST_COMMAND, NULL, "#config {log} {html}");
 
 		*buf = 0;
 
@@ -544,10 +544,6 @@ struct help_type help_table[] =
 		"<278>         arguments. The priority part is optional and determines the priority\n"
 		"<278>         of the alias, it defaults to 5.\n"
 		"\n"
-		"<278>         If no % variable is used in the commands section any argument will be\n"
-		"<278>         appended to the end as if %0 was used. This feature might be removed\n"
-		"<278>         in the future, and shouldn't be used.\n"
-		"\n"
 		"<178>Example<278>: #alias {k} {kill %1;kick}\n"
 		"\n"
 		"<278>         Typing 'k orc' would result in attacking the orc followed by a kick.\n"
@@ -639,7 +635,7 @@ struct help_type help_table[] =
 		"<278>         to the next.\n"
 		"\n"
 		"<178>Example<278>: #while {1} {#math cnt $cnt + 1;#if {$cnt == 20} {#break}}\n",
-		
+
 		"statements"
 	},
 	{
@@ -869,7 +865,7 @@ struct help_type help_table[] =
 		"<278>         clients, typically for the purpose of chatting and sending files.\n"
 		"<278>         This is a decentralized chat system, meaning you have to exchange ip\n"
 		"<278>         addresses and port numbers with other users in order to connect to\n"
-		"<278>         them.\n"
+		"<278>         them. Chat events are triggered in the startup session.\n"
 		"\n"
 		"<278>         <178>#chat {init} {port}\n"
 		"<278>           #chat initialize launches your chat server. The port number is\n"
@@ -924,10 +920,10 @@ struct help_type help_table[] =
 		"<278>           used instead of the connection's name when sending someone a message\n"
 		"<278>           The second column shows the connection's name. The third column\n"
 		"<278>           shows flags set for the connection, (P)rivate, (I)gnore, (S)erve,\n"
-		"<278>           (F)orward to user, and (f)orward from user. The next columns show\n"
-		"<278>           ip, port, and client name.\n"
+		"<278>           Forward(A)ll to user, (F)orward to user, and (f)orward from user.\n"
+		"<278>           The next columns show ip, port, and client name.\n"
 		"<278>         <178>#chat {zap}        {buddy}            Close a connection\n",
-		
+
 		"port"
 	},
 	{
@@ -944,6 +940,8 @@ struct help_type help_table[] =
 		"<278>           Will delete all triggers associated with the given class.\n"
 		"<278>         <178>#class {<name>} {close}\n"
 		"<278>           Close the given class, opening the last open class, if any.\n"
+		"<278>         <178>#class {<name>} {debug} {on|off}\n"
+		"<278>           Toggle debug mode for given class.\n"
 		"<278>         <178>#class {<name>} {kill}\n"
 		"<278>           Will clear, close, and remove the class.\n"
 		"<278>         <178>#class {<name>} {list}\n"
@@ -968,7 +966,7 @@ struct help_type help_table[] =
 		"<178>Example<278>: #class rich kill;#class rich read poor.tin\n"
 		"<278>         Deletes all triggers of 'rich' class if any. Read 'poor.tin' file,\n"
 		"<278>         all triggers loaded will be assigned to the 'rich' class.\n",
-		
+
 		"config debug ignore info kill line message"
 	},
 	{
@@ -1078,7 +1076,7 @@ struct help_type help_table[] =
 		"<278>         reiterate the command.\n"
 		"\n"
 		"<178>Example<278>: #loop 1 10 cnt {#if {$cnt % 2 == 0} {#continue} {say $cnt}}\n",
-		
+
 		"break foreach list loop parse repeat return while"
 	},
 	{
@@ -1166,6 +1164,7 @@ struct help_type help_table[] =
 		"<278>         COMPLETE    makes tab completion work while editing\n"
 		"\n"
 		"<278>         DICTIONARY  performs tab completion on the dictionary\n"
+		"<278>         INPUT       performs tab completion on the input history\n"
 		"<278>         LIST        performs tab completion on the tab completion list\n"
 		"<278>         SCROLLBACK  performs tab completion on the scrollback buffer\n"
 		"\n"
@@ -1201,7 +1200,7 @@ struct help_type help_table[] =
 		"\n"
 		"<278>         You can launch tintin and attach the first daemonized instance using\n"
 		"<278>         tt++ -R. To attach a named instance use tt++ -R<name>.\n",
-		
+
 		"script system run"
 	},
 	{
@@ -1219,7 +1218,7 @@ struct help_type help_table[] =
 		"<278>         the log file, you must be logging in order for this to work.\n"
 		"\n"
 		"<278>         Not every list has debug support yet.\n",
-		
+
 		"class ignore info kill message"
 	},
 	{
@@ -1230,7 +1229,7 @@ struct help_type help_table[] =
 		"<278>         The default command can only be used within the switch command. When\n"
 		"<278>         the conditional argument of non of the case commands matches the switch\n"
 		"<278>         command's conditional statement the default command is executed.\n",
-		
+
 		"case default else elseif if switch regexp"
 	},
 	{
@@ -1254,7 +1253,7 @@ struct help_type help_table[] =
 		"<278>         a name as the first argument, be aware this changes the syntax. If\n"
 		"<278>         the name is a number keep in mind that delays with the same numeric\n"
 		"<278>         name will not be overwritten\n",
-		
+
 		"event ticker"
 	},
 
@@ -1335,7 +1334,7 @@ struct help_type help_table[] =
 		"<278>         [BOXED] <178>MAP\n"
 		"<278>           will draw the map\n"
 		"<278>         <178>RAIN<278> {<VARIABLE>} {[SPAWN]} {[FADE]} {[LEGEND]}\n"
-		"<278>           will draw digital rain.\n"
+		"<278>           will draw digital rain SPAWN (0.01-100) FADE (1-100).\n"
 		"<278>         [JOINTED|TOP|LEFT|BOTTOM|RIGHT] <178>SIDE\n"
 		"<278>           will draw one or more sides of a box.\n"
 		"<278>         [GRID] <178>TABLE<278> {[LIST1]} {[LIST2]}\n"
@@ -1369,7 +1368,7 @@ struct help_type help_table[] =
 		"<178>Example<278>: #echo {The current date is %t.} {%Y-%m-%d %H:%M:%S}\n"
 		"<278>         #echo {[%38s][%-38s]} {Hello World} {Hello World}\n"
 		"<278>         #echo {{this is %s on the top row} {1}} {printed}\n",
-		
+
 		"buffer format grep showme"
 	},
 	{
@@ -1403,7 +1402,7 @@ struct help_type help_table[] =
 		"<278>           Write the editor content to file.\n"
 		"\n"
 		"<178>Example<278>: #edit create {bla.txt} {line 1} {line 2}\n",
-		
+
 		"cursor macro"
 	},
 	{
@@ -1479,13 +1478,13 @@ struct help_type help_table[] =
 		"<268>├─────────────────────────┤├────────────────────────────────────────────┤\n"
 		"<268>│<178>arrow down               <268>││<178>next input line                             <268>│\n"
 		"<268>└─────────────────────────┘└────────────────────────────────────────────┘\n"
-		
+
 		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐\n"
 		"<268>│<178>ctrl arrow left          <268>││<178>cursor left word                            <268>│\n"
 		"<268>├─────────────────────────┤├────────────────────────────────────────────┤\n"
 		"<268>│<178>ctrl arrow right         <268>││<178>cursor right word                           <268>│\n"
 		"<268>└─────────────────────────┘└────────────────────────────────────────────┘\n"
-		
+
 		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐\n"
 		"<268>│<178>backspace                <268>││<178>backspace                                   <268>│\n"
 		"<268>├─────────────────────────┤├────────────────────────────────────────────┤\n"
@@ -1493,38 +1492,38 @@ struct help_type help_table[] =
 		"<268>├─────────────────────────┤├────────────────────────────────────────────┤\n"
 		"<268>│<178>ctrl backspace           <268>││<178>clear line                                  <268>│\n"
 		"<268>└─────────────────────────┘└────────────────────────────────────────────┘\n"
-		
+
 		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐\n"
 		"<268>│<178>delete                   <268>││<178>delete                                      <268>│\n"
 		"<268>├─────────────────────────┤├────────────────────────────────────────────┤\n"
 		"<268>│<178>ctrl delete              <268>││<178>delete word right                           <268>│\n"
 		"<268>└─────────────────────────┘└────────────────────────────────────────────┘\n"
-		
-		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐\n"	
+
+		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐\n"
 		"<268>│<178>end                      <268>││<178>cursor end                                  <268>│\n"
 		"<268>├─────────────────────────┤├────────────────────────────────────────────┤\n"
 		"<268>│<178>ctrl end                 <268>││<178>scroll buffer end                           <268>│\n"
 		"<268>└─────────────────────────┘└────────────────────────────────────────────┘\n"
 
-		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐\n"	
+		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐\n"
 		"<268>│<178>enter                    <268>││<178>enter                                       <268>│\n"
 		"<268>├─────────────────────────┤├────────────────────────────────────────────┤\n"
 		"<268>│<178>shift-enter              <268>││<178>soft enter                                  <268>│\n"
 		"<268>└─────────────────────────┘└────────────────────────────────────────────┘\n"
-		
+
 		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐\n"
 		"<268>│<178>home                     <268>││<178>cursor home                                 <268>│\n"
 		"<268>├─────────────────────────┤├────────────────────────────────────────────┤\n"
 		"<268>│<178>ctrl home                <268>││<178>scroll buffer home                          <268>│\n"
 		"<268>└─────────────────────────┘└────────────────────────────────────────────┘\n"
-		
-		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐\n"	
+
+		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐\n"
 		"<268>│<178>page up                  <268>││<178>scroll buffer up                            <268>│\n"
 		"<268>├─────────────────────────┤├────────────────────────────────────────────┤\n"
 		"<268>│<178>page down                <268>││<178>scroll buffer down                          <268>│\n"
 		"<268>└─────────────────────────┘└────────────────────────────────────────────┘\n"
 
-		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐\n"	
+		"<268>┌─────────────────────────┐┌────────────────────────────────────────────┐\n"
 		"<268>│<178>tab                      <268>││<178>complete word forward                       <268>│\n"
 		"<268>├─────────────────────────┤├────────────────────────────────────────────┤\n"
 		"<268>│<178>shift-tab                <268>││<178>complete word backward                      <268>│\n"
@@ -1542,7 +1541,7 @@ struct help_type help_table[] =
 		"<278>         only called if the proceeding #IF or #ELSEIF is false.\n"
 		"\n"
 		"<178>Example<278>: #if {1d2 == 1} {smile};#else {grin}\n",
-		
+
 		"case default elseif if switch regexp"
 	},
 	{
@@ -1555,7 +1554,7 @@ struct help_type help_table[] =
 		"<278>         #ELSEIF statements are false.\n"
 		"\n"
 		"<178>Example<278>: #if {1d3 == 1} {smirk};#elseif {1d2 == 1} {snicker}\n",
-		
+
 		"case default else if switch regexp"
 	},
 	{
@@ -1568,7 +1567,7 @@ struct help_type help_table[] =
 		"\n"
 		"<278>         The message is optional and is printed before tintin exits. When\n"
 		"<278>         using #end {\\} tintin will terminate silently.\n",
-		
+
 		"zap"
 	},
 	{
@@ -1593,7 +1592,7 @@ struct help_type help_table[] =
 		"\n"
 		"<278>         Ending a line with \\ will stop tintin from appending a line feed.\n"
 		"<278>         To escape arguments in an alias or action use %%0 %%1 %%2 etc.\n",
-		
+
 		"characters colors coordinates mathematics pcre"
 	},
 	{
@@ -1641,6 +1640,9 @@ struct help_type help_table[] =
 		"\n"
 		"<278>         <178>EDIT STARTED, EDIT FINISHED\n"
 		"<278>           %0 name  %1 lines %2 size %3 data\n"
+		"\n"
+		"<278>         <178>EDIT RESUMED, EDIT SUSPENDED\n"
+		"<278>           %0 name\n"
 		"\n"
 		"<278>         <178>HISTORY UPDATE\n"
 		"<278>           %0 command\n"
@@ -1716,12 +1718,13 @@ struct help_type help_table[] =
 		"\n"
 		"<278>         <128>PORT EVENTS\n"
 		"\n"
-		"<278>         <178>CHAT MESSAGE<278>, <178>PORT MESSAGE\n"
-		"<278>           %0 raw text  %1 plain text\n"
+		"<278>         <178>CHAT MESSAGE           <278>%0 raw text  %1 plain text\n"
+		"<278>         <178>CHAT SNOOP REQUEST     <278>%0 name %1 ip %2 port\n"
 		"\n"
 		"<278>         <178>PORT CONNECTION        <278>%0 name %1 ip %2 port\n"
 		"<278>         <178>PORT DISCONNECTION     <278>%0 name %1 ip %2 port\n"
 		"<278>         <178>PORT LOG MESSAGE       <278>%0 name %1 ip %2 port %3 data %4 plain data\n"
+		"<278>         <178>PORT MESSAGE           <278>%0 raw text %1 plain text\n"
 		"<278>         <178>PORT RECEIVED MESSAGE  <278>%0 name %1 ip %2 port %3 data %4 plain data\n"
 		"<278>         <178>PORT RECEIVED DATA     <278>%0 name %1 ip %2 port %3 data %4 size\n"
 		"\n"
@@ -1771,6 +1774,7 @@ struct help_type help_table[] =
 		"<278>         <178>WRITE ERROR            <278>%0 filename %1 error message\n"
 		"<278>         <178>WRITE FILE             <278>%0 filename\n"
 		"\n"
+		"<278>         <178>RECEIVED ERROR         <278>%0 message\n"
 		"<278>         <178>SYSTEM CRASH           <278>%0 message\n"
 		"<278>         <178>SYSTEM ERROR           <278>%0 name %1 system msg %2 error %3 error msg\n"
 		"<278>         <178>UNKNOWN COMMAND        <278>%0 raw text\n"
@@ -1814,7 +1818,7 @@ struct help_type help_table[] =
 		"<178>Example<278>: #event {SESSION CONNECTED} {#read mychar.tin}\n"
 		"\n"
 		"<178>Comment<278>: You can remove an event with the #unevent command.\n",
-		
+
 		"button delay ticker"
 	},
 	{
@@ -1828,7 +1832,7 @@ struct help_type help_table[] =
 		"\n"
 		"<178>Example<278>: #foreach {bob;tim;kim} {name} {tell $name Hello}\n"
 		"<178>Example<278>: #foreach {{bob}{tim}{kim}} {name} {tell $name Hello}\n",
-		
+
 		"break continue list loop parse repeat return while"
 	},
 	{
@@ -1876,7 +1880,7 @@ struct help_type help_table[] =
 		"<278>         #format {test} {%%}             a literal % character\n"
 		"\n"
 		"<178>Comment<278>: See #help TIME for help on the %t argument.\n",
-		
+
 		"cat echo function local math replace script time variable"
 	},
 
@@ -1910,7 +1914,7 @@ struct help_type help_table[] =
 		"<278>         #show The current time is @gettime{}\n"
 		"\n"
 		"<178>Comment<278>: You can remove a function with the #unfunction command.\n",
-		
+
 		"format local math replace script variable"
 	},
 	{
@@ -1925,7 +1929,7 @@ struct help_type help_table[] =
 		"<278>         There are a system messages that can be gagged using gag events.\n"
 		"\n"
 		"<178>Comment<278>: You can remove a gag with the #ungag command.\n",
-		
+
 		"action highlight prompt substitute"
 	},
 	{
@@ -1940,7 +1944,7 @@ struct help_type help_table[] =
 		"<268>      #<278>      Code by Peter Unold, Bill Reis, and Igor van den Hoven      <268>#\n"
 		"<268>      #<278>                                                                  <268>#\n"
 		"<268>      #<268>##################################################################<268>#<288>\n",
-		
+
 		""
 	},
 	{
@@ -1959,7 +1963,7 @@ struct help_type help_table[] =
 		"\n"
 		"<178>Example<278>: #grep Bubba tells you\n"
 		"<278>         This will show all occasions where bubba tells you something.\n",
-		
+
 		"buffer echo showme"
 	},
 	{
@@ -1970,7 +1974,7 @@ struct help_type help_table[] =
 		"<278>         Without an argument #help will list all available help subjects.\n"
 		"\n"
 		"<278>         Using #help %* will display all help entries.\n",
-		
+
 		"commands debug ignore info message statements"
 	},
 	{
@@ -2039,7 +2043,7 @@ struct help_type help_table[] =
 		"<178>Comment<278>: This command only works with ANSI/VT100 terminals or emulators.\n"
 		"\n"
 		"<178>Comment<278>: You can remove a highlight with the #unhighlight command.\n",
-		
+
 		"action gag prompt substitute"
 	},
 	{
@@ -2074,7 +2078,7 @@ struct help_type help_table[] =
 		"<278>         the history list by default. You can bind these with a macro yourself\n"
 		"<278>         using #cursor {history next} and #cursor {history prev}. Many #cursor\n"
 		"<278>         commands only work properly when bound with a macro.\n",
-		
+
 		"alias cursor keypad macro speedwalk tab"
 	},
 	{
@@ -2101,7 +2105,7 @@ struct help_type help_table[] =
 		"<178>Example<278>: #alias {k} {#if {\"%0\" == \"\"} {kill $target};#else {kill %0}}\n"
 		"\n"
 		"<178>Example<278>: #if {\"%0\" == \"{bli|bla}\"} {#showme %0 is either bli or bla.}\n",
-		
+
 		"case default else elseif math switch regexp"
 	},
 	{
@@ -2984,10 +2988,10 @@ struct help_type help_table[] =
 		"<278>                 }\n"
 		"<278>             }\n"
 		"        }\n",
-		
+
 		"break continue foreach loop parse repeat return while"
 	},
-	
+
 	{
 		"LOCAL",
 		TOKEN_TYPE_COMMAND,
@@ -3760,8 +3764,8 @@ struct help_type help_table[] =
 		"<278>         In order to copy/paste, most terminals require that you press the shift\n"
 		"<278>         key during selection.\n"
 		"\n",
-		
-		"button draw event MSLP"
+
+		"button draw event mslp"
 	},
 
 	{
@@ -3929,7 +3933,7 @@ struct help_type help_table[] =
 		"<278>         #pathdir {dw} {ue} {40}\n"
 		"\n"
 		"<178>Comment<278>: You can remove a pathdir with the #unpathdir command.\n",
-		
+
 		"map path"
 	},
 	{
@@ -3972,7 +3976,7 @@ struct help_type help_table[] =
 		"<278>         is used.\n"
 		"\n"
 		"<178>TinTin++ <178>Description                                      POSIX\n"
-		"<178>      %a <278>Match zero or more characters including newlines ([^\\0]*?)\n"       
+		"<178>      %a <278>Match zero or more characters including newlines ([^\\0]*?)\n"
 		"<178>      %A <278>Match zero or more newlines                      ([\\n]*?)\n"
 		"<178>      %c <278>Match zero or more ansi color codes              ((?:\\e\\[[0-9;]*m)*?)\n"
 		"<178>      %d <278>Match zero or more digits                        ([0-9]*?)\n"
@@ -4245,12 +4249,11 @@ struct help_type help_table[] =
 		TOKEN_TYPE_COMMAND,
 		"<178>Command<278>: #read <178>{<278>filename<178>}\n"
 		"\n"
-		"<278>         Reads a commands file into memory.  The coms file is merged in with\n"
-		"<278>         the currently loaded commands.  Duplicate commands are overwritten.\n"
+		"<278>         Reads a commands file into memory.  The commands are merged with the\n"
+		"<278>         currently loaded commands.  Duplicate commands are overwritten.\n"
 		"\n"
-		"<278>         If you uses braces, { and } you can use several lines for 1 commands.\n"
-		"<278>         This however means you must always match every { with a } for the read\n"
-		"<278>         command to work.\n"
+		"<278>         If you uses braces you can use several lines for each command.  You\n"
+		"<278>         must match every { with a } for the read command to work.\n"
 		"\n"
 		"<278>         You can comment out triggers using /* text */\n"
 		,
@@ -4331,13 +4334,14 @@ struct help_type help_table[] =
 	{
 		"REPEAT",
 		TOKEN_TYPE_STRING,
-		"<178>Command<278>: #<178>[<078>number<178>] {<278>commands<178>}\n"
+		"<178>Command<278>: #<178>[<078>number<178>] {<278>commands<178>} {<278>..<178>}\n"
 		"\n"
 		"<278>        Sometimes you want to repeat the same command multiple times. This is\n"
 		"<278>        the easiest way to accomplish that.\n"
 		"\n"
-		"<178>Example<278>: #10 {buy bread}\n",
-		
+		"<178>Example<278>: #10 {buy bread}\n"
+		"<178>Example<278>: #2 {buy bread} {buy apple}\n",
+
 		"mathematics statements"
 	},
 	{
@@ -4413,8 +4417,12 @@ struct help_type help_table[] =
 		"\n"
 		"<178>         #scan {dir} <filename> <variable>\n"
 		"\n"
-		"<278>          The scan dir command will read the given filename or directory and\n"
-		"<278>          store any gathered information into the provided variable.\n"
+		"<278>           The scan dir command will read the given filename or directory and\n"
+		"<278>           store any gathered information into the provided variable.\n"
+		"\n"
+		"<178>         #scan {json} <filename> <variable>\n"
+		"<278>           The scan json command will read the given filename and store the data\n"
+		"<278>           in the provided tintin variable.\n"
 		"\n"
 		"<278>         <178>#scan {tsv} <filename>\n"
 		"\n"
@@ -4426,9 +4434,9 @@ struct help_type help_table[] =
 		"<278>         <178>#scan {file} <filename> {commands}\n"
 		"\n"
 		"<278>           The scan file command reads the given files and executes the\n"
-		"<278>            commands argument. &0 contains the raw content of the file and\n"
-		"<278>            &1 contains the plain content. &2 contains the raw byte size of the\n"
-		"<278>            file and &3 the plain byte size. &5 contains the line count.\n"
+		"<278>           commands argument. &0 contains the raw content of the file and\n"
+		"<278>           &1 contains the plain content. &2 contains the raw byte size of the\n"
+		"<278>           file and &3 the plain byte size. &5 contains the line count.\n"
 		"\n"
 		"<278>         <178>#scan {txt} <filename>\n"
 		"\n"
@@ -5208,7 +5216,7 @@ struct help_type help_table[] =
 		"<278>         To see the internal index of a variable use &<variable name>. To see\n"
 		"<278>         the size of a table you would use: &targets[] or &targets[%*]. A non\n"
 		"<278>         existent nested variable will report itself as 0.\n"
-		"\n" 
+		"\n"
 		"<178>Example<278>: #show {Number of targets starting with A: &targets[A%*]\n"
 		"\n"
 		"<278>         In some scripts you need to know the name of a nested variable. This\n"

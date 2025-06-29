@@ -277,7 +277,7 @@ void process_msdp_index_val(struct session *ses, struct port_data *buddy, int va
 			msdp_table[var_index].fun(ses, buddy, val_index);
 		}
 	}
-} 
+}
 
 // 1d array support for commands
 
@@ -377,7 +377,7 @@ void process_msdp_varval(struct session *ses, struct port_data *buddy, char *var
 		}
 		return;
 	}
-} 
+}
 
 void msdp_command_list(struct session *ses, struct port_data *buddy, int index)
 {
@@ -462,7 +462,7 @@ void msdp_command_send(struct session *ses, struct port_data *buddy, int index)
 {
 	if (HAS_BIT(buddy->msdp_data[index]->flags, MSDP_FLAG_SENDABLE))
 	{
-		SET_BIT(buddy->msdp_data[index]->flags, MSDP_FLAG_UPDATED);	
+		SET_BIT(buddy->msdp_data[index]->flags, MSDP_FLAG_UPDATED);
 		SET_BIT(buddy->comm_flags, COMM_FLAG_MSDPUPDATE);
 	}
 }
@@ -613,7 +613,7 @@ void msdp_configure_arachnos(struct session *ses, struct port_data *buddy, int i
 				{
 					timeval_t = (time_t) atoll(val);
 					timeval_tm = *localtime(&timeval_t);
-					
+
 					strftime(msg_time, 20, "%T %D", &timeval_tm);
 				}
 				else if (!strcmp(var, "MSG_BODY"))
@@ -624,14 +624,14 @@ void msdp_configure_arachnos(struct session *ses, struct port_data *buddy, int i
 				{
 					timeval_t = (time_t) atoll(val);
 					timeval_tm = *localtime(&timeval_t);
-					
+
 					strftime(mud_uptime, 20, "%T %D", &timeval_tm);
 				}
 				else if (!strcmp(var, "MUD_UPDATE"))
 				{
 					timeval_t = (time_t) atoll(val);
 					timeval_tm = *localtime(&timeval_t);
-					
+
 					strftime(mud_update, 20, "%T %D", &timeval_tm);
 				}
 				else if (!strcmp(var, "MUD_PLAYERS"))

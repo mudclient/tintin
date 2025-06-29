@@ -68,7 +68,7 @@ DO_COMMAND(do_split)
 	if (*arg)
 	{
 		arg = sub_arg_in_braces(ses, arg, arg1, GET_ONE, SUB_VAR|SUB_FUN);
-		
+
 		input = get_number(ses, arg1);
 
 		input *= -1;
@@ -331,8 +331,8 @@ void split_show(struct session *ses, char *prompt, char *row_str, char *col_str)
 	{
 		snprintf(buf1, BUFFER_SIZE, "%.*s", raw_len_str(ses, prompt, 0, gtd->screen->cols - col), prompt);
 
-		show_debug(ses, LIST_PROMPT, "#DEBUG PROMPT {%s}", prompt);
-		show_debug(ses, LIST_PROMPT, "#PROMPT WIDTH %d WITH OFFSET %d LONGER THAN ROW SIZE %d.", width, col, gtd->screen->cols);
+		show_debug(ses, LIST_PROMPT, NULL, "#DEBUG PROMPT {%s}", prompt);
+		show_debug(ses, LIST_PROMPT, NULL, "#PROMPT WIDTH %d WITH OFFSET %d LONGER THAN ROW SIZE %d.", width, col, gtd->screen->cols);
 	}
 
 	save_pos(ses);
@@ -358,7 +358,7 @@ void split_show(struct session *ses, char *prompt, char *row_str, char *col_str)
 		{
 			erase_cols(gtd->screen->cols);
 		}
-	
+
 		print_stdout(0, 0, "%s", buf1);
 	}
 

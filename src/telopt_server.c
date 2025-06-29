@@ -560,7 +560,7 @@ int process_sb_ttype_is(struct session *ses, struct port_data *buddy, unsigned c
 	{
 		switch (src[i])
 		{
-			default:			
+			default:
 				*pto++ = src[i];
 				break;
 

@@ -125,7 +125,7 @@ int client_translate_telopts(struct session *ses, unsigned char *src, int cplen)
 
 	if (cplen == 0)
 	{
-		gtd->mud_output_buf[gtd->mud_output_len] = 0;	
+		gtd->mud_output_buf[gtd->mud_output_len] = 0;
 
 		pop_call();
 		return 0;
@@ -251,13 +251,13 @@ int client_translate_telopts(struct session *ses, unsigned char *src, int cplen)
 			{
 				switch(cpsrc[1])
 				{
-					case NOP:   
+					case NOP:
 					case DM:
-					case BREAK: 
-					case IP:    
-					case AO:    
-					case AYT:   
-					case EC:    
+					case BREAK:
+					case IP:
+					case AO:
+					case AYT:
+					case EC:
 					case EL:
 					case IAC:
 					case GA:
